@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/assets/reader-bilingual.jpg"><img src="docs/assets/reader-bilingual.jpg" width="1120" alt="Stread Reader：左侧文章目录，正文按段落展示英文与简体中文，并排版数学公式。"></a>
+  <a href="docs/assets/attention-overview.png"><img src="docs/assets/attention-overview.png" width="1120" alt="Attention Is All You Need 在 Stread 中的阅读首屏：文章标题、作者、目录与摘要。"></a>
 </p>
 
 ## 从整理资料，到读懂与回顾
@@ -38,6 +38,20 @@ Stread 把资料管理、双语阅读和阅读积累连接起来。读到一半�
 | **Queue · 协作** | 汇集转换、纠错、译文修改和问答任务，通过稳定的任务编号交给外部 Agent。 |
 
 从 Reader 返回时，会保留打开文章时的工作区、筛选、列表位置与草稿。资料、原文件、修订和阅读记录保存在本机。
+
+## 对照翻译
+
+阅读外文论文时，可以在 **原文、译文、对照** 三种视图之间切换。对照模式把每段原文与对应译文放在一起，读中文理解内容，也能随时核对原文的措辞与推导。
+
+- **逐段对照**：原文与译文相邻呈现，公式、图表和引用保留在阅读上下文中。
+- **调整顺序**：在阅读设置中选择原文在前或译文在前，并切换已有的译文语言。
+- **核对来源**：打开 PDF 原页，对照原始材料查看公式、图表、脚注和版式。
+
+非中文资料默认转换为完整原文与简体中文，也可在转换要求中指定其他语言。译文由外部 Agent 生成、审阅后保存；阅读时切换视图直接使用已有内容，不会即时调用模型翻译。
+
+<p align="center">
+  <a href="docs/assets/attention-bilingual.png"><img src="docs/assets/attention-bilingual.png" width="1120" alt="Attention 的缩放点积注意力章节：英文原文、逐段简体中文译文与数学公式。"></a>
+</p>
 
 ## 开始使用
 
@@ -63,7 +77,7 @@ Stread 通过 **32 个 MCP 工具**向外部 Agent 提供本机工作台能力�
 
 非中文资料默认交付**完整原文与简体中文**。转换结果需由未参与生成的审阅者对照原始材料独立复核，并在真实 Reader 中检查；确认后的最新预览才会发布。完整发布规则见[转换工作流](services/workspace/conversion-workflow.md)。
 
-模型与 Agent 由你选择的外部客户端运行；Stread 保存任务和内容，语言切换展示已经保存的译文。连接方式、权限与转换要求见 [MCP 接入](docs/MCP.md)。
+模型与 Agent 由你选择的外部客户端运行，Stread 保存任务和内容。连接方式、权限与转换要求见 [MCP 接入](docs/MCP.md)。
 
 <details>
 <summary><strong>本地数据与备份</strong></summary>
