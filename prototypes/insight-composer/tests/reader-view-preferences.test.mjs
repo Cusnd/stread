@@ -89,7 +89,14 @@ test("order affects bilingual content only and untranslated content retains its 
 
 test("real renderer consistently orders standard and semantic HTML blocks while retaining source addresses", async () => {
   const [{ createServer }, { createElement }, { renderToStaticMarkup }] = await Promise.all([import("vite"), import("react"), import("react-dom/server")]);
-  const server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false }, appType: "custom" });
+  const server = await createServer({
+    configFile: false,
+    root: fileURLToPath(new URL("..", import.meta.url)),
+    esbuild: { jsx: "automatic" },
+    optimizeDeps: { noDiscovery: true, include: [] },
+    server: { middlewareMode: true, watch: null, hmr: false, ws: false },
+    appType: "custom",
+  });
   try {
     const { PaperArticle } = await server.ssrLoadModule("/src/PaperArticle.jsx");
     const paper = await prepareReaderDocument({ format: "continous-reader", schema: 2, id: "order-test", revision: 1,

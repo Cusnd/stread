@@ -141,7 +141,14 @@ test("invalid profiles/content preserve the original payload and expose diagnost
 
 test("the actual React component pairs current nodes, keeps uncertain translations separate and renders diagnostics", async () => {
   const [{ createServer }, { createElement }, { renderToStaticMarkup }] = await Promise.all([import("vite"), import("react"), import("react-dom/server")]);
-  const server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false }, appType: "custom" });
+  const server = await createServer({
+    configFile: false,
+    root: fileURLToPath(new URL("..", import.meta.url)),
+    esbuild: { jsx: "automatic" },
+    optimizeDeps: { noDiscovery: true, include: [] },
+    server: { middlewareMode: true, watch: null, hmr: false, ws: false },
+    appType: "custom",
+  });
   try {
     const { HtmlBlock } = await server.ssrLoadModule("/src/HtmlBlock.jsx");
     const render = (block, mode = "bilingual") => renderToStaticMarkup(createElement(HtmlBlock, { block, mode, language: "en", notes: [], assetBase: "/article/" }));

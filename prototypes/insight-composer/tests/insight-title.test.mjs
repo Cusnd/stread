@@ -57,7 +57,14 @@ test("archive undo receipts retain titles independently from answers and source 
 
 test("title field and question detail keep title, content and keyboard editing distinct", async () => {
   const [{ createServer }, { createElement }, { renderToStaticMarkup }] = await Promise.all([import("vite"), import("react"), import("react-dom/server")]);
-  const server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false }, appType: "custom" });
+  const server = await createServer({
+    configFile: false,
+    root: fileURLToPath(new URL("..", import.meta.url)),
+    esbuild: { jsx: "automatic" },
+    optimizeDeps: { noDiscovery: true, include: [] },
+    server: { middlewareMode: true, watch: null, hmr: false, ws: false },
+    appType: "custom",
+  });
   try {
     const [{ ComposerTitleField, composerAnchor, MAX_COMPOSER_HEIGHT, COMPOSER_TITLE_HEIGHT }, { QuestionDetail }] = await Promise.all([
       server.ssrLoadModule("/src/ComposerSurface.jsx"), server.ssrLoadModule("/src/QuestionDetail.jsx"),

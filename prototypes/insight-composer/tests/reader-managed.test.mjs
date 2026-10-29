@@ -184,7 +184,14 @@ test("view preferences migrate temporary TOC state without erasing useful user c
 
 test("real renderer handles optional source/captions, ordered languages, table alignment and fenced code", async () => {
   const [{ createServer }, { createElement }, { renderToStaticMarkup }] = await Promise.all([import("vite"), import("react"), import("react-dom/server")]);
-  const server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false }, optimizeDeps: { holdUntilCrawlEnd: false }, appType: "custom" });
+  const server = await createServer({
+    configFile: false,
+    root: fileURLToPath(new URL("..", import.meta.url)),
+    esbuild: { jsx: "automatic" },
+    optimizeDeps: { noDiscovery: true, include: [] },
+    server: { middlewareMode: true, watch: null, hmr: false, ws: false },
+    appType: "custom",
+  });
   try {
     const [{ PaperArticle }, { composerAnchor }, { InsightQuote }] = await Promise.all([server.ssrLoadModule("/src/PaperArticle.jsx"), server.ssrLoadModule("/src/ComposerSurface.jsx"), server.ssrLoadModule("/src/InsightQuote.jsx")]);
     const document = await prepareReaderDocument({ format: "continous-reader", schema: 2, id: "safe", revision: 1, assetBase: "/api/documents/safe/assets/", meta: { title: "Safe", language: "fr" }, blocks: [
