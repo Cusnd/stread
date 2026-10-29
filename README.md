@@ -53,17 +53,18 @@ Stread 把资料管理、双语阅读和阅读积累连接起来。读到一半�
   <a href="docs/assets/attention-bilingual.png"><img src="docs/assets/attention-bilingual.png" width="1120" alt="Attention 的缩放点积注意力章节：英文原文、逐段简体中文译文与数学公式。"></a>
 </p>
 
-## PDF 原页对照
+## PDF 原页对照与段落联动
 
 点击阅读工具栏的 **原页**，在正文旁打开所附 PDF。一边阅读重排正文或译文，一边核对原稿中的公式、图表、脚注与版式。
 
-- **位置联动**：开启“联动”后，正文与 PDF 按已有来源信息关联；也可使用“定位原页”和“定位本页正文”手动跳转。
+- **段落联动**：点击或选中原文、译文，PDF 会定位到对应页面，并高亮原稿中的对应段落。
+- **双向定位**：点击 PDF 中的段落区域，即可回到对应正文；也可使用“定位原页”和“定位本页正文”手动跳转。
 - **独立查看**：关闭联动后分别浏览正文与原稿，支持 PDF 翻页、缩放和调整原页面板宽度。
 
-原页对照适用于附有 PDF 来源的文章，定位精度取决于转换时保留的来源信息。
+原页对照适用于附有 PDF 来源的文章。段落高亮与反向点击需要转换时保留段落坐标；只有页码信息时，定位到对应页面。
 
 <p align="center">
-  <a href="docs/assets/attention-pdf-comparison.png"><img src="docs/assets/attention-pdf-comparison.png" width="1120" alt="Stread PDF 原页对照：左侧双语正文与注意力公式，右侧对应的原始 PDF 页面，支持联动、定位、翻页与缩放。"></a>
+  <a href="docs/assets/attention-pdf-comparison.png"><img src="docs/assets/attention-pdf-comparison.png" width="1120" alt="Stread 段落联动：选中左侧的中文译文，右侧 PDF 第 4 页同步高亮对应的英文原段落；点击 PDF 段落也可回到正文。"></a>
 </p>
 
 ## 开始使用
