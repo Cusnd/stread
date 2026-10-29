@@ -1,54 +1,86 @@
-# stread
+<p align="center">
+  <img src="electron/assets/stread.png" width="96" height="96" alt="Stread">
+</p>
 
-面向论文与长文的本地阅读工作台：集中整理资料，在原文与译文之间阅读，把洞见、问题和后续阅读安排留在同一处。
+<h1 align="center">Stread</h1>
 
-**桌面程序目前显示为 Continuous Reader。** `stread` 是开源项目名称；可执行文件名称、应用标识和已有资料目录保持不变。
+<p align="center">
+  <strong>面向论文与长文的本地阅读工作台</strong><br>
+  把原文、译文、洞见和下一次阅读，放在一起。
+</p>
 
-[下载安装](https://github.com/Cusnd/stread/releases/tag/v0.1.3) · [使用指南](docs/GETTING_STARTED.md) · [MCP 接入](docs/MCP.md) · [开发指南](docs/DEVELOPMENT.md) · [更新记录](CHANGELOG.md)
+<p align="center">
+  <a href="https://github.com/Cusnd/stread/releases"><strong>下载 Stread</strong></a> ·
+  <a href="docs/GETTING_STARTED.md">使用指南</a> ·
+  <a href="docs/MCP.md">MCP 接入</a> ·
+  <a href="docs/DEVELOPMENT.md">开发指南</a>
+</p>
 
-## 可以做什么
+<p align="center">
+  <a href="https://github.com/Cusnd/stread/releases"><img src="https://img.shields.io/badge/Windows-x64-242424?style=flat-square&amp;labelColor=555555" alt="Windows x64"></a>
+  <a href="docs/MCP.md"><img src="https://img.shields.io/badge/MCP-32_tools-53695b?style=flat-square&amp;labelColor=555555" alt="MCP · 32 个工具"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0--only-53695b?style=flat-square&amp;labelColor=555555" alt="License: AGPL-3.0-only"></a>
+</p>
 
-| 工作区 | 用途 |
-| --- | --- |
-| **Collection** | 按集合、标签和阅读状态管理资料，搜索、归档、恢复，并进入阅读。 |
-| **Reader** | 阅读结构化正文，切换原文／译文／对照，查看原始 PDF，记录带来源位置的批注、笔记和问题。 |
-| **Flow** | 查看阅读活动、集中管理洞见、安排阅读计划，以及回顾阅读历史。 |
+<p align="center">
+  <a href="docs/assets/reader-bilingual.jpg"><img src="docs/assets/reader-bilingual.jpg" width="1120" alt="Stread Reader：左侧文章目录，正文按段落展示英文与简体中文，并排版数学公式。"></a>
+</p>
 
-阅读位置、洞见、原文件和已发布内容保存在本机。前台阅读活动用于形成阅读记录；保存位置不代表文章已经读完。
+## 从整理资料，到读懂与回顾
 
-外部 Agent 可以通过 **32 个 MCP 工具**读取受限上下文、整理资料、修改内容并提交经过审阅的版本。Reader 本身不启动 Agent、不运行模型，也不提供云端同步。非中文资料的默认转换交付为完整原文加简体中文；发布前需要真实的独立审阅和 Reader 检查。
+Stread 把资料管理、双语阅读和阅读积累连接起来。读到一半可以随时离开，回来时接着读；记录下来的批注、笔记和问题，也能回到它们对应的原文。
 
-## 安装与更新
+| 工作区 | 用来做什么 |
+| :--- | :--- |
+| **Collection · 整理** | 默认工作区。按分类、标签和阅读状态查找资料，整理阅读计划，归档或恢复文章。 |
+| **Reader · 阅读** | 切换原文、译文与双语对照，查看 PDF 原页，阅读公式和图表，记录带来源位置的洞见。 |
+| **Flow · 回顾** | 查看阅读活动与历史，集中管理洞见，安排下一步阅读。 |
+| **Queue · 协作** | 汇集转换、纠错、译文修改和问答任务，通过稳定的任务编号交给外部 Agent。 |
 
-当前桌面发行目标为 **Windows x64**。首次安装使用完整安装包，当前基础版本为 **0.1.3**：
+从 Reader 返回时，会保留打开文章时的工作区、筛选、列表位置与草稿。资料、原文件、修订和阅读记录保存在本机。
 
-- `Continuous-Reader-0.1.3-Setup-x64.exe`：常规安装，适合日常使用。
-- `Continuous-Reader-0.1.3-Portable-x64.exe`：单文件启动包。资料仍保存在用户目录，不保存在可执行文件旁。
+## 开始使用
 
-从 [0.1.3 Releases 页面](https://github.com/Cusnd/stread/releases/tag/v0.1.3) 获取文件。安装后的运行不需要另装 Node.js 或 Python。Windows 可执行文件目前没有 Authenticode 签名；程序增量更新使用的是另一套 Ed25519 签名校验，二者不能混同。
+从 [GitHub Releases](https://github.com/Cusnd/stread/releases) 下载 **Windows x64** 桌面程序，无需另外安装 Node.js 或 Python。
 
-后续在 **设置 → 更新 → 检查更新** 中下载并重启更新。日常界面、桌面逻辑和工作台服务更新只传输程序层文件；匹配上一版本时使用真正的文件差分，跨过版本时使用完整程序层包。Electron、Python、生产依赖或数据库结构等基础条件变化时，程序会引导安装完整版本。
+| 下载类型 | 适合的使用方式 |
+| :--- | :--- |
+| **Setup 安装版** | 按向导安装，从桌面或开始菜单打开。 |
+| **Portable 单文件版** | 双击启动；资料保存在用户目录，不在可执行文件旁。 |
 
-旧于 0.1.3 的程序需要先安装一次包含更新引导程序的完整版本。普通浏览器和源码开发窗口没有桌面更新页。更新流程、备份和恢复见[使用指南](docs/GETTING_STARTED.md)。
+1. **打开一篇资料。** 在 Collection 中单击查看详情，双击进入 Reader。
+2. **导入自己的文件。** 选择文件、核对转换要求，点击“加入队列”。
+3. **交给 Agent 处理。** 让已连接 MCP 的外部 Agent 读取 Queue，或在任务详情中“复制给 Agent”；完成转换、独立审阅和发布后即可阅读。
+4. **留下思考。** 在 Reader 记录洞见，在 Flow 安排后续阅读与回顾。
 
-## 第一次使用
+支持导入 **PDF、HTML、Markdown、文本与结构化 JSON**，单个文件最大 **64 MB**。桌面程序可在 **设置 → 更新** 中检查、下载并重启更新；具体功能与安装说明见 [Releases](https://github.com/Cusnd/stread/releases) 和[使用指南](docs/GETTING_STARTED.md)。
 
-1. 打开 Continuous Reader，在 Collection 中选择资料；单击查看详情，双击进入阅读。
-2. 导入自己的文件时，选择“准备转换”保存原文件，再复制转换请求。
-3. 将请求交给已经接入本机 MCP 的外部 Agent。它完成生成、独立审阅和发布后，文章才会成为可读资料。
-4. 在 Reader 中阅读、记录洞见，在 Flow 中安排后续阅读与回顾。
+## 与 Agent 协作
 
-导入界面接受 PDF、HTML、Markdown、文本或结构化 JSON，单个文件最大 64 MB。保存原文件只是转换的开始；语言按钮展示已经保存的内容，不会即时调用模型翻译。
+Stread 通过 **32 个 MCP 工具**向外部 Agent 提供本机工作台能力：读取资料与任务、整理内容、回答问题，以及提交经过审阅的修订。
 
-## 数据与连接
+**加入队列 → Agent 处理 → 独立审阅 → Reader 检查 → 发布**
 
-默认资料目录是 `%USERPROFILE%\.continuous-reader`。安装版和 Portable 默认使用同一目录；可通过 `--reader-user-data=<绝对目录>` 使用独立资料库。备份前正常退出程序，然后完整复制该目录。
+非中文资料默认交付**完整原文与简体中文**。转换结果需由未参与生成的审阅者对照原始材料独立复核，并在真实 Reader 中检查；确认后的最新预览才会发布。完整发布规则见[转换工作流](services/workspace/conversion-workflow.md)。
 
-资料、原文件、预览和业务执行都在本机。检查和下载程序更新时会连接 GitHub；打开外部链接时会使用浏览器。外部 Agent 是否使用远程模型，以及向模型提供哪些材料，取决于你选择的客户端和授权。
+模型与 Agent 由你选择的外部客户端运行；Stread 保存任务和内容，语言切换展示已经保存的译文。连接方式、权限与转换要求见 [MCP 接入](docs/MCP.md)。
+
+<details>
+<summary><strong>本地数据与备份</strong></summary>
+
+资料、原文件、预览和业务操作都在本机，桌面与 MCP 使用同一份 SQLite 数据库和文件对象，不提供云端同步。
+
+默认资料目录为 `%USERPROFILE%\.continuous-reader`，Setup 与 Portable 共用此目录。需要独立资料库时，可通过 `--reader-user-data=<绝对目录>` 指定。备份前正常退出程序，再完整复制资料目录。详细步骤见[备份与恢复](docs/GETTING_STARTED.md#备份与恢复)。
+
+检查与下载程序更新时会连接 GitHub。外部 Agent 是否使用远程模型，以及向模型提供哪些材料，取决于你选择的客户端和授权。
+
+阅读统计来自实际记录的前台活动；保存阅读位置不等于完成阅读。
+
+</details>
 
 ## 从源码运行
 
-开发需要 Git、Node.js **24 或更新版本**及可用的 Python。先安装 JavaScript 依赖：
+准备 **Git、Node.js 24+ 和 Python 3.10+**，安装依赖：
 
 ```powershell
 git clone https://github.com/Cusnd/stread.git
@@ -64,21 +96,35 @@ $devProfile = Join-Path $env:USERPROFILE '.stread-development'
 npm run desktop:dev -- "--reader-user-data=$devProfile"
 ```
 
-桌面开发入口支持前端热更新，并在桌面或服务代码变化时先保存再重启。浏览器开发、测试、静态构建和打包命令见[开发指南](docs/DEVELOPMENT.md)。
+桌面开发支持前端热更新，桌面或服务代码变化时会保存后重启。浏览器开发、环境配置与打包方式见[开发指南](docs/DEVELOPMENT.md)。
 
-## 文档
+<details>
+<summary><strong>常用开发命令</strong></summary>
 
-| 需要了解的内容 | 文档 |
-| --- | --- |
-| 安装、导入、阅读、更新和备份 | [使用指南](docs/GETTING_STARTED.md) |
-| 外部 Agent 连接与转换工作流 | [MCP 接入](docs/MCP.md) |
-| 开发环境、命令和验证 | [开发指南](docs/DEVELOPMENT.md) |
-| 进程、存储、内容与更新边界 | [架构说明](docs/ARCHITECTURE.md) |
-| 启动、PDF、MCP 和更新故障 | [故障排查](docs/TROUBLESHOOTING.md) |
-| 签名密钥、完整发布和增量发布 | [发布指南](docs/RELEASING.md) |
-| 提交问题和代码 | [贡献指南](CONTRIBUTING.md) |
-| 安全问题报告 | [安全政策](SECURITY.md) |
+| 命令 | 用途 |
+| :--- | :--- |
+| `npm run dev` | 启动浏览器前端与本机工作台服务。 |
+| `npm run desktop:dev` | 启动支持热更新的桌面开发窗口。 |
+| `npm test` | 运行前端、工作台与术语模块测试。 |
+| `npm run test:desktop` | 运行桌面生命周期、打包、MCP、PDF 与更新测试。 |
+| `npm run build` | 构建前端产物。 |
+| `npm run desktop:pack` | 生成 Windows 安装版与 Portable。 |
+
+`npm test` 不包含桌面测试。构建、浏览器检查与安装程序验证需分别完成，详见[修改后的验证](docs/DEVELOPMENT.md#修改后的验证)。
+
+</details>
+
+## 文档与贡献
+
+| 使用 Stread | 开发与维护 |
+| :--- | :--- |
+| [使用指南](docs/GETTING_STARTED.md) | [开发指南](docs/DEVELOPMENT.md) |
+| [MCP 接入](docs/MCP.md) | [架构说明](docs/ARCHITECTURE.md) |
+| [故障排查](docs/TROUBLESHOOTING.md) | [发布指南](docs/RELEASING.md) |
+| [更新记录](CHANGELOG.md) | [贡献指南](CONTRIBUTING.md) |
+
+欢迎通过 [Issues](https://github.com/Cusnd/stread/issues) 反馈问题或提出建议。安全问题请按[安全政策](SECURITY.md)报告。
 
 ## 许可
 
-项目代码采用 **AGPL-3.0-only**，详见 [LICENSE](LICENSE)。依赖、字体、图标、论文示例及其他第三方材料保留各自许可或权利，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+项目代码采用 [**AGPL-3.0-only**](LICENSE)。依赖、字体、图标及论文示例等第三方材料保留各自许可或权利，详见[第三方说明](THIRD_PARTY_NOTICES.md)。
