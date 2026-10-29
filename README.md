@@ -53,6 +53,19 @@ Stread 把资料管理、双语阅读和阅读积累连接起来。读到一半�
   <a href="docs/assets/attention-bilingual.png"><img src="docs/assets/attention-bilingual.png" width="1120" alt="Attention 的缩放点积注意力章节：英文原文、逐段简体中文译文与数学公式。"></a>
 </p>
 
+## PDF 原页对照
+
+点击阅读工具栏的 **原页**，在正文旁打开所附 PDF。一边阅读重排正文或译文，一边核对原稿中的公式、图表、脚注与版式。
+
+- **位置联动**：开启“联动”后，正文与 PDF 按已有来源信息关联；也可使用“定位原页”和“定位本页正文”手动跳转。
+- **独立查看**：关闭联动后分别浏览正文与原稿，支持 PDF 翻页、缩放和调整原页面板宽度。
+
+原页对照适用于附有 PDF 来源的文章，定位精度取决于转换时保留的来源信息。
+
+<p align="center">
+  <a href="docs/assets/attention-pdf-comparison.png"><img src="docs/assets/attention-pdf-comparison.png" width="1120" alt="Stread PDF 原页对照：左侧双语正文与注意力公式，右侧对应的原始 PDF 页面，支持联动、定位、翻页与缩放。"></a>
+</p>
+
 ## 开始使用
 
 从 [GitHub Releases](https://github.com/Cusnd/stread/releases) 下载 **Windows x64** 桌面程序，无需另外安装 Node.js 或 Python。
