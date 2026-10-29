@@ -100,23 +100,30 @@ test("Windows canonical casing changes after creating missing profile parents do
   const targetDir = path.join(f.root, "Profiles", "Continuous Reader", "workspace");
   const parentDir = path.dirname(targetDir);
   const originalRealpath = fs.realpath;
+  const canonicalParent = path.join(await originalRealpath(f.root), "Profiles", "Continuous Reader");
+  let casingChanges = 0;
   // The same Windows directory may be returned with different drive/ancestor
   // casing after it is created. Keep the real filesystem and only vary the
   // spelling returned by realpath, as opposed to redirecting the target.
   t.mock.method(fs, "realpath", async (filename, ...args) => {
     const actual = await originalRealpath(filename, ...args);
-    return path.relative(parentDir, filename) === "" ? actual.toUpperCase() : actual;
+    if (path.relative(canonicalParent, actual) !== "") return actual;
+    casingChanges += 1;
+    return actual.toUpperCase();
   });
   const sourceBytes = await fs.readFile(f.databasePath), walBytes = await fs.readFile(f.databasePath + "-wal");
   const blob = path.join(f.sourceDir, "blobs", f.sha256);
   await fs.writeFile(blob, "corrupt contents");
   await assert.rejects(migrateWorkspace(f.sourceDir, targetDir), { code: "RESOURCE_HASH_MISMATCH" });
+  assert.ok(casingChanges > 0, "The canonical parent spelling must change during setup.");
   assert.deepEqual(await fs.readdir(parentDir), []);
   await fs.writeFile(blob, f.bytes);
+  const previousCasingChanges = casingChanges;
   const migrated = await migrateWorkspace(f.sourceDir, targetDir);
+  assert.ok(casingChanges > previousCasingChanges, "The successful migration must exercise the casing change too.");
   assert.equal(migrated.status, "migrated");
   assert.equal(migrated.counts.documents, 1);
-  assert.equal(path.relative(migrated.targetDir, targetDir), "");
+  assert.equal(path.relative(migrated.targetDir, await originalRealpath(targetDir)), "");
   assert.deepEqual(await fs.readFile(f.databasePath), sourceBytes);
   assert.deepEqual(await fs.readFile(f.databasePath + "-wal"), walBytes);
   assert.deepEqual(await fs.readdir(parentDir), ["workspace"]);
@@ -129,11 +136,16 @@ test("a parent resolving to a different directory is still rejected before a sna
   const redirected = path.join(f.root, "different-parent");
   await fs.mkdir(redirected);
   const originalRealpath = fs.realpath;
+  const canonicalParent = path.join(await originalRealpath(f.root), "desktop");
+  let redirections = 0;
   t.mock.method(fs, "realpath", async (filename, ...args) => {
     const actual = await originalRealpath(filename, ...args);
-    return path.relative(parentDir, filename) === "" ? originalRealpath(redirected) : actual;
+    if (path.relative(canonicalParent, actual) !== "") return actual;
+    redirections += 1;
+    return originalRealpath(redirected);
   });
   await assert.rejects(migrateWorkspace(f.sourceDir, f.targetDir), { code: "INVALID_TARGET" });
+  assert.equal(redirections, 1, "The canonical parent must be redirected during setup.");
   assert.deepEqual(await fs.readdir(parentDir), []);
   assert.deepEqual(await fs.readdir(redirected), []);
   await assert.rejects(fs.stat(f.targetDir), { code: "ENOENT" });

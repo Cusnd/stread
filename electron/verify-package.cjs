@@ -55,11 +55,14 @@ function assertNoPrivateData(relative) {
 async function requiredFile(root, relative, allowEmpty = false) {
   const file = path.resolve(root, relative);
   if (!within(root, file)) fail('path escapes the packaged runtime: ' + relative);
-  let info, actual;
-  try { info = await fs.stat(file); actual = await fs.realpath(file); }
+  let info, actual, canonicalRoot;
+  try {
+    info = await fs.stat(file);
+    [canonicalRoot, actual] = await Promise.all([fs.realpath(root), fs.realpath(file)]);
+  }
   catch { fail('required file is missing: ' + slash(relative)); }
   if (!info.isFile() || (!allowEmpty && info.size === 0)) fail('required file is empty or invalid: ' + slash(relative));
-  if (!within(root, actual)) fail('required file resolves outside the package: ' + slash(relative));
+  if (!within(canonicalRoot, actual)) fail('required file resolves outside the package: ' + slash(relative));
   return info;
 }
 

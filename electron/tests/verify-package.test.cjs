@@ -149,7 +149,7 @@ test('afterPack refuses an application archive without the desktop MCP entry', a
   await assert.rejects(afterPack({ appOutDir: h.root, packager: { projectDir: h.root, getResourcesDir: () => resources } }), /desktop entry is missing from app.asar: electron\/mcp.cjs/);
 });
 
-test('afterPack accepts a complete local application without the retired remote proxy', async (t) => {
+async function packagedFixture(t) {
   const h = await fixture(t), appSource = path.join(h.root, 'app-source'), resources = path.dirname(h.runtime);
   for (const file of ['assets/continuous-reader.ico', 'assets/continuous-reader.png']) await put(resources, file);
   for (const file of afterPack.requiredAppFiles) await put(appSource, file);
@@ -159,6 +159,25 @@ test('afterPack accepts a complete local application without the retired remote 
   await put(resources, 'update-base.json', base);
   await put(h.root, '.desktop/update-base.json', base);
   await fs.cp(h.stagedRuntime, path.join(h.root, '.desktop/runtime'), { recursive: true });
-  const report = await afterPack({ appOutDir: h.root, packager: { projectDir: h.root, getResourcesDir: () => resources } });
+  return { ...h, resources, verifyPackage: (directory = resources) => afterPack({ appOutDir: h.root, packager: { projectDir: h.root, getResourcesDir: () => directory } }) };
+}
+
+test('afterPack accepts a complete local application without the retired remote proxy', async (t) => {
+  const h = await packagedFixture(t), report = await h.verifyPackage();
   assert.ok(report.fileCount > requiredFiles.length);
+});
+
+test('package root aliases preserve containment while resource junctions cannot escape the canonical root', async (t) => {
+  const h = await packagedFixture(t), alias = path.join(h.root, 'package-alias');
+  const linkType = process.platform === 'win32' ? 'junction' : 'dir';
+  await fs.symlink(h.resources, alias, linkType);
+  assert.notEqual(path.resolve(alias), await fs.realpath(alias));
+  const report = await h.verifyPackage(alias);
+  assert.ok(report.fileCount > requiredFiles.length);
+
+  const assets = path.join(h.resources, 'assets'), external = path.join(h.root, 'outside-assets');
+  assert.ok(assets.startsWith(h.root + path.sep) && external.startsWith(h.root + path.sep));
+  await fs.rename(assets, external);
+  await fs.symlink(external, assets, linkType);
+  await assert.rejects(h.verifyPackage(alias), /required file resolves outside the package: assets\/continuous-reader\.ico/);
 });
