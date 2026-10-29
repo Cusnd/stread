@@ -1,0 +1,16 @@
+[
+  {
+    "block_id": "b-9493ce3a8bf0467c951245bc60fff4f9",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5915623a1d78488cb5ddd6d99372ccef",
+    "text": "Different molecular scissors platforms including zinc-finger nucleases (ZFNs), transcription activator-like effector nucleases (TALENs) and clustered regularly interspaced palindromic repeats/CRISPR-associated-9 (CRISPR/Cas9). (a) ZFNs are hybrid proteins between zinc-finger arrays and the catalytic domain of FokI endonuclease. Each ZF array is capable of binding to three nucleotides in the target sequence. Dimerization of the FokI catalytic domain leads to the formation of double-strand breaks (DSBs). (b) TALENs possess a modular central repeat domain that can be engineered to bind any user-selected sequence. Engineering of the sequences and order of RVDs can confer user-defined sequence specificities. TALENs are hybrid proteins between the TAL effector backbone and the catalytic domain of FokI endonuclease. TALENs require two monomers to bind to the sense and antisense strands, respectively. (c) The CRISPR/Cas9 two-component system is composed of Cas9 endonuclease and the single-guide RNA (sgRNA) molecule. Engineering of 20 nucleotides in the sgRNA can confer user-selected specificity. Cas9 nuclease domains cleave both strands within the target sequence preceding the protospacer-associated motif (PAM) NGG trinucleotide sequence."
+  },
+  {
+    "block_id": "b-9493ce3a8bf0467c951245bc60fff4f9",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5915623a1d78488cb5ddd6d99372ccef",
+    "text": "不同的分子剪刀平台，包括锌指核酸酶（ZFNs）、转录激活因子样效应物核酸酶（TALENs），以及成簇规律间隔短回文重复序列/CRISPR 相关蛋白 9（CRISPR/Cas9）。(a) ZFN 是由锌指阵列与 FokI 核酸内切酶催化结构域构成的融合蛋白。每个锌指阵列可以结合靶序列中的三个核苷酸。FokI 催化结构域的二聚化促成双链断裂（DSBs）。(b) TALEN 具有模块化的中央重复结构域，可通过工程改造使其结合使用者选择的任意序列。改变重复可变双残基（RVDs）的序列和排列顺序，可赋予使用者定义的序列特异性。TALEN 是由 TAL 效应物骨架与 FokI 核酸内切酶催化结构域构成的融合蛋白，需要两个单体分别结合正义链和反义链。(c) CRISPR/Cas9 双组分系统由 Cas9 核酸内切酶和单导向 RNA（sgRNA）分子组成。改造 sgRNA 中的 20 个核苷酸可赋予使用者选择的特异性。Cas9 的核酸酶结构域切割靶序列中、位于原间隔序列邻近基序（PAM）NGG 三核苷酸序列之前的两条 DNA 链。"
+  }
+]

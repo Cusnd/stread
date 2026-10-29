@@ -1,0 +1,100 @@
+[
+  {
+    "block_id": "b-1604449e03da4259812aa13d0592747a",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-7a9dc8f8206f499eb7b8038224637ae1",
+    "text": "\n  map(String key, String value):\n    // key: document name\n    // value: document contents\n    for each word w in value:\n      EmitIntermediate(w, \"1\");\n\n  reduce(String key, Iterator values):\n    // key: a word\n    // values: a list of counts\n    int result = 0;\n    for each v in values:\n      result += ParseInt(v);\n    Emit(AsString(result));\n"
+  },
+  {
+    "block_id": "b-1604449e03da4259812aa13d0592747a",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-7a9dc8f8206f499eb7b8038224637ae1",
+    "text": "\n  map(String key, String value):\n    // key：文档名称\n    // value：文档内容\n    for each word w in value:\n      EmitIntermediate(w, \"1\");\n\n  reduce(String key, Iterator values):\n    // key：一个单词\n    // values：计数值列表\n    int result = 0;\n    for each v in values:\n      result += ParseInt(v);\n    Emit(AsString(result));\n"
+  },
+  {
+    "block_id": "b-7e933ad7aa964cab98ce8b27a4f79ab5",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-4789b9a7890c4fe3bf795f302e27ab27",
+    "text": "map (k1,v1) $\\rightarrow$ list(k2,v2)"
+  },
+  {
+    "block_id": "b-7e933ad7aa964cab98ce8b27a4f79ab5",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f173f1a2fae040f398340824becd4281",
+    "text": "reduce (k2,list(v2)) $\\rightarrow$ list(v2)"
+  },
+  {
+    "block_id": "b-16137cb9d8654a99a600ef445675170f",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-ff6ac1d263744b76ab6bd80d9eb16eae",
+    "text": "\n  Counter* uppercase;\n  uppercase = GetCounter(\"uppercase\");\n\n  map(String name, String contents):\n    for each word w in contents:\n      if (IsCapitalized(w)):\n        uppercase->Increment();\n      EmitIntermediate(w, \"1\");\n"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-35d30a50cfe14acf840d9eb371a048c8",
+    "text": "Figure 3: Data transfer rates over time for different executions of the sort program"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-d3be3a70eab4439fa765775f878a045e",
+    "text": "(a) Normal execution"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-bac6d866b8b845b9a73c658dd3d636ba",
+    "text": "(b) No backup tasks"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5a8ad2eab5c74e63a4f756d6084c42e2",
+    "text": "(c) 200 tasks killed"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-35d30a50cfe14acf840d9eb371a048c8",
+    "text": "图 3：排序程序在不同执行情况下，数据传输速率随时间的变化。"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-d3be3a70eab4439fa765775f878a045e",
+    "text": "(a) 正常执行"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-bac6d866b8b845b9a73c658dd3d636ba",
+    "text": "(b) 无备用任务"
+  },
+  {
+    "block_id": "b-4de6e21712514bc9853cbe8794687394",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5a8ad2eab5c74e63a4f756d6084c42e2",
+    "text": "(c) 200 个任务被终止"
+  },
+  {
+    "block_id": "b-d5812b94d7be48eda04de20c9e7398d3",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5b758bb8c4074364ac2930dead22217c",
+    "text": "\n#include \"mapreduce/mapreduce.h\"\n\n// User's map function\nclass WordCounter : public Mapper {\n public:\n  virtual void Map(const MapInput& input) {\n    const string& text = input.value();\n    const int n = text.size();\n    for (int i = 0; i < n; ) {\n      // Skip past leading whitespace\n      while ((i < n) && isspace(text[i]))\n        i++;\n\n      // Find word end\n      int start = i;\n      while ((i < n) && !isspace(text[i]))\n        i++;\n\n      if (start < i)\n        Emit(text.substr(start,i-start),\"1\");\n    }\n  }\n};\nREGISTER_MAPPER(WordCounter);\n\n// User's reduce function\nclass Adder : public Reducer {\n  virtual void Reduce(ReduceInput* input) {\n    // Iterate over all entries with the\n    // same key and add the values\n    int64 value = 0;\n    while (!input->done()) {\n      value += StringToInt(input->value());\n      input->NextValue();\n    }\n\n    // Emit sum for input->key()\n    Emit(IntToString(value));\n  }\n};\nREGISTER_REDUCER(Adder);\n\nint main(int argc, char** argv) {\n  ParseCommandLineFlags(argc, argv);\n\n  MapReduceSpecification spec;\n\n  // Store list of input files into \"spec\"\n  for (int i = 1; i < argc; i++) {\n    MapReduceInput* input = spec.add_input();\n    input->set_format(\"text\");\n    input->set_filepattern(argv[i]);\n    input->set_mapper_class(\"WordCounter\");\n  }\n\n  // Specify the output files:\n  //    /gfs/test/freq-00000-of-00100\n  //    /gfs/test/freq-00001-of-00100\n  //    ...\n  MapReduceOutput* out = spec.output();\n  out->set_filebase(\"/gfs/test/freq\");\n  out->set_num_tasks(100);\n  out->set_format(\"text\");\n  out->set_reducer_class(\"Adder\");\n\n  // Optional: do partial sums within map\n  // tasks to save network bandwidth\n  out->set_combiner_class(\"Adder\");\n\n  // Tuning parameters: use at most 2000\n  // machines and 100 MB of memory per task\n  spec.set_machines(2000);\n  spec.set_map_megabytes(100);\n  spec.set_reduce_megabytes(100);\n\n  // Now run it\n  MapReduceResult result;\n  if (!MapReduce(spec, &result)) abort();\n\n  // Done: 'result' structure contains info\n  // about counters, time taken, number of\n  // machines used, etc.\n\n  return 0;\n}\n"
+  }
+]

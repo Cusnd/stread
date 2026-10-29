@@ -1,0 +1,32 @@
+.margin-rail { overflow-anchor: none; }
+.margin-rail[data-state="open"] .margin-group:not([inert]):not([data-object-occluded]) { pointer-events: auto; }
+.margin-group { position: absolute; display: flex; gap: 16px; width: var(--margin-width); min-width: 0; padding: 0 0 0 8px; overflow: clip; overflow-anchor: none; transition: visibility 0s; }
+.margin-group[data-object-occluded] { visibility: hidden; pointer-events: none; transition: visibility 0s 140ms; }
+.margin-group-colors { display: flex; flex-direction: column; align-self: stretch; flex: 0 0 3px; width: 3px; gap: 2px; padding: 0; }
+.margin-group-color { position: relative; display: block; flex: 1 1 0; min-width: 0; min-height: 0; width: 3px; margin: 0; padding: 0; border: 0; border-radius: 0; background: var(--note-color); }
+button.margin-group-color::before { content: ""; position: absolute; inset: 0 -7px; }
+.margin-group-color[aria-pressed="true"]::after, .margin-group-color[data-active]::after { content: ""; position: absolute; top: calc(50% - 3px); left: -7px; width: 3px; height: 6px; border-radius: 2px; background: var(--text-primary); }
+button.margin-group-color:hover { filter: brightness(.96); }
+button.margin-group-color:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; z-index: 1; }
+.margin-group-content { min-width: 0; flex: 1; }
+.margin-group-heading { display: flex; justify-content: space-between; align-items: center; height: 28px; font-size: 11px; line-height: 20px; color: var(--text-secondary); }
+.margin-group-previews { position: relative; display: flex; flex-direction: column; gap: 12px; padding-top: 4px; }
+.margin-group .margin-preview { position: relative; width: 100%; margin: 0; padding: 0; border: 0; transition: none; }
+.margin-preview .margin-note-type { min-height: 28px; font-size: 11px; gap: 6px; }
+.margin-preview .reference-number { font-size: 11px; }
+.margin-preview-dot { flex: 0 0 6px; height: 6px; border-radius: 50%; }
+.margin-preview .insight-identity { min-width: 0; }
+.margin-preview-open { display: block; width: 100%; margin: 0; padding: 2px 0 0; background: transparent; text-align: left; color: var(--text-primary); border-radius: 2px; }
+.margin-preview-copy { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.85; }
+.margin-preview-copy strong { font-weight: 600; }
+.margin-preview-open:hover { color: var(--accent-hover); }
+.margin-group-more, .margin-group-open { display: block; padding: 5px 0; background: transparent; color: var(--text-secondary); font-size: 11px; line-height: 18px; text-align: left; }
+.margin-group-more { margin-top: 8px; min-height: 28px; }
+.margin-group-more:hover, .margin-group-open:hover { color: var(--text-primary); text-decoration: underline; text-underline-offset: 4px; }
+.margin-group.is-compact { min-height: 0; height: min(32px, var(--margin-group-budget)); }
+.margin-group.is-compact .margin-group-heading { height: 100%; }
+.margin-group.is-compact .margin-group-content { min-height: 0; }
+.margin-group.is-compact .margin-group-open { padding: 0; line-height: 1.4; }
+.margin-group.is-parallel { gap: 6px; }
+.margin-group.is-parallel .margin-group-open { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .margin-group, .margin-group[data-object-occluded] { transition: none; } }

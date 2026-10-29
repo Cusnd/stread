@@ -1,0 +1,1563 @@
+[
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-054e71ad457341c59b5f6e25ab41ed78",
+    "text": "Table 1: Architectures for ImageNet. Building blocks are shown in brackets (see also Fig. 5), with the numbers of blocks stacked. Downsampling is performed by conv3_1, conv4_1, and conv5_1 with a stride of 2."
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-a9efb7abb94b46239a19faf65d6e852c",
+    "text": "layer name"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-c8f85514036b4634b8cecd80ffdc3034",
+    "text": "output size"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-ff56c8720aa3455189c3c12c42104384",
+    "text": "18-layer"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-ceea36baa77e44168c96e2430b193e2e",
+    "text": "34-layer"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5e9a2927f326446985114f6dbda17c32",
+    "text": "50-layer"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5e85c872d068499985f143214b004224",
+    "text": "101-layer"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-ebbfde7b5e9c40d0b8af8ad884e7dbd0",
+    "text": "152-layer"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6db6ebd7e20244e69e661d67be34941e",
+    "text": "conv1"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5ebdb635c3e64e3dbd928126495de7d5",
+    "text": "112$\\times$112"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2776800a6e434bc9a8b766de56bb6f4b",
+    "text": "7$\\times$7, 64, stride 2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-4374387bc39f4f069fa3c983aa4ecb82",
+    "text": "conv2_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-3bd35bc65d2447d5b24f9f83716ed1ca",
+    "text": "56$\\times$56"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-eb286561439e458ea7e62a59ffb62d9c",
+    "text": "3$\\times$3 max pool, stride 2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-0c75c671a1aa4063a463c5a2ecfb8736",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-73e1a0e1498e4df4be170731c7f42d86",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-efb1d3ca10754fcc912ef40edf2127df",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{1$\\times$1, 256}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-98cd5fb39a5648659e3b1955ed64d18b",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{1$\\times$1, 256}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-cc896b36e88d44e987c3fac6ef9e4d47",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{1$\\times$1, 256}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6572a76bf4f1449aa2c18829456bac30",
+    "text": "conv3_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-32bf267a2d3f44f6932edfec49725a46",
+    "text": "28$\\times$28"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-3c65794e349b4242ba95747b9e9184cb",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-eabbc884fc28476f8c5dcf1fcb7d66fe",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\end{array}\\right]$$\\times$4"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-db0ffc2b7bf34a34bbd242951d4b1baa",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{1$\\times$1, 512}\\end{array}\\right]$$\\times$4"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e0b2f34bc2c24c8488a0c3e7800edeed",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{1$\\times$1, 512}\\end{array}\\right]$$\\times$4"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6fcbe74020be428d89432e29c4dc3e01",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{1$\\times$1, 512}\\end{array}\\right]$$\\times$8"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-eb1d4c6cfeb04752922c56ee1b0a6bc8",
+    "text": "conv4_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-aa6a61411ae34cc393220945e7e841c9",
+    "text": "14$\\times$14"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e3aed143016844dcb9108c17963ccae6",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f9c6b326caea472b9007fcce2f485e5e",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\end{array}\\right]$$\\times$6"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-68808e30aa04452a8dcf361b1364650d",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{1$\\times$1, 1024}\\end{array}\\right]$$\\times$6"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-0047e015bc1a4fb2b351112842777e3f",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{1$\\times$1, 1024}\\end{array}\\right]$$\\times$23"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f6c547aa70324780ab58f9b29f1e9b2f",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{1$\\times$1, 1024}\\end{array}\\right]$$\\times$36"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-56a16250fed54ef284dbea936bfe31c0",
+    "text": "conv5_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5c32b0b061ab4a75815776bba7abae93",
+    "text": "7$\\times$7"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-54518923212048968230fb850d7e5e99",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-03e4b01b8e0c43a4902925c15b82bf60",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-3db35e300af04642adc24feba0cce0f6",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{1$\\times$1, 2048}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-b20d9964d56943eb99239937fb7890cc",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{1$\\times$1, 2048}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-9ec2215ab6e74de1ba88c0b598cee26c",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{1$\\times$1, 2048}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5ec6d0642390402abeeba952dd9a924a",
+    "text": ""
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2fb85927d2b44b738c42ee447bd0be1e",
+    "text": "1$\\times$1"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-98d00a9a01864c50a1557546003deda9",
+    "text": "average pool, 1000-d fc, softmax"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-17279c815d2247f18eefe39183714225",
+    "text": "FLOPs"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-941909cfcb2740c4aab9022f9cb1001e",
+    "text": "1.8$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-4b70ccb7b4234dabaa0d0eed222eece7",
+    "text": "3.6$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e101a7957e1a47b799eecac972dff6b8",
+    "text": "3.8$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-db32f7c724ab42c4b38d3180395fa22f",
+    "text": "7.6$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-4c2d8704c0be47baa2d1178a2bb02ee6",
+    "text": "11.3$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-054e71ad457341c59b5f6e25ab41ed78",
+    "text": "表 1：用于 ImageNet 的网络结构。方括号内给出构建块（另见图 5），并标出这些块的堆叠次数。conv3_1、conv4_1 和 conv5_1 以步幅 2 执行下采样。"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-a9efb7abb94b46239a19faf65d6e852c",
+    "text": "层名"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-c8f85514036b4634b8cecd80ffdc3034",
+    "text": "输出尺寸"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-ff56c8720aa3455189c3c12c42104384",
+    "text": "18 层"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-ceea36baa77e44168c96e2430b193e2e",
+    "text": "34 层"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5e9a2927f326446985114f6dbda17c32",
+    "text": "50 层"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5e85c872d068499985f143214b004224",
+    "text": "101 层"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-ebbfde7b5e9c40d0b8af8ad884e7dbd0",
+    "text": "152 层"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-6db6ebd7e20244e69e661d67be34941e",
+    "text": "conv1"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5ebdb635c3e64e3dbd928126495de7d5",
+    "text": "112$\\times$112"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-2776800a6e434bc9a8b766de56bb6f4b",
+    "text": "7$\\times$7, 64, 步幅 2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-4374387bc39f4f069fa3c983aa4ecb82",
+    "text": "conv2_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-3bd35bc65d2447d5b24f9f83716ed1ca",
+    "text": "56$\\times$56"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-eb286561439e458ea7e62a59ffb62d9c",
+    "text": "3$\\times$3 最大池化, 步幅 2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-0c75c671a1aa4063a463c5a2ecfb8736",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-73e1a0e1498e4df4be170731c7f42d86",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-efb1d3ca10754fcc912ef40edf2127df",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{1$\\times$1, 256}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-98cd5fb39a5648659e3b1955ed64d18b",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{1$\\times$1, 256}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-cc896b36e88d44e987c3fac6ef9e4d47",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 64}\\\\[-1.00006pt] \\text{3$\\times$3, 64}\\\\[-1.00006pt] \\text{1$\\times$1, 256}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-6572a76bf4f1449aa2c18829456bac30",
+    "text": "conv3_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-32bf267a2d3f44f6932edfec49725a46",
+    "text": "28$\\times$28"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-3c65794e349b4242ba95747b9e9184cb",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-eabbc884fc28476f8c5dcf1fcb7d66fe",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\end{array}\\right]$$\\times$4"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-db0ffc2b7bf34a34bbd242951d4b1baa",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{1$\\times$1, 512}\\end{array}\\right]$$\\times$4"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-e0b2f34bc2c24c8488a0c3e7800edeed",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{1$\\times$1, 512}\\end{array}\\right]$$\\times$4"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-6fcbe74020be428d89432e29c4dc3e01",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 128}\\\\[-1.00006pt] \\text{3$\\times$3, 128}\\\\[-1.00006pt] \\text{1$\\times$1, 512}\\end{array}\\right]$$\\times$8"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-eb1d4c6cfeb04752922c56ee1b0a6bc8",
+    "text": "conv4_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-aa6a61411ae34cc393220945e7e841c9",
+    "text": "14$\\times$14"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-e3aed143016844dcb9108c17963ccae6",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-f9c6b326caea472b9007fcce2f485e5e",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\end{array}\\right]$$\\times$6"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-68808e30aa04452a8dcf361b1364650d",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{1$\\times$1, 1024}\\end{array}\\right]$$\\times$6"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-0047e015bc1a4fb2b351112842777e3f",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{1$\\times$1, 1024}\\end{array}\\right]$$\\times$23"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-f6c547aa70324780ab58f9b29f1e9b2f",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 256}\\\\[-1.00006pt] \\text{3$\\times$3, 256}\\\\[-1.00006pt] \\text{1$\\times$1, 1024}\\end{array}\\right]$$\\times$36"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-56a16250fed54ef284dbea936bfe31c0",
+    "text": "conv5_x"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5c32b0b061ab4a75815776bba7abae93",
+    "text": "7$\\times$7"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-54518923212048968230fb850d7e5e99",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\end{array}\\right]$$\\times$2"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-03e4b01b8e0c43a4902925c15b82bf60",
+    "text": "$\\left[\\begin{array}{c}\\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-3db35e300af04642adc24feba0cce0f6",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{1$\\times$1, 2048}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-b20d9964d56943eb99239937fb7890cc",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{1$\\times$1, 2048}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-9ec2215ab6e74de1ba88c0b598cee26c",
+    "text": "$\\left[\\begin{array}{c}\\text{1$\\times$1, 512}\\\\[-1.00006pt] \\text{3$\\times$3, 512}\\\\[-1.00006pt] \\text{1$\\times$1, 2048}\\end{array}\\right]$$\\times$3"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5ec6d0642390402abeeba952dd9a924a",
+    "text": ""
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-2fb85927d2b44b738c42ee447bd0be1e",
+    "text": "1$\\times$1"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-98d00a9a01864c50a1557546003deda9",
+    "text": "平均池化、1000 维全连接层、softmax"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-17279c815d2247f18eefe39183714225",
+    "text": "计算量（FLOPs）"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-941909cfcb2740c4aab9022f9cb1001e",
+    "text": "1.8$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-4b70ccb7b4234dabaa0d0eed222eece7",
+    "text": "3.6$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-e101a7957e1a47b799eecac972dff6b8",
+    "text": "3.8$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-db32f7c724ab42c4b38d3180395fa22f",
+    "text": "7.6$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-9e3d4d3881164498a9693ca3b66c6895",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-4c2d8704c0be47baa2d1178a2bb02ee6",
+    "text": "11.3$\\times 10^{9}$"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-9c37f108cf91441697a6f300bb74ed56",
+    "text": "Table 6: Classification error on the CIFAR-10 test set. All methods are with data augmentation. For ResNet-110, we run it 5 times and show “best (mean$\\pm$std)” as in [43]."
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-1c0445000e774b2cace3f260b16e9ccb",
+    "text": "method"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6b21843b99434c18afc9c56647edde91",
+    "text": "error (%)"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-7e5ee3ca950949baba472e74fc9a72a3",
+    "text": "Maxout [10]"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-45d7af57871c4102bc41b27490318615",
+    "text": "9.38"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-3d8e75a06bb441bf95ace9da7ac51365",
+    "text": "NIN [25]"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5700a40c2c934b11a1568b129bbe1678",
+    "text": "8.81"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e1dfbfecc5414540887466e839c84ae3",
+    "text": "DSN [24]"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-c474e7c003ff46c9b34dc8bde215fad3",
+    "text": "8.22"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-4497a2c7d9724d8886358e51bf82326f",
+    "text": ""
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-804d6178261c416b904062abe94492c0",
+    "text": "# layers"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2dc0ed9362594141b079c33e38cb8cf6",
+    "text": "# params"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2e4ad233ed55402fa4fa6a9c87e436ca",
+    "text": ""
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-cf502070f8924a8cbb6fee86705170a5",
+    "text": "FitNet [35]"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5873de8d9ac249d38070afd7ac05fed1",
+    "text": "19"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-15e603794e4749a69d77bf265ba87b3b",
+    "text": "2.5M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-1f61405f66ce430286ad41cdedb69a51",
+    "text": "8.39"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-7e2c2d7ca8bc4bb88ecb80e7daf9af82",
+    "text": "Highway [42, 43]"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6f4f42022b6f466fb1dbf648e46f6da9",
+    "text": "19"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e22b7a59c65c4a5083b8ebfe336eef7a",
+    "text": "2.3M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-0aebe7049d644ee4abaa25946c82b38d",
+    "text": "7.54 (7.72$\\pm$0.16)"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f89df18c02d64e9a9bda0a01e8e3c263",
+    "text": "Highway [42, 43]"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-fda95e2c712d4027abf530e04c2c40b1",
+    "text": "32"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2c12a74d4aaf45ddb5789c5907a239c4",
+    "text": "1.25M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e6cf6fa8949c4ec3b4c3d87ab78d3257",
+    "text": "8.80"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f33de6ecb0484cb292dba6241d42d456",
+    "text": "ResNet"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-05927fb3b7fd45b3a3d798c49b57426d",
+    "text": "20"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-8593508e5f10482e84c39c15ef52072e",
+    "text": "0.27M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-43580f7cd59c43e9befeb294e9b9fe68",
+    "text": "8.75"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e1ebc9ebff8d4c1b9fe232f7ec10256e",
+    "text": "ResNet"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-fd55eebd509c4c40b3535252188c9485",
+    "text": "32"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-b281046a081c46148376191880bc8e6b",
+    "text": "0.46M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-93b6c5da27544a91b2f69bf14d4e7288",
+    "text": "7.51"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f7fd1b08202e43b9ab477a25ee86d367",
+    "text": "ResNet"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f1e8c53cfd6643c88babea57c03ae8ce",
+    "text": "44"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-9462ec84e1da45a9909b672a9d43da87",
+    "text": "0.66M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2e816e6e183b45c89e29bebc87bb1669",
+    "text": "7.17"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5b56fce6134143be93cf31fe0646bcef",
+    "text": "ResNet"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-1b5a9918b2844ce1b1c7c2e2200c0d83",
+    "text": "56"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-cc4dc75b175948c58221c0b90be35561",
+    "text": "0.85M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-31048e865c5045d3b4cb0b266b59f8cf",
+    "text": "6.97"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-a1fccd54ab3c4f0e9fb78023a8de190b",
+    "text": "ResNet"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e4187cb5e2f24989b2e487564e6bb5f6",
+    "text": "110"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5de7918f225b485ba536e8d34998f7ae",
+    "text": "1.7M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2dab304c3a494bca884fe30dbcfa5496",
+    "text": "6.43 (6.61$\\pm$0.16)"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-04fa7b4c5eaf4ef3b117f30ecfedddfd",
+    "text": "ResNet"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5eaf1986288a42599a8f76e1e1e42cf8",
+    "text": "1202"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-0d91ed489a6345f2bee616679689e7b5",
+    "text": "19.4M"
+  },
+  {
+    "block_id": "b-76203e52025c42a387e33152fcf0c91d",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-71702461db6c459fa4615d9e252c9c1e",
+    "text": "7.93"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-352c7a0e161e40b4a867d349634510ed",
+    "text": "Table 9: Object detection improvements on MS COCO using Faster R-CNN and ResNet-101."
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-ea005cd25f29427aa8fa34a5624d1586",
+    "text": "training data"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2f991bec10f245a6b4b52f2c60282b36",
+    "text": "COCO train"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-3bfcc244e97f4b6195169c702170d712",
+    "text": "COCO trainval"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-cbb8d641342e49079f75318016af59db",
+    "text": "test data"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5cec2887ef8a432cb258b9257787e04a",
+    "text": "COCO val"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-59d2fbd658c843bf873c4c8777e3dad5",
+    "text": "COCO test-dev"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-42a8655e73a5415d95863c10e8d688c5",
+    "text": "mAP"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-042c28748e904d9d92757f6996a9b7d7",
+    "text": "@.5"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e49357ab8c4f4a0cb201f5dea2d95de8",
+    "text": "@[.5, .95]"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-60564fe9baf64c3cbda8e3adea201b7e",
+    "text": "@.5"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-627209e5dc7c4a40800d26fd53e3a75d",
+    "text": "@[.5, .95]"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e315a811a2a64ea5b2ed0147bbb04fc9",
+    "text": "baseline Faster R-CNN (VGG-16)"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-304612c52a874babb78b9241957b93ce",
+    "text": "41.5"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6293ba7713fb42b8bd8031c9437fccac",
+    "text": "21.2"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-08f0f51f57a54c5dbe788fd8f0997cf3",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-c33b5e65d8214b10a88fa95729c7eaf8",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2d2c0991e6344dc4a3913e69694693e3",
+    "text": "baseline Faster R-CNN (ResNet-101)"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-1ed0f56f10c5448c862c02eef30ff851",
+    "text": "48.4"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-bdc3e2f3a25742e2b7a8269f2b003ad8",
+    "text": "27.2"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-bff790739b8a42bb981fed14d84ee604",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-8c87d4a6d57b47c59282efcf0e4eae3f",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6a4f81a7d5004bd69be1bd079da0d4c9",
+    "text": "+box refinement"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-681424c187b547e8ba72b87dc3e6eeab",
+    "text": "49.9"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-4114a52d329d471d99325077d2f080d7",
+    "text": "29.9"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5cb552dae047476d975b7a63a0166de9",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-bca7fda6df3b43718861265b8b50532d",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-aafe0ad2707648699883daec58fb7e15",
+    "text": "+context"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-d8351ee8f10d4da7bc0c4bda06fa5ab8",
+    "text": "51.1"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-d256f8311a4646fca567f2010a51bf91",
+    "text": "30.0"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-9f8408425a534335a6afeebbae3725cd",
+    "text": "53.3"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-a32ef8fa5c3c45f4a3cfe87e0c2f0d12",
+    "text": "32.2"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-6f5c3439c15c4bcfa90a6b2f4e200c10",
+    "text": "+multi-scale testing"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-47188b1bb0ba4471bc1350d59e7f1fb7",
+    "text": "53.8"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5efc9a26765e46479257ec78367d4520",
+    "text": "32.5"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-2da549d038864a30840ca9001c988fe2",
+    "text": "55.7"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f50fa521bc34443fb77c7e59a0aa0979",
+    "text": "34.9"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-29da7b83c0564c24adfa19bb09372181",
+    "text": "ensemble"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-90c88174b18347318e453bfa9b33b21d",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-454fd4927dfc4c91a6f9416058edc1e8",
+    "text": ""
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-710776519797442ea4249289f0240ee4",
+    "text": "59.0"
+  },
+  {
+    "block_id": "b-1c5ab41e0a504d9dbaf821a21d384b74",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-d0f625443d9c4ef7afdea929991fbc55",
+    "text": "37.4"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-bc652d9f1484421783163c5bf9eb1bc7",
+    "text": "Table 14: Comparisons of localization error (%) on the ImageNet dataset with state-of-the-art methods."
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-b91365290a334021ba70cf54d316a969",
+    "text": "method"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-8df7a7911ce646cabcc17d4aa7935c43",
+    "text": "top-5 localization err"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-1b18e5a0222c428391296c61d390da59",
+    "text": "val"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f4f429fac5e44a5d9832a8f1adecc3aa",
+    "text": "test"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-0c4ae027a61843d787ad9e8dbf24bc12",
+    "text": "OverFeat [40] (ILSVRC’13)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-1d6c55a3a83a4a2a960ca57399efece6",
+    "text": "30.0"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-94649f1a49c04c2ab1cbf37f5932533c",
+    "text": "29.9"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-0424e68f4cee4090b324f1c53c1d7889",
+    "text": "GoogLeNet [44] (ILSVRC’14)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-e0274dee5f144314a380c0d0c715bb34",
+    "text": "-"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-d372083a8048499891772ab9d1edff2d",
+    "text": "26.7"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-34cb62b2d9254abdb18f6189d8f92761",
+    "text": "VGG [41] (ILSVRC’14)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-f2371b1eb9a9402bba9ca2964893ca83",
+    "text": "26.9"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-06be66dd43a64e519647917213e01165",
+    "text": "25.3"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-5196ce1db93a4ea5b6c2471bc9ecdb1f",
+    "text": "ours (ILSVRC’15)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-a7cec985056f467292c79429f3fe9da7",
+    "text": "8.9"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "source",
+    "field": "html_text",
+    "node_id": "n-9c52bbe741eb4dcf83946ac3aa3cd941",
+    "text": "9.0"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-bc652d9f1484421783163c5bf9eb1bc7",
+    "text": "表 14：在 ImageNet 数据集上与当时先进方法的定位错误率（%）比较。"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-b91365290a334021ba70cf54d316a969",
+    "text": "方法"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-8df7a7911ce646cabcc17d4aa7935c43",
+    "text": "前 5 定位错误率"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-1b18e5a0222c428391296c61d390da59",
+    "text": "验证集"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-f4f429fac5e44a5d9832a8f1adecc3aa",
+    "text": "测试集"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-0c4ae027a61843d787ad9e8dbf24bc12",
+    "text": "OverFeat [40] (ILSVRC’13)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-1d6c55a3a83a4a2a960ca57399efece6",
+    "text": "30.0"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-94649f1a49c04c2ab1cbf37f5932533c",
+    "text": "29.9"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-0424e68f4cee4090b324f1c53c1d7889",
+    "text": "GoogLeNet [44] (ILSVRC’14)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-e0274dee5f144314a380c0d0c715bb34",
+    "text": "-"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-d372083a8048499891772ab9d1edff2d",
+    "text": "26.7"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-34cb62b2d9254abdb18f6189d8f92761",
+    "text": "VGG [41] (ILSVRC’14)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-f2371b1eb9a9402bba9ca2964893ca83",
+    "text": "26.9"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-06be66dd43a64e519647917213e01165",
+    "text": "25.3"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-5196ce1db93a4ea5b6c2471bc9ecdb1f",
+    "text": "本文方法 (ILSVRC’15)"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-a7cec985056f467292c79429f3fe9da7",
+    "text": "8.9"
+  },
+  {
+    "block_id": "b-8a5e9694843f4cec90266222958c5674",
+    "variant": "zh-CN",
+    "field": "html_text",
+    "node_id": "n-9c52bbe741eb4dcf83946ac3aa3cd941",
+    "text": "9.0"
+  }
+]

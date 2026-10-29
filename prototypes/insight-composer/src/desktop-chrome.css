@@ -1,0 +1,87 @@
+/* Native caption buttons share the existing page header only in Electron.
+   Nothing here changes the browser layout or adds a second title row. */
+html[data-desktop-titlebar="windows"] .workspace-header {
+  padding-right: calc(var(--desktop-controls-width, 138px) + 16px * var(--ui-scale, 1));
+}
+html[data-desktop-titlebar="windows"] .reader-app .topbar.reader-topbar {
+  --reader-header-padding: calc(20px * var(--ui-scale, 1));
+  --reader-caption-reserve: max(0px, calc(var(--desktop-controls-width, 138px) + 12px * var(--ui-scale, 1) - var(--reader-header-padding)));
+  width: var(--desktop-viewport-width, 100vw);
+  height: auto;
+  min-height: calc(56px * var(--ui-scale, 1));
+  padding: 0 var(--reader-header-padding);
+}
+/* Keep the page's native scrollbar below the full-window header and caption
+   controls. Retain window scrolling so reading anchors and jumps do not change. */
+html[data-desktop-titlebar="windows"]:has(.reader-app[data-reader-runtime])::-webkit-scrollbar-track {
+  margin-top: var(--reader-scrollbar-top, calc(56px * var(--ui-scale, 1)));
+}
+/* The equal side tracks center reading modes in the whole window. Reserve
+   native buttons inside the right track instead of shifting that center. */
+html[data-desktop-titlebar="windows"] .reader-app.paper-reader .topbar.reader-topbar {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+html[data-desktop-titlebar="windows"] .reader-app .reader-topbar .reader-tools {
+  margin-right: var(--reader-caption-reserve);
+  margin-block: calc(6px * var(--ui-scale, 1));
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: calc(4px * var(--ui-scale, 1));
+}
+/* A narrow window or enlarged interface can use two rows of tools; the title
+   truncates and the mode switch keeps its center without covering any action. */
+html[data-desktop-titlebar="windows"] .reader-app.paper-reader .reader-topbar .reader-tools {
+  min-width: 0;
+  max-width: calc(100% - var(--reader-caption-reserve));
+}
+html[data-desktop-titlebar="windows"] .reader-image-lightbox .reader-image-header {
+  right: calc(var(--desktop-controls-width, 138px) + 18px);
+}
+/* Keep each existing modal centered and unchanged in size. Only its closing
+   action yields when the modal's right edge reaches the native caption area.
+   Settings uses the opening's frozen --ui-scale, so changing interface size
+   while it is open does not change the panel or this header's geometry. */
+html[data-desktop-titlebar="windows"] .settings-heading {
+  padding-right: max(calc(18px * var(--ui-scale, 1)), calc(var(--desktop-controls-width, 138px) - max(24px * var(--ui-scale, 1), (100vw - 560px * var(--ui-scale, 1)) / 2) + 8px));
+}
+html[data-desktop-titlebar="windows"] .flow-insight-dialog .workspace-dialog-heading {
+  padding-right: max(calc(18px * var(--ui-scale, 1)), calc(var(--desktop-controls-width, 138px) - max(40px * var(--ui-scale, 1), (100vw - 860px * var(--ui-scale, 1)) / 2) + 8px));
+}
+html[data-desktop-titlebar="windows"] .workspace-service-dialog.is-wide .workspace-service-surface > header {
+  padding-right: max(20px, calc(var(--desktop-controls-width, 138px) - max(16px, (100vw - 800px) / 2) + 8px));
+}
+html[data-desktop-titlebar="windows"] .question-dialog-header {
+  padding-right: max(calc(18px * var(--ui-scale, 1)), calc(var(--desktop-controls-width, 138px) - max(32px, (100vw - 780px) / 2) + 8px));
+}
+html[data-desktop-titlebar="windows"] .workspace-detail-dialog .workspace-dialog-heading {
+  padding-right: max(calc(16px * var(--ui-scale, 1)), calc(var(--desktop-controls-width, 138px) - 12px * var(--ui-scale, 1) + 8px));
+}
+html[data-desktop-titlebar="windows"] :is(.workspace-header, .reader-topbar) {
+  -webkit-app-region: drag;
+  app-region: drag;
+  user-select: none;
+}
+html[data-desktop-titlebar="windows"] :is(.workspace-brand, .workspace-primary-navigation, .workspace-header-actions, .workspace-skip-link, .topbar-left, .reader-mode-switch, .reader-tools),
+html[data-desktop-titlebar="windows"] :is(.workspace-header, .reader-topbar) :is(button, a, input, select, textarea, label, [role="button"], [tabindex]),
+html[data-desktop-titlebar="windows"] :is(dialog, [role="dialog"], [role="alertdialog"], [role="menu"], .settings-overlay, .overlay) {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+/* Electron's native hit testing must not capture clicks through a modal or
+   its backdrop. Closed, retained dialog content does not disable dragging. */
+html[data-desktop-titlebar="windows"]:has(dialog[open], .settings-overlay:not([inert]):not([aria-hidden="true"]), .insights-overlay[data-state="open"], .reader-image-lightbox[role="dialog"][aria-modal="true"]) :is(.workspace-header, .reader-topbar),
+html[data-desktop-titlebar="windows"][data-desktop-controls="hidden"] :is(.workspace-header, .reader-topbar) {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+/* At desktop minimum width the document title yields first; all reading
+   controls retain their visible labels and independent pointer targets. */
+@media (max-width: 1250px) {
+  html[data-desktop-titlebar="windows"] .reader-app .topbar.reader-topbar {
+    --reader-header-padding: calc(14px * var(--ui-scale, 1));
+    gap: calc(10px * var(--ui-scale, 1));
+  }
+  html[data-desktop-titlebar="windows"] .reader-topbar .reader-mode-option { --reader-mode-padding: calc(8px * var(--ui-scale, 1)); }
+  html[data-desktop-titlebar="windows"] .reader-app .reader-topbar .tool-button { padding-inline: calc(6px * var(--ui-scale, 1)); }
+  html[data-desktop-titlebar="windows"] .reader-app .reader-topbar .topbar-divider { margin-inline: calc(2px * var(--ui-scale, 1)); }
+}

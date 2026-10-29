@@ -1,0 +1,24 @@
+.reader-context-position {
+  position: fixed; inset: 0 auto auto 0; margin: 0; padding: 0; border: 0;
+  width: calc(224px * var(--ui-scale, 1)); overflow: visible;
+  background: transparent; color: var(--text, #292b2e);
+  font-family: inherit; z-index: 1500;
+}
+.reader-context-position::backdrop { background: transparent; pointer-events: none; }
+.reader-context-submenu { width: calc(180px * var(--ui-scale, 1)); }
+.reader-context-surface { background: #fff; border: 1px solid #25282d16; border-radius: calc(8px * var(--ui-scale, 1)); box-shadow: 0 12px 36px #22262b18, 0 2px 8px #22262b0c; }
+.reader-context-clip { overflow: hidden; border-radius: inherit; }
+.reader-context-content { position: relative; padding: calc(5px * var(--ui-scale, 1)); overflow: auto; overscroll-behavior: contain; box-sizing: border-box; }
+.reader-context-slot { position: relative; }
+.reader-context-group { padding-top: calc(5px * var(--ui-scale, 1)); margin-top: calc(3px * var(--ui-scale, 1)); }
+.reader-context-item { position: relative; isolation: isolate; display: flex; align-items: center; gap: calc(8px * var(--ui-scale, 1)); min-height: calc(32px * var(--ui-scale, 1)); width: 100%; padding: calc(6px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1)); border: 0; border-radius: calc(4px * var(--ui-scale, 1)); background: transparent; color: inherit; font: inherit; font-size: calc(12px * var(--ui-scale, 1)); line-height: 1.4; text-align: left; cursor: pointer; }
+.reader-context-item:focus { outline: none; }
+.reader-context-item:focus-visible { outline: 1px solid #363b4266; outline-offset: -1px; }
+.reader-context-item:disabled { color: #999b9e; cursor: default; }
+.reader-context-item.is-danger { color: #a53d37; }
+.reader-context-item[data-active] { background: #f0f1f2; }
+.reader-context-label { flex: 1; }
+.reader-context-icon, .reader-context-check, .reader-context-arrow { flex: none; width: calc(15px * var(--ui-scale, 1)); height: calc(15px * var(--ui-scale, 1)); }
+.reader-context-position[data-context-state="closing"] { pointer-events: none; }
+.insight-entry[data-context-active], .margin-note[data-context-active], .reader-object[data-context-active] { outline: 1px solid #33394038; outline-offset: 2px; }
+.article p[data-block-id][data-context-active] { outline: 1px solid #33394038; outline-offset: 3px; border-radius: 2px; }

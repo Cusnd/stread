@@ -1,0 +1,12 @@
+.composer[data-intent="change-request"] .composer-type, .composer[data-intent="change-request"] .composer-actions { top: 39px; }
+.request-context { position: absolute; inset: 0 0 auto; height: 32px; display: flex; align-items: center; gap: 9px; padding: 0 12px; border-bottom: 1px solid var(--line); border-radius: 8px 8px 0 0; background: var(--surface-reading); font-size: 11px; color: var(--text-secondary); }
+.request-context-label { flex: none; color: var(--accent); }
+.request-context-source { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.request-context button { margin-left: auto; flex: none; display: grid; place-items: center; width: 20px; height: 22px; padding: 0; background: transparent; color: var(--text-secondary); border-radius: 4px; }
+.request-context button:hover, .request-location-trigger[aria-pressed="true"] { background: var(--selected-surface); color: var(--accent); }
+.request-location-trigger { color: var(--text-secondary); }
+.article[data-selecting-request="true"] [data-block-id]:hover { outline: 1px dashed var(--accent); outline-offset: 4px; cursor: crosshair; }
+.change-request-list { grid-column: 1 / -1; }
+.change-request-list h3 { display: flex; align-items: center; gap: 8px; margin: 22px 0 2px; font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.change-request-list h3 span { font-size: 11px; font-weight: 400; }
+.change-request-body { margin: 10px 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.65; }

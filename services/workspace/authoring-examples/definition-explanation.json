@@ -1,0 +1,39 @@
+{
+  "format": "reader-authoring-1",
+  "key": "layout-example-definition-explanation",
+  "meta": {
+    "title": "Layout example: a definition and its explanation",
+    "language": "en",
+    "translations": { "zh-CN": { "title": "布局示例：定义与解释" } }
+  },
+  "blocks": [
+    {
+      "key": "context",
+      "type": "para",
+      "text": "This self-contained teaching example combines a definition with its condition and interpretation. It is not an excerpt from an uploaded source.",
+      "translations": { "zh-CN": { "text": "这个自编教学示例把定义、条件和解释组合起来，并非上传原稿的节选。" } }
+    },
+    {
+      "key": "weighted-mean-definition",
+      "type": "html",
+      "html": "<section class=\"layout-stack\"><blockquote data-key=\"definition\"><strong>Weighted mean.</strong> For values <span data-tex=\"x_i\"></span> and weights <span data-tex=\"w_i\"></span>, divide the weighted sum of the values by the sum of the weights.</blockquote><div class=\"layout-pair\"><p data-key=\"condition\"><strong>Condition.</strong> Here every weight satisfies <span data-tex=\"w_i \\ge 0\"></span>, and <span data-tex=\"\\sum_i w_i &gt; 0\"></span>. These conditions exclude division by zero and negative contributions.</p><p data-key=\"interpretation\"><strong>Interpretation.</strong> Multiplying every weight by the same positive constant leaves the result unchanged. Only the weights relative to one another affect the mean.</p></div></section>",
+      "translations": {
+        "zh-CN": {
+          "alignment": "same-structure",
+          "html": "<section class=\"layout-stack\"><blockquote data-key=\"definition\"><strong>加权平均数。</strong>对于数值 <span data-tex=\"x_i\"></span> 及权重 <span data-tex=\"w_i\"></span>，用数值的加权和除以权重之和。</blockquote><div class=\"layout-pair\"><p data-key=\"condition\"><strong>条件。</strong>这里每个权重满足 <span data-tex=\"w_i \\ge 0\"></span>，并且 <span data-tex=\"\\sum_i w_i &gt; 0\"></span>。这些条件排除了除以零和负权重的贡献。</p><p data-key=\"interpretation\"><strong>解释。</strong>将所有权重乘以同一个正常数，结果不变。决定平均数的是权重之间的相对关系。</p></div></section>"
+        }
+      }
+    },
+    {
+      "key": "weighted-mean-equation",
+      "type": "math",
+      "tex": "\\bar{x}_w = \\frac{\\sum_i w_i x_i}{\\sum_i w_i}"
+    },
+    {
+      "key": "ordinary-followup",
+      "type": "para",
+      "text": "The displayed equation remains a standard math block. Combining related prose does not require moving every neighbouring paragraph or equation into HTML.",
+      "translations": { "zh-CN": { "text": "显示公式仍使用普通公式块。组合相关文字，不意味着要把相邻段落和公式全部移入 HTML。" } }
+    }
+  ]
+}

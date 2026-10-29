@@ -1,0 +1,39 @@
+{
+  "name": "insight-composer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/build.mjs && node scripts/prepare-sites-build.mjs",
+    "preview": "vite preview",
+    "test:sites": "node --test tests/sites-worker.test.mjs",
+    "sample:html": "node scripts/prepare-html-table3.mjs",
+    "test:html": "node --test tests/html-content.test.mjs tests/attention-sample.test.mjs",
+    "test:conversion": "node --test tests/conversion-contract.test.mjs",
+    "compile:authoring": "node scripts/compile-authoring.mjs"
+  },
+  "dependencies": {
+    "@codemirror/commands": "6.11.1",
+    "@codemirror/lang-markdown": "6.5.2",
+    "@codemirror/language": "6.13.1",
+    "@codemirror/search": "6.7.2",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.15",
+    "@phosphor-icons/react": "^2.1.10",
+    "@radix-ui/react-dropdown-menu": "^2.2.1",
+    "@vitejs/plugin-react": "5.0.4",
+    "css-tree": "3.2.1",
+    "iconoir-react": "^7.12.1",
+    "katex": "^0.18.7",
+    "lucide-react": "^1.61.0",
+    "markdown-it": "15.0.3",
+    "motion": "14.6.0",
+    "parse5": "8.0.1",
+    "pdfjs-dist": "6.4.299",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "viewerjs": "1.15.2",
+    "vite": "6.4.2"
+  }
+}

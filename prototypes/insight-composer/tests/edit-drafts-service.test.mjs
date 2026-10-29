@@ -1,0 +1,63 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve, sep } from "node:path";
+import { randomUUID } from "node:crypto";
+import { createWorkspaceServer } from "../../../services/workspace/server.mjs";
+import { publishAuthoringFixture } from "../../../services/workspace/tests/authoring-fixture.mjs";
+import { cancelledEditDrafts, documentDraftFor, rebaseDocumentDraft } from "../src/workspace/edit-drafts.js";
+import { parseTags } from "../src/workspace/model.js";
+
+test("Collection cancelled edits and concurrent recovery save against isolated HTTP authority without losing either writer's fields", async (t) => {
+  const dataDir = await mkdtemp(join(tmpdir(), "reader-edit-recovery-"));
+  const server = await createWorkspaceServer({ dataDir, bootstrap: false, glossaryPath: false, staticRoot: false, authToken: "draft-test-token" });
+  t.after(async () => {
+    await server.shutdown();
+    assert.ok(resolve(dataDir).startsWith(resolve(tmpdir()) + sep));
+    await rm(dataDir, { recursive: true, force: true });
+  });
+  await new Promise((done) => server.listen(0, "127.0.0.1", done));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const headers = { Authorization: "Bearer draft-test-token" };
+  const request = async (path, body, status = 200) => {
+    const response = await fetch(base + path, { method: body ? "POST" : "GET", headers: { ...headers, ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const result = await response.json();
+    assert.equal(response.status, status, JSON.stringify(result));
+    return result;
+  };
+  const command = (input, status) => request("/api/commands", { requestId: randomUUID(), ...input }, status);
+  const article = await publishAuthoringFixture({ base, headers, authoring: { format: "reader-authoring-1", key: "draft-recovery", meta: { title: "Original title", language: "en" }, blocks: [{ key: "paragraph", type: "para", text: "The document body stays unchanged." }] } });
+  const documentId = article.document.id;
+  const getMaterial = async () => (await request("/api/documents/" + documentId)).record;
+  const update = (draft) => ({ kind: "document.update", documentId, expectedVersion: draft.expectedVersion, patch: { title: draft.title, summary: draft.summary, kind: draft.kind, status: draft.status, collectionIds: draft.collectionIds, tags: parseTags(draft.tagsText) } });
+  const first = await getMaterial();
+  const view = { documentDraft: { ...documentDraftFor(first), title: "Cancelled input" } };
+  Object.assign(view, cancelledEditDrafts("edit-document"));
+  await command({ kind: "reading.open", documentId });
+  view.documentDraft = documentDraftFor(await getMaterial());
+  assert.equal(view.documentDraft.title, "Original title");
+  assert.ok(view.documentDraft.expectedVersion > first.version);
+  view.documentDraft.summary = "User summary";
+  await command(update(view.documentDraft));
+  assert.equal((await getMaterial()).summary, "User summary");
+
+  const before = await getMaterial();
+  const draft = { ...documentDraftFor(before), title: "My retained title", tagsText: "my-tag" };
+  await command({ kind: "document.update", documentId, expectedVersion: before.version, patch: { title: "Concurrent title", summary: "Concurrent summary", status: "done" } });
+  const failure = await command(update(draft), 409);
+  assert.equal(failure.code, "REVISION_CONFLICT");
+  assert.equal(draft.title, "My retained title");
+  const recovered = rebaseDocumentDraft(draft, await getMaterial());
+  assert.ok(recovered.conflicts.some((item) => item.field === "title" && item.latest === "Concurrent title"));
+  assert.equal(recovered.draft.summary, "Concurrent summary");
+  assert.equal(recovered.draft.status, "done");
+  await command(update(recovered.draft));
+  const saved = await getMaterial();
+  assert.equal(saved.title, "My retained title");
+  assert.equal(saved.summary, "Concurrent summary");
+  assert.deepEqual(saved.tags, ["my-tag"]);
+  assert.equal(saved.status, "done");
+  const document = (await request("/api/documents/" + documentId)).document;
+  assert.equal(document.blocks[0].text, "The document body stays unchanged.");
+});

@@ -1,0 +1,31 @@
+.icon-gallery { --ui-scale: 1; min-height: 100dvh; padding: 38px 40px 28px; background: #fff; color: #262728; }
+.icon-gallery-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 38px; }
+.icon-gallery-back { display: inline-flex; align-items: center; gap: 8px; color: #757575; font-size: 12px; }
+.icon-gallery h1 { margin: 14px 0 0; font-size: 29px; line-height: 1.3; letter-spacing: -.04em; font-weight: 550; }
+.icon-gallery-actions { display: flex; align-items: center; gap: 24px; }
+.icon-gallery-size { display: flex; border: 0; padding: 0; margin: 0; gap: 4px; }
+.icon-gallery-size label { position: relative; cursor: pointer; }
+.icon-gallery-size input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.icon-gallery-size span { display: block; padding: 7px 10px; border-radius: 4px; color: #828282; font-size: 12px; }
+.icon-gallery-size input:checked + span { color: #272727; background: #f1f1ef; }
+.icon-gallery-size input:focus-visible + span { outline: 2px solid #292929; outline-offset: 2px; }
+.icon-gallery-enter { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
+.icon-gallery-directions { display: grid; gap: 33px; }
+.icon-gallery-direction-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 18px; }
+.icon-gallery-name { display: flex; align-items: baseline; gap: 14px; }
+.icon-gallery-index { font-size: 11px; color: #9b9b98; font-variant-numeric: tabular-nums; }
+.icon-gallery h2 { margin: 0; font-size: 17px; font-weight: 550; letter-spacing: .04em; }
+.icon-gallery-name p { margin: 0; color: #858582; font-size: 12px; }
+.icon-gallery-apply { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 83px; height: 30px; padding: 0 12px; color: #555; background: #fff; border: 1px solid #e1e1de; border-radius: 5px; font-size: 11px; }
+.icon-gallery-apply:hover { border-color: #949490; }
+.icon-gallery-apply[aria-pressed="true"] { color: #fff; background: #282a2b; border-color: #282a2b; }
+.icon-gallery-toolbar.reader-app { min-height: 0; height: auto; background: #fafaf9; padding: 12px 0; border-radius: 5px; overflow: hidden; }
+.icon-gallery .icon-gallery-toolbar .topbar.reader-topbar { position: relative; top: auto; background: transparent; border: 0; box-shadow: none; z-index: auto; padding-inline: 18px; }
+.icon-gallery-glyphs { display: grid; grid-template-columns: repeat(12, 1fr); padding: 17px 10px 0; color: #3d3e3f; }
+.icon-gallery-glyph { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+.icon-gallery-glyph > svg { width: 20px; height: 20px; flex: none; }
+.icon-gallery-glyph > span { color: #90908c; font-size: 10px; line-height: 1.5; }
+.icon-gallery[data-size="detail"] .icon-gallery-glyph > svg { width: 34px; height: 34px; }
+.icon-gallery-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 32px; color: #959591; font-size: 11px; }
+.icon-gallery :is(button, a):focus-visible { outline: 2px solid #292929; outline-offset: 3px; }
+@media (max-width: 1180px) { .icon-gallery { padding: 30px 24px 24px; } .icon-gallery-name p { max-width: 340px; } }

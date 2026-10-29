@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "authoring_key": "resnet",
+  "document_id": "doc-3dc57c1822d04b2db7c13c7b140212cf",
+  "revision": 4,
+  "block_count": 180,
+  "types": {
+    "heading": 16,
+    "para": 141,
+    "figure": 7,
+    "math": 2,
+    "html": 4,
+    "table": 10
+  },
+  "html_nodes": 157,
+  "translated_blocks": 2,
+  "custom_css_blocks": 0,
+  "internal_links": 279,
+  "assets": [
+    "source.pdf",
+    "assets/figure-1.svg",
+    "assets/figure-2.svg",
+    "assets/figure-3.svg",
+    "assets/figure-4.svg",
+    "assets/figure-5.svg",
+    "assets/figure-6.svg",
+    "assets/figure-7.svg"
+  ],
+  "warnings": [],
+  "scope": "Compiler structure, identity, translation provenance and math checks. Content fidelity and UI are verified separately."
+}

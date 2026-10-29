@@ -1,0 +1,26 @@
+{
+  "result": "PASS",
+  "authoring_key": "crispr",
+  "document_id": "doc-b3a5ae8a3ba540ea86f267ade2b4b0df",
+  "revision": 3,
+  "block_count": 156,
+  "types": {
+    "heading": 15,
+    "para": 137,
+    "figure": 2,
+    "html": 1,
+    "table": 1
+  },
+  "html_nodes": 1,
+  "translated_blocks": 2,
+  "custom_css_blocks": 0,
+  "internal_links": 165,
+  "assets": [
+    "source.pdf",
+    "assets/figure-1.jpg",
+    "assets/figure-3.jpg",
+    "assets/figure-2.jpg"
+  ],
+  "warnings": [],
+  "scope": "Compiler structure, identity, translation provenance and math checks. Content fidelity and UI are verified separately."
+}

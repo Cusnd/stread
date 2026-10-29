@@ -1,0 +1,1979 @@
+{
+  "format": "reader-authoring-1",
+  "key": "mapreduce",
+  "meta": {
+    "title": "MapReduce: Simplified Data Processing on Large Clusters",
+    "language": "en",
+    "authors": "Jeffrey Dean, Sanjay Ghemawat"
+  },
+  "source": {
+    "path": "source.pdf",
+    "sha256": "9cfef3ef1b8fe1a1b66c7221f56c2eeca0b15d6608ea68b0c85a38bfbffd8ce5",
+    "pages": 13
+  },
+  "blocks": [
+    {
+      "key": "heading-1",
+      "type": "heading",
+      "level": 1,
+      "text": "Abstract"
+    },
+    {
+      "key": "p-8af665fd021d3b54",
+      "type": "para",
+      "text": "MapReduce is a programming model and an associated implementation for processing and generating large data sets. Users specify a *map* function that processes a key/value pair to generate a set of intermediate key/value pairs, and a *reduce* function that merges all intermediate values associated with the same intermediate key. Many real world tasks are expressible in this model, as shown in the paper.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "p-5b13ea09a1d9fcca",
+      "type": "para",
+      "text": "Programs written in this functional style are automatically parallelized and executed on a large cluster of commodity machines. The run-time system takes care of the details of partitioning the input data, scheduling the program's execution across a set of machines, handling machine failures, and managing the required inter-machine communication. This allows programmers without any experience with parallel and distributed systems to easily utilize the resources of a large distributed system.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "p-81eff5a0fc3671fa",
+      "type": "para",
+      "text": "Our implementation of MapReduce runs on a large cluster of commodity machines and is highly scalable: a typical MapReduce computation processes many terabytes of data on thousands of machines. Programmers find the system easy to use: hundreds of MapReduce programs have been implemented and upwards of one thousand MapReduce jobs are executed on Google's clusters every day.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "SECTION00010000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Introduction",
+      "num": "1"
+    },
+    {
+      "key": "p-f46d81b972704785",
+      "type": "para",
+      "text": "Over the past five years, the authors and many others at Google have implemented hundreds of special-purpose computations that process large amounts of raw data, such as crawled documents, web request logs, etc., to compute various kinds of derived data, such as inverted indices, various representations of the graph structure of web documents, summaries of the number of pages crawled per host, the set of most frequent queries in a given day, etc. Most such computations are conceptually straightforward. However, the input data is usually large and the computations have to be distributed across hundreds or thousands of machines in order to finish in a reasonable amount of time. The issues of how to parallelize the computation, distribute the data, and handle failures conspire to obscure the original simple computation with large amounts of complex code to deal with these issues.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "p-56b7718f0c12ca07",
+      "type": "para",
+      "text": "As a reaction to this complexity, we designed a new abstraction that allows us to express the simple computations we were trying to perform but hides the messy details of parallelization, fault-tolerance, data distribution and load balancing in a library. Our abstraction is inspired by the *map* and *reduce* primitives present in Lisp and many other functional languages. We realized that most of our computations involved applying a *map* operation to each logical “record” in our input in order to compute a set of intermediate key/value pairs, and then applying a *reduce* operation to all the values that shared the same key, in order to combine the derived data appropriately. Our use of a functional model with user-specified map and reduce operations allows us to parallelize large computations easily and to use re-execution as the primary mechanism for fault tolerance.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "p-7bdfccc69eafa8a9",
+      "type": "para",
+      "text": "The major contributions of this work are a simple and powerful interface that enables automatic parallelization and distribution of large-scale computations, combined with an implementation of this interface that achieves high performance on large clusters of commodity PCs.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "p-b7539883d6ae1103",
+      "type": "para",
+      "text": "Section [2](#SECTION00020000000000000000) describes the basic programming model and gives several examples. Section [3](#SECTION00030000000000000000) describes an implementation of the MapReduce interface tailored towards our cluster-based computing environment. Section [4](#SECTION00040000000000000000) describes several refinements of the programming model that we have found useful. Section [5](#SECTION00050000000000000000) has performance measurements of our implementation for a variety of tasks. Section [6](#SECTION00060000000000000000) explores the use of MapReduce within Google including our experiences in using it as the basis for a rewrite of our production indexing system. Section [7](#SECTION00070000000000000000) discusses related and future work.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "SECTION00020000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Programming Model",
+      "num": "2"
+    },
+    {
+      "key": "p-01663064939b0751",
+      "type": "para",
+      "text": "The computation takes a set of *input* key/value pairs, and produces a set of *output* key/value pairs. The user of the MapReduce library expresses the computation as two functions: *Map* and *Reduce*.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-ea84a797f15cfc18",
+      "type": "para",
+      "text": "*Map*, written by the user, takes an input pair and produces a set of *intermediate* key/value pairs. The MapReduce library groups together all intermediate values associated with the same intermediate key $I$ and passes them to the *Reduce* function.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-95c37dd5c5a2da1a",
+      "type": "para",
+      "text": "The *Reduce* function, also written by the user, accepts an intermediate key $I$ and a set of values for that key. It merges together these values to form a possibly smaller set of values. Typically just zero or one output value is produced per *Reduce* invocation. The intermediate values are supplied to the user's reduce function via an iterator. This allows us to handle lists of values that are too large to fit in memory.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "SECTION00021000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Example",
+      "num": "2.1"
+    },
+    {
+      "key": "p-ebb35c71773553bf",
+      "type": "para",
+      "text": "Consider the problem of counting the number of occurrences of each word in a large collection of documents. The user would write code similar to the following pseudo-code:",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "html-1",
+      "type": "html",
+      "role": "code",
+      "html": "<pre><code>\n  map(String key, String value):\n    // key: document name\n    // value: document contents\n    for each word w in value:\n      EmitIntermediate(w, &quot;1&quot;);\n\n  reduce(String key, Iterator values):\n    // key: a word\n    // values: a list of counts\n    int result = 0;\n    for each v in values:\n      result += ParseInt(v);\n    Emit(AsString(result));\n</code></pre>",
+      "translations": {
+        "zh-CN": {
+          "html": "<pre><code>\n  map(String key, String value):\n    // key：文档名称\n    // value：文档内容\n    for each word w in value:\n      EmitIntermediate(w, \"1\");\n\n  reduce(String key, Iterator values):\n    // key：一个单词\n    // values：计数值列表\n    int result = 0;\n    for each v in values:\n      result += ParseInt(v);\n    Emit(AsString(result));\n</code></pre>",
+          "alignment": "same-structure"
+        }
+      },
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-cfd62cb9cf8b09eb",
+      "type": "para",
+      "text": "The `map` function emits each word plus an associated count of occurrences (just “1” in this simple example). The `reduce` function sums together all counts emitted for a particular word.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "figure-1",
+      "type": "figure",
+      "num": "1",
+      "src": "assets/figure-1.png",
+      "alt": "Figure 1: Execution overview",
+      "caption": "Figure 1: Execution overview",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-8aaf3c710976d3e1",
+      "type": "para",
+      "text": "In addition, the user writes code to fill in a *mapreduce specification* object with the names of the input and output files, and optional tuning parameters. The user then invokes the *MapReduce* function, passing it the specification object. The user's code is linked together with the MapReduce library (implemented in C++). Appendix [A](#SECTION000110000000000000000) contains the full program text for this example.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "SECTION00022000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Types",
+      "num": "2.2"
+    },
+    {
+      "key": "p-8797f99fbab7225a",
+      "type": "para",
+      "text": "Even though the previous pseudo-code is written in terms of string inputs and outputs, conceptually the map and reduce functions supplied by the user have associated types:",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "function-types",
+      "type": "html",
+      "role": "algorithm",
+      "html": "<div class=\"layout-stack\"><p>map <code>(k1,v1)</code> <span data-tex=\"\\rightarrow\"></span> <code>list(k2,v2)</code></p><p>reduce <code>(k2,list(v2))</code> <span data-tex=\"\\rightarrow\"></span> <code>list(v2)</code></p></div>",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-806ca9fa7c3c6b8f",
+      "type": "para",
+      "text": "I.e., the input keys and values are drawn from a different domain than the output keys and values. Furthermore, the intermediate keys and values are from the same domain as the output keys and values.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-23b58065e47c4ec7",
+      "type": "para",
+      "text": "Our C++ implementation passes strings to and from the user-defined functions and leaves it to the user code to convert between strings and appropriate types.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "SECTION00023000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "More Examples",
+      "num": "2.3"
+    },
+    {
+      "key": "p-5af95f95344424ac",
+      "type": "para",
+      "text": "Here are a few simple examples of interesting programs that can be easily expressed as MapReduce computations.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "SECTION00023010000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Distributed Grep"
+    },
+    {
+      "key": "p-a529aaaee9a27673",
+      "type": "para",
+      "text": "The map function emits a line if it matches a supplied pattern. The reduce function is an identity function that just copies the supplied intermediate data to the output.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "SECTION00023020000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Count of URL Access Frequency",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-291ea780a253aee6",
+      "type": "para",
+      "text": "The map function processes logs of web page requests and outputs  $\\left<\\texttt{URL}, \\texttt{1}\\right>$. The reduce function adds together all values for the same URL and emits a  $\\left<\\texttt{URL}, \\texttt{total count}\\right>$ pair."
+    },
+    {
+      "key": "SECTION00023030000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Reverse Web-Link Graph",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "p-ef0900b8df3b9ebb",
+      "type": "para",
+      "text": "The map function outputs  $\\left<\\texttt{target}, \\texttt{source}\\right>$ pairs for each link to a `target` URL found in a page named `source`. The reduce function concatenates the list of all source URLs associated with a given target URL and emits the pair:  $\\left<\\texttt{target}, \\texttt{list(source)}\\right>$"
+    },
+    {
+      "key": "SECTION00023040000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Term-Vector per Host"
+    },
+    {
+      "key": "p-ecaeb64ead9aeb94",
+      "type": "para",
+      "text": "A term vector summarizes the most important words that occur in a document or a set of documents as a list of  $\\left< word, frequency \\right>$ pairs. The map function emits a  $\\left<\\texttt{hostname}, \\texttt{term vector}\\right>$ pair for each input document (where the hostname is extracted from the URL of the document). The reduce function is passed all per-document term vectors for a given host. It adds these term vectors together, throwing away infrequent terms, and then emits a final  $\\left<\\texttt{hostname}, \\texttt{term vector}\\right>$ pair.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "SECTION00023050000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Inverted Index"
+    },
+    {
+      "key": "p-3aaf9e8fb528982e",
+      "type": "para",
+      "text": "The map function parses each document, and emits a sequence of  $\\left<\\texttt{word}, \\texttt{document ID}\\right>$ pairs. The reduce function accepts all pairs for a given word, sorts the corresponding document IDs and emits a  $\\left<\\texttt{word}, \\texttt{list(document ID)}\\right>$ pair. The set of all output pairs forms a simple inverted index. It is easy to augment this computation to keep track of word positions."
+    },
+    {
+      "key": "SECTION00023060000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Distributed Sort"
+    },
+    {
+      "key": "p-46e7ee0f041fe34a",
+      "type": "para",
+      "text": "The map function extracts the key from each record, and emits a  $\\left<\\texttt{key}, \\texttt{record}\\right>$ pair. The reduce function emits all pairs unchanged. This computation depends on the partitioning facilities described in Section [4.1](#SECTION00041000000000000000) and the ordering properties described in Section [4.2](#SECTION00042000000000000000)."
+    },
+    {
+      "key": "SECTION00030000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Implementation",
+      "num": "3"
+    },
+    {
+      "key": "p-e10c5a317824afe2",
+      "type": "para",
+      "text": "Many different implementations of the MapReduce interface are possible. The right choice depends on the environment. For example, one implementation may be suitable for a small shared-memory machine, another for a large NUMA multi-processor, and yet another for an even larger collection of networked machines.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-0c1233b8475a453e",
+      "type": "para",
+      "text": "This section describes an implementation targeted to the computing environment in wide use at Google: large clusters of commodity PCs connected together with switched Ethernet [[4](#Barroso03)]. In our environment:",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-11abd3665b322751",
+      "type": "para",
+      "text": "(1) Machines are typically dual-processor x86 processors running Linux, with 2-4 GB of memory per machine.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-d7a3553e283200dd",
+      "type": "para",
+      "text": "(2) Commodity networking hardware is used - typically either 100 megabits/second or 1 gigabit/second at the machine level, but averaging considerably less in overall bisection bandwidth.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-94cd370b549886e9",
+      "type": "para",
+      "text": "(3) A cluster consists of hundreds or thousands of machines, and therefore machine failures are common.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-061d38aa917d224e",
+      "type": "para",
+      "text": "(4) Storage is provided by inexpensive IDE disks attached directly to individual machines. A distributed file system [[8](#Ghemawat03)] developed in-house is used to manage the data stored on these disks. The file system uses replication to provide availability and reliability on top of unreliable hardware.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-d1d4ee9e2f74e284",
+      "type": "para",
+      "text": "(5) Users submit jobs to a scheduling system. Each job consists of a set of tasks, and is mapped by the scheduler to a set of available machines within a cluster.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "SECTION00031000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Execution Overview",
+      "num": "3.1"
+    },
+    {
+      "key": "p-74f2eea000470a33",
+      "type": "para",
+      "text": "The *Map* invocations are distributed across multiple machines by automatically partitioning the input data into a set of $M$ *splits*. The input splits can be processed in parallel by different machines. *Reduce* invocations are distributed by partitioning the intermediate key space into $R$ pieces using a partitioning function (e.g.,  $hash(key) ~{\\bf mod}~R$). The number of partitions ($R$) and the partitioning function are specified by the user.",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "p-5480cb40d1660f05",
+      "type": "para",
+      "text": "Figure [1](#figure-1) shows the overall flow of a MapReduce operation in our implementation. When the user program calls the `MapReduce` function, the following sequence of actions occurs (the numbered labels in Figure [1](#figure-1) correspond to the numbers in the list below):",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "list-1",
+      "type": "list",
+      "ordered": true,
+      "items": [
+        {
+          "key": "item-1",
+          "text": "The MapReduce library in the user program first splits the input files into $M$ pieces of typically 16 megabytes to 64 megabytes (MB) per piece (controllable by the user via an optional parameter). It then starts up many copies of the program on a cluster of machines."
+        },
+        {
+          "key": "item-2",
+          "text": "One of the copies of the program is special - the master. The rest are workers that are assigned work by the master. There are $M$ map tasks and $R$ reduce tasks to assign. The master picks idle workers and assigns each one a map task or a reduce task."
+        },
+        {
+          "key": "item-3",
+          "text": "A worker who is assigned a map task reads the contents of the corresponding input split. It parses key/value pairs out of the input data and passes each pair to the user-defined *Map* function. The intermediate key/value pairs produced by the *Map* function are buffered in memory."
+        },
+        {
+          "key": "item-4",
+          "text": "Periodically, the buffered pairs are written to local disk, partitioned into $R$ regions by the partitioning function. The locations of these buffered pairs on the local disk are passed back to the master, who is responsible for forwarding these locations to the reduce workers."
+        },
+        {
+          "key": "item-5",
+          "text": "When a reduce worker is notified by the master about these locations, it uses remote procedure calls to read the buffered data from the local disks of the map workers. When a reduce worker has read all intermediate data, it sorts it by the intermediate keys so that all occurrences of the same key are grouped together. The sorting is needed because typically many different keys map to the same reduce task. If the amount of intermediate data is too large to fit in memory, an external sort is used."
+        },
+        {
+          "key": "item-6",
+          "text": "The reduce worker iterates over the sorted intermediate data and for each unique intermediate key encountered, it passes the key and the corresponding set of intermediate values to the user's *Reduce* function. The output of the *Reduce* function is appended to a final output file for this reduce partition."
+        },
+        {
+          "key": "item-7",
+          "text": "When all map tasks and reduce tasks have been completed, the master wakes up the user program. At this point, the `MapReduce` call in the user program returns back to the user code."
+        }
+      ],
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "p-f8a6beeae45d1338",
+      "type": "para",
+      "text": "After successful completion, the output of the mapreduce execution is available in the $R$ output files (one per reduce task, with file names as specified by the user). Typically, users do not need to combine these $R$ output files into one file - they often pass these files as input to another MapReduce call, or use them from another distributed application that is able to deal with input that is partitioned into multiple files.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "SECTION00032000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Master Data Structures",
+      "num": "3.2"
+    },
+    {
+      "key": "p-50ff2b81c8119681",
+      "type": "para",
+      "text": "The master keeps several data structures. For each map task and reduce task, it stores the state (*idle*, *in-progress*, or *completed*), and the identity of the worker machine (for non-idle tasks).",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "p-420900a331b4a17c",
+      "type": "para",
+      "text": "The master is the conduit through which the location of intermediate file regions is propagated from map tasks to reduce tasks. Therefore, for each completed map task, the master stores the locations and sizes of the $R$ intermediate file regions produced by the map task. Updates to this location and size information are received as map tasks are completed. The information is pushed incrementally to workers that have *in-progress* reduce tasks.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "SECTION00033000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Fault Tolerance",
+      "num": "3.3"
+    },
+    {
+      "key": "p-893703072c17ec48",
+      "type": "para",
+      "text": "Since the MapReduce library is designed to help process very large amounts of data using hundreds or thousands of machines, the library must tolerate machine failures gracefully.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "SECTION00033100000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Worker Failure"
+    },
+    {
+      "key": "p-6fb5aa82697e9617",
+      "type": "para",
+      "text": "The master pings every worker periodically. If no response is received from a worker in a certain amount of time, the master marks the worker as failed. Any map tasks completed by the worker are reset back to their initial *idle* state, and therefore become eligible for scheduling on other workers. Similarly, any map task or reduce task in progress on a failed worker is also reset to *idle* and becomes eligible for rescheduling.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "p-62ed86963ab78b42",
+      "type": "para",
+      "text": "Completed map tasks are re-executed on a failure because their output is stored on the local disk(s) of the failed machine and is therefore inaccessible. Completed reduce tasks do not need to be re-executed since their output is stored in a global file system.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "p-13e313e64909cecf",
+      "type": "para",
+      "text": "When a map task is executed first by worker $A$ and then later executed by worker $B$ (because $A$ failed), all workers executing reduce tasks are notified of the re-execution. Any reduce task that has not already read the data from worker $A$ will read the data from worker $B$.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "p-6536113df6f6b4ca",
+      "type": "para",
+      "text": "MapReduce is resilient to large-scale worker failures. For example, during one MapReduce operation, network maintenance on a running cluster was causing groups of 80 machines at a time to become unreachable for several minutes. The MapReduce master simply re-executed the work done by the unreachable worker machines, and continued to make forward progress, eventually completing the MapReduce operation.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "SECTION00033200000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Master Failure"
+    },
+    {
+      "key": "p-26d6b05b085f6bbe",
+      "type": "para",
+      "text": "It is easy to make the master write periodic checkpoints of the master data structures described above. If the master task dies, a new copy can be started from the last checkpointed state. However, given that there is only a single master, its failure is unlikely; therefore our current implementation aborts the MapReduce computation if the master fails. Clients can check for this condition and retry the MapReduce operation if they desire.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "SECTION00033300000000000000",
+      "type": "heading",
+      "level": 3,
+      "text": "Semantics in the Presence of Failures",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-5620cb4ca36460d9",
+      "type": "para",
+      "text": "When the user-supplied *map* and *reduce* operators are deterministic functions of their input values, our distributed implementation produces the same output as would have been produced by a non-faulting sequential execution of the entire program.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-468fc279797cd8da",
+      "type": "para",
+      "text": "We rely on atomic commits of map and reduce task outputs to achieve this property. Each in-progress task writes its output to private temporary files. A reduce task produces one such file, and a map task produces $R$ such files (one per reduce task). When a map task completes, the worker sends a message to the master and includes the names of the $R$ temporary files in the message. If the master receives a completion message for an already completed map task, it ignores the message. Otherwise, it records the names of $R$ files in a master data structure.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-59a91cb1180165ec",
+      "type": "para",
+      "text": "When a reduce task completes, the reduce worker atomically renames its temporary output file to the final output file. If the same reduce task is executed on multiple machines, multiple rename calls will be executed for the same final output file. We rely on the atomic rename operation provided by the underlying file system to guarantee that the final file system state contains just the data produced by one execution of the reduce task.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-dcdaf98257739219",
+      "type": "para",
+      "text": "The vast majority of our *map* and *reduce* operators are deterministic, and the fact that our semantics are equivalent to a sequential execution in this case makes it very easy for programmers to reason about their program's behavior. When the *map* and/or *reduce* operators are non-deterministic, we provide weaker but still reasonable semantics. In the presence of non-deterministic operators, the output of a particular reduce task $R_1$ is equivalent to the output for $R_1$ produced by a sequential execution of the non-deterministic program. However, the output for a different reduce task $R_2$ may correspond to the output for $R_2$ produced by a different sequential execution of the non-deterministic program.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-90a8d839ac7c39f7",
+      "type": "para",
+      "text": "Consider map task $M$ and reduce tasks $R_1$ and $R_2$. Let $e(R_i)$ be the execution of $R_i$ that committed (there is exactly one such execution). The weaker semantics arise because $e(R_1)$ may have read the output produced by one execution of $M$ and $e(R_2)$ may have read the output produced by a different execution of $M$.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "SECTION00034000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Locality",
+      "num": "3.4"
+    },
+    {
+      "key": "p-95559760f57143e0",
+      "type": "para",
+      "text": "Network bandwidth is a relatively scarce resource in our computing environment. We conserve network bandwidth by taking advantage of the fact that the input data (managed by GFS [[8](#Ghemawat03)]) is stored on the local disks of the machines that make up our cluster. GFS divides each file into 64 MB blocks, and stores several copies of each block (typically 3 copies) on different machines. The MapReduce master takes the location information of the input files into account and attempts to schedule a map task on a machine that contains a replica of the corresponding input data. Failing that, it attempts to schedule a map task near a replica of that task's input data (e.g., on a worker machine that is on the same network switch as the machine containing the data). When running large MapReduce operations on a significant fraction of the workers in a cluster, most input data is read locally and consumes no network bandwidth.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "SECTION00035000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Task Granularity",
+      "num": "3.5"
+    },
+    {
+      "key": "p-b044877706deefc1",
+      "type": "para",
+      "text": "We subdivide the map phase into $M$ pieces and the reduce phase into $R$ pieces, as described above. Ideally, $M$ and $R$ should be much larger than the number of worker machines. Having each worker perform many different tasks improves dynamic load balancing, and also speeds up recovery when a worker fails: the many map tasks it has completed can be spread out across all the other worker machines.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-30ae3fb931f1e5a1",
+      "type": "para",
+      "text": "There are practical bounds on how large $M$ and $R$ can be in our implementation, since the master must make $O(M+R)$ scheduling decisions and keeps $O(M * R)$ state in memory as described above. (The constant factors for memory usage are small however: the $O(M * R)$ piece of the state consists of approximately one byte of data per map task/reduce task pair.)",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "p-73b3a57c8d9fbff4",
+      "type": "para",
+      "text": "Furthermore, $R$ is often constrained by users because the output of each reduce task ends up in a separate output file. In practice, we tend to choose $M$ so that each individual task is roughly 16 MB to 64 MB of input data (so that the locality optimization described above is most effective), and we make $R$ a small multiple of the number of worker machines we expect to use. We often perform MapReduce computations with $M=200,000$ and $R=5,000$, using 2,000 worker machines.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "SECTION00036000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Backup Tasks",
+      "num": "3.6"
+    },
+    {
+      "key": "p-ee2b222cc934b71c",
+      "type": "para",
+      "text": "One of the common causes that lengthens the total time taken for a MapReduce operation is a “straggler”: a machine that takes an unusually long time to complete one of the last few map or reduce tasks in the computation. Stragglers can arise for a whole host of reasons. For example, a machine with a bad disk may experience frequent correctable errors that slow its read performance from 30 MB/s to 1 MB/s. The cluster scheduling system may have scheduled other tasks on the machine, causing it to execute the MapReduce code more slowly due to competition for CPU, memory, local disk, or network bandwidth. A recent problem we experienced was a bug in machine initialization code that caused processor caches to be disabled: computations on affected machines slowed down by over a factor of one hundred.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "p-c7e9884d6d37881d",
+      "type": "para",
+      "text": "We have a general mechanism to alleviate the problem of stragglers. When a MapReduce operation is close to completion, the master schedules backup executions of the remaining *in-progress* tasks. The task is marked as completed whenever either the primary or the backup execution completes. We have tuned this mechanism so that it typically increases the computational resources used by the operation by no more than a few percent. We have found that this significantly reduces the time to complete large MapReduce operations. As an example, the sort program described in Section [5.3](#SECTION00053000000000000000) takes 44% longer to complete when the backup task mechanism is disabled.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "SECTION00040000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Refinements",
+      "num": "4"
+    },
+    {
+      "key": "p-166ca3417030d1de",
+      "type": "para",
+      "text": "Although the basic functionality provided by simply writing *Map* and *Reduce* functions is sufficient for most needs, we have found a few extensions useful. These are described in this section.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "SECTION00041000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Partitioning Function",
+      "num": "4.1"
+    },
+    {
+      "key": "p-342011e29b623c04",
+      "type": "para",
+      "text": "The users of MapReduce specify the number of reduce tasks/output files that they desire ($R$). Data gets partitioned across these tasks using a partitioning function on the intermediate key. A default partitioning function is provided that uses hashing (e.g. “ $hash(key) ~{\\bf mod}~R$”). This tends to result in fairly well-balanced partitions. In some cases, however, it is useful to partition data by some other function of the key. For example, sometimes the output keys are URLs, and we want all entries for a single host to end up in the same output file. To support situations like this, the user of the MapReduce library can provide a special partitioning function. For example, using “ $hash(Hostname(urlkey))~{\\bf mod}~R$” as the partitioning function causes all URLs from the same host to end up in the same output file.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "SECTION00042000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Ordering Guarantees",
+      "num": "4.2",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "p-f37d8f5a31f8d1b5",
+      "type": "para",
+      "text": "We guarantee that within a given partition, the intermediate key/value pairs are processed in increasing key order. This ordering guarantee makes it easy to generate a sorted output file per partition, which is useful when the output file format needs to support efficient random access lookups by key, or users of the output find it convenient to have the data sorted.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "SECTION00043000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Combiner Function",
+      "num": "4.3"
+    },
+    {
+      "key": "p-5977a622f72453f0",
+      "type": "para",
+      "text": "In some cases, there is significant repetition in the intermediate keys produced by each map task, and the user-specified *Reduce* function is commutative and associative. A good example of this is the word counting example in Section [2.1](#SECTION00021000000000000000). Since word frequencies tend to follow a Zipf distribution, each map task will produce hundreds or thousands of records of the form `<the, 1>`. All of these counts will be sent over the network to a single reduce task and then added together by the *Reduce* function to produce one number. We allow the user to specify an optional *Combiner* function that does partial merging of this data before it is sent over the network.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "p-e3d2075c9925e46f",
+      "type": "para",
+      "text": "The *Combiner* function is executed on each machine that performs a map task. Typically the same code is used to implement both the combiner and the reduce functions. The only difference between a reduce function and a combiner function is how the MapReduce library handles the output of the function. The output of a reduce function is written to the final output file. The output of a combiner function is written to an intermediate file that will be sent to a reduce task.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "p-b31443c86ee6b73d",
+      "type": "para",
+      "text": "Partial combining significantly speeds up certain classes of MapReduce operations. Appendix [A](#SECTION000110000000000000000) contains an example that uses a combiner.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "SECTION00044000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Input and Output Types",
+      "num": "4.4",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "p-5f82460dd34ea9a3",
+      "type": "para",
+      "text": "The MapReduce library provides support for reading input data in several different formats. For example, “text” mode input treats each line as a key/value pair: the key is the offset in the file and the value is the contents of the line. Another common supported format stores a sequence of key/value pairs sorted by key. Each input type implementation knows how to split itself into meaningful ranges for processing as separate map tasks (e.g. text mode's range splitting ensures that range splits occur only at line boundaries). Users can add support for a new input type by providing an implementation of a simple *reader* interface, though most users just use one of a small number of predefined input types.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "p-010f2947aeea229a",
+      "type": "para",
+      "text": "A *reader* does not necessarily need to provide data read from a file. For example, it is easy to define a *reader* that reads records from a database, or from data structures mapped in memory.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "p-529f236dd67bfca4",
+      "type": "para",
+      "text": "In a similar fashion, we support a set of output types for producing data in different formats and it is easy for user code to add support for new output types.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "SECTION00045000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Side-effects",
+      "num": "4.5"
+    },
+    {
+      "key": "p-46f997e8feb86bf2",
+      "type": "para",
+      "text": "In some cases, users of MapReduce have found it convenient to produce auxiliary files as additional outputs from their map and/or reduce operators. We rely on the application writer to make such side-effects atomic and idempotent. Typically the application writes to a temporary file and atomically renames this file once it has been fully generated.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "p-b583a07245306de2",
+      "type": "para",
+      "text": "We do not provide support for atomic two-phase commits of multiple output files produced by a single task. Therefore, tasks that produce multiple output files with cross-file consistency requirements should be deterministic. This restriction has never been an issue in practice.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "SECTION00046000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Skipping Bad Records",
+      "num": "4.6"
+    },
+    {
+      "key": "p-1cff4a70866d8b37",
+      "type": "para",
+      "text": "Sometimes there are bugs in user code that cause the *Map* or *Reduce* functions to crash deterministically on certain records. Such bugs prevent a MapReduce operation from completing. The usual course of action is to fix the bug, but sometimes this is not feasible; perhaps the bug is in a third-party library for which source code is unavailable. Also, sometimes it is acceptable to ignore a few records, for example when doing statistical analysis on a large data set. We provide an optional mode of execution where the MapReduce library detects which records cause deterministic crashes and skips these records in order to make forward progress.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "p-c7252b00988ab54d",
+      "type": "para",
+      "text": "Each worker process installs a signal handler that catches segmentation violations and bus errors. Before invoking a user *Map* or *Reduce* operation, the MapReduce library stores the sequence number of the argument in a global variable. If the user code generates a signal, the signal handler sends a “last gasp” UDP packet that contains the sequence number to the MapReduce master. When the master has seen more than one failure on a particular record, it indicates that the record should be skipped when it issues the next re-execution of the corresponding Map or Reduce task.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "SECTION00047000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Local Execution",
+      "num": "4.7"
+    },
+    {
+      "key": "p-fa84c4188597045a",
+      "type": "para",
+      "text": "Debugging problems in *Map* or *Reduce* functions can be tricky, since the actual computation happens in a distributed system, often on several thousand machines, with work assignment decisions made dynamically by the master. To help facilitate debugging, profiling, and small-scale testing, we have developed an alternative implementation of the MapReduce library that sequentially executes all of the work for a MapReduce operation on the local machine. Controls are provided to the user so that the computation can be limited to particular map tasks. Users invoke their program with a special flag and can then easily use any debugging or testing tools they find useful (e.g. `gdb`).",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "SECTION00048000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Status Information",
+      "num": "4.8"
+    },
+    {
+      "key": "p-9c80966d56d501d1",
+      "type": "para",
+      "text": "The master runs an internal HTTP server and exports a set of status pages for human consumption. The status pages show the progress of the computation, such as how many tasks have been completed, how many are in progress, bytes of input, bytes of intermediate data, bytes of output, processing rates, etc. The pages also contain links to the standard error and standard output files generated by each task. The user can use this data to predict how long the computation will take, and whether or not more resources should be added to the computation. These pages can also be used to figure out when the computation is much slower than expected.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "p-bd33ac91bbf8e1d7",
+      "type": "para",
+      "text": "In addition, the top-level status page shows which workers have failed, and which map and reduce tasks they were processing when they failed. This information is useful when attempting to diagnose bugs in the user code.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "SECTION00049000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Counters",
+      "num": "4.9"
+    },
+    {
+      "key": "p-47a048f50762918d",
+      "type": "para",
+      "text": "The MapReduce library provides a counter facility to count occurrences of various events. For example, user code may want to count total number of words processed or the number of German documents indexed, etc.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "p-1bef86710d7c6664",
+      "type": "para",
+      "text": "To use this facility, user code creates a named counter object and then increments the counter appropriately in the *Map* and/or *Reduce* function. For example:",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "html-3",
+      "type": "html",
+      "role": "code",
+      "html": "<pre><code>\n  Counter* uppercase;\n  uppercase = GetCounter(&quot;uppercase&quot;);\n\n  map(String name, String contents):\n    for each word w in contents:\n      if (IsCapitalized(w)):\n        uppercase-&gt;Increment();\n      EmitIntermediate(w, &quot;1&quot;);\n</code></pre>",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-e3d4db1b56d5b33a",
+      "type": "para",
+      "text": "The counter values from individual worker machines are periodically propagated to the master (piggybacked on the ping response). The master aggregates the counter values from successful map and reduce tasks and returns them to the user code when the MapReduce operation is completed. The current counter values are also displayed on the master status page so that a human can watch the progress of the live computation. When aggregating counter values, the master eliminates the effects of duplicate executions of the same map or reduce task to avoid double counting. (Duplicate executions can arise from our use of backup tasks and from re-execution of tasks due to failures.)",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-c0f3e1ca8fdc8e52",
+      "type": "para",
+      "text": "Some counter values are automatically maintained by the MapReduce library, such as the number of input key/value pairs processed and the number of output key/value pairs produced.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-2b1cf6a072fa47c3",
+      "type": "para",
+      "text": "Users have found the counter facility useful for sanity checking the behavior of MapReduce operations. For example, in some MapReduce operations, the user code may want to ensure that the number of output pairs produced exactly equals the number of input pairs processed, or that the fraction of German documents processed is within some tolerable fraction of the total number of documents processed.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "SECTION00050000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Performance",
+      "num": "5"
+    },
+    {
+      "key": "p-7196d6cf42485edc",
+      "type": "para",
+      "text": "In this section we measure the performance of MapReduce on two computations running on a large cluster of machines. One computation searches through approximately one terabyte of data looking for a particular pattern. The other computation sorts approximately one terabyte of data.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-6948ee9fee25412b",
+      "type": "para",
+      "text": "These two programs are representative of a large subset of the real programs written by users of MapReduce - one class of programs shuffles data from one representation to another, and another class extracts a small amount of interesting data from a large data set.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "SECTION00051000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Cluster Configuration",
+      "num": "5.1",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-fd1eedf24a477255",
+      "type": "para",
+      "text": "All of the programs were executed on a cluster that consisted of approximately 1800 machines. Each machine had two 2GHz Intel Xeon processors with Hyper-Threading enabled, 4GB of memory, two 160GB IDE disks, and a gigabit Ethernet link. The machines were arranged in a two-level tree-shaped switched network with approximately 100-200 Gbps of aggregate bandwidth available at the root. All of the machines were in the same hosting facility and therefore the round-trip time between any pair of machines was less than a millisecond.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "figure-2",
+      "type": "figure",
+      "num": "2",
+      "src": "assets/figure-2.png",
+      "alt": "Figure 2: Data transfer rate over time",
+      "caption": "Figure 2: Data transfer rate over time",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-058afd37778cd1fe",
+      "type": "para",
+      "text": "Out of the 4GB of memory, approximately 1-1.5GB was reserved by other tasks running on the cluster. The programs were executed on a weekend afternoon, when the CPUs, disks, and network were mostly idle.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "figure-3",
+      "type": "html",
+      "role": "figure",
+      "num": "3",
+      "html": "<figure><figcaption data-key=\"caption\">Figure 3: Data transfer rates over time for different executions of the sort program</figcaption><div class=\"layout-grid\"><figure><img src=\"assets/figure-3-1.png\" alt=\"(a) Normal execution\"><figcaption>(a) Normal execution</figcaption></figure><figure><img src=\"assets/figure-3-2.png\" alt=\"(b) No backup tasks\"><figcaption>(b) No backup tasks</figcaption></figure><figure><img src=\"assets/figure-3-3.png\" alt=\"(c) 200 tasks killed\"><figcaption>(c) 200 tasks killed</figcaption></figure></div></figure>",
+      "translations": {
+        "zh-CN": {
+          "html": "<figure><figcaption data-key=\"caption\">图 3：排序程序在不同执行情况下，数据传输速率随时间的变化。</figcaption><div class=\"layout-grid\"><figure><img alt=\"(a) Normal execution\" src=\"assets/figure-3-1.png\"/><figcaption>(a) 正常执行</figcaption></figure><figure><img alt=\"(b) No backup tasks\" src=\"assets/figure-3-2.png\"/><figcaption>(b) 无备用任务</figcaption></figure><figure><img alt=\"(c) 200 tasks killed\" src=\"assets/figure-3-3.png\"/><figcaption>(c) 200 个任务被终止</figcaption></figure></div></figure>",
+          "alignment": "same-structure"
+        }
+      },
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "SECTION00052000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Grep",
+      "num": "5.2"
+    },
+    {
+      "key": "p-9f89b9e4a0012e2c",
+      "type": "para",
+      "text": "The *grep* program scans through $10^{10}$ 100-byte records, searching for a relatively rare three-character pattern (the pattern occurs in 92,337 records). The input is split into approximately 64MB pieces ($M = 15000$), and the entire output is placed in one file ($R = 1$).",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-cb880744822a9a00",
+      "type": "para",
+      "text": "Figure [2](#figure-2) shows the progress of the computation over time. The Y-axis shows the rate at which the input data is scanned. The rate gradually picks up as more machines are assigned to this MapReduce computation, and peaks at over 30 GB/s when 1764 workers have been assigned. As the map tasks finish, the rate starts dropping and hits zero about 80 seconds into the computation. The entire computation takes approximately 150 seconds from start to finish. This includes about a minute of startup overhead. The overhead is due to the propagation of the program to all worker machines, and delays interacting with GFS to open the set of 1000 input files and to get the information needed for the locality optimization.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "SECTION00053000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Sort",
+      "num": "5.3"
+    },
+    {
+      "key": "p-b346e99e8cb7f2c8",
+      "type": "para",
+      "text": "The *sort* program sorts $10^{10}$ 100-byte records (approximately 1 terabyte of data). This program is modeled after the TeraSort benchmark [[10](#TeraSort)].",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-2661cb176e4d56e5",
+      "type": "para",
+      "text": "The sorting program consists of less than 50 lines of user code. A three-line *Map* function extracts a 10-byte sorting key from a text line and emits the key and the original text line as the intermediate key/value pair. We used a built-in *Identity* function as the *Reduce* operator. This functions passes the intermediate key/value pair unchanged as the output key/value pair. The final sorted output is written to a set of 2-way replicated GFS files (i.e., 2 terabytes are written as the output of the program).",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "p-7eeaf749e0a9203a",
+      "type": "para",
+      "text": "As before, the input data is split into 64MB pieces ($M = 15000$). We partition the sorted output into 4000 files ($R = 4000$). The partitioning function uses the initial bytes of the key to segregate it into one of $R$ pieces.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "p-9f51c8f114049e57",
+      "type": "para",
+      "text": "Our partitioning function for this benchmark has built-in knowledge of the distribution of keys. In a general sorting program, we would add a pre-pass MapReduce operation that would collect a sample of the keys and use the distribution of the sampled keys to compute split-points for the final sorting pass.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "p-56334ba3c29ba8d3",
+      "type": "para",
+      "text": "Figure [3](#figure-3) (a) shows the progress of a normal execution of the sort program. The top-left graph shows the rate at which input is read. The rate peaks at about 13 GB/s and dies off fairly quickly since all map tasks finish before 200 seconds have elapsed. Note that the input rate is less than for *grep*. This is because the sort map tasks spend about half their time and I/O bandwidth writing intermediate output to their local disks. The corresponding intermediate output for grep had negligible size.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "p-5f9c891dd6927731",
+      "type": "para",
+      "text": "The middle-left graph shows the rate at which data is sent over the network from the map tasks to the reduce tasks. This shuffling starts as soon as the first map task completes. The first hump in the graph is for the first batch of approximately 1700 reduce tasks (the entire MapReduce was assigned about 1700 machines, and each machine executes at most one reduce task at a time). Roughly 300 seconds into the computation, some of these first batch of reduce tasks finish and we start shuffling data for the remaining reduce tasks. All of the shuffling is done about 600 seconds into the computation.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "p-bf19ee98d77c2126",
+      "type": "para",
+      "text": "The bottom-left graph shows the rate at which sorted data is written to the final output files by the reduce tasks. There is a delay between the end of the first shuffling period and the start of the writing period because the machines are busy sorting the intermediate data. The writes continue at a rate of about 2-4 GB/s for a while. All of the writes finish about 850 seconds into the computation. Including startup overhead, the entire computation takes 891 seconds. This is similar to the current best reported result of 1057 seconds for the TeraSort benchmark [[18](#Wyllie99)].",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "p-3b0653b5e4dd40ce",
+      "type": "para",
+      "text": "A few things to note: the input rate is higher than the shuffle rate and the output rate because of our locality optimization - most data is read from a local disk and bypasses our relatively bandwidth constrained network. The shuffle rate is higher than the output rate because the output phase writes two copies of the sorted data (we make two replicas of the output for reliability and availability reasons). We write two replicas because that is the mechanism for reliability and availability provided by our underlying file system. Network bandwidth requirements for writing data would be reduced if the underlying file system used erasure coding [[14](#Rabin89)] rather than replication.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "SECTION00054000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Effect of Backup Tasks",
+      "num": "5.4",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "p-ce033b2861ac8f55",
+      "type": "para",
+      "text": "In Figure [3](#figure-3) (b), we show an execution of the sort program with backup tasks disabled. The execution flow is similar to that shown in Figure [3](#figure-3) (a), except that there is a very long tail where hardly any write activity occurs. After 960 seconds, all except 5 of the reduce tasks are completed. However these last few stragglers don't finish until 300 seconds later. The entire computation takes 1283 seconds, an increase of 44% in elapsed time.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "SECTION00055000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Machine Failures",
+      "num": "5.5"
+    },
+    {
+      "key": "p-2d97bbb136e9fa6e",
+      "type": "para",
+      "text": "In Figure [3](#figure-3) (c), we show an execution of the sort program where we intentionally killed 200 out of 1746 worker processes several minutes into the computation. The underlying cluster scheduler immediately restarted new worker processes on these machines (since only the processes were killed, the machines were still functioning properly).",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "p-2da7c67ed93bfd78",
+      "type": "para",
+      "text": "The worker deaths show up as a negative input rate since some previously completed map work disappears (since the corresponding map workers were killed) and needs to be redone. The re-execution of this map work happens relatively quickly. The entire computation finishes in 933 seconds including startup overhead (just an increase of 5% over the normal execution time).",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "SECTION00060000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Experience",
+      "num": "6"
+    },
+    {
+      "key": "p-fb7c25eaeef076f2",
+      "type": "para",
+      "text": "We wrote the first version of the MapReduce library in February of 2003, and made significant enhancements to it in August of 2003, including the locality optimization, dynamic load balancing of task execution across worker machines, etc. Since that time, we have been pleasantly surprised at how broadly applicable the MapReduce library has been for the kinds of problems we work on. It has been used across a wide range of domains within Google, including:",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "list-2",
+      "type": "list",
+      "ordered": false,
+      "items": [
+        {
+          "key": "item-1",
+          "text": "large-scale machine learning problems,"
+        },
+        {
+          "key": "item-2",
+          "text": "clustering problems for the Google News and Froogle products,"
+        },
+        {
+          "key": "item-3",
+          "text": "extraction of data used to produce reports of popular queries (e.g. Google Zeitgeist),"
+        },
+        {
+          "key": "item-4",
+          "text": "extraction of properties of web pages for new experiments and products (e.g. extraction of geographical locations from a large corpus of web pages for localized search), and"
+        },
+        {
+          "key": "item-5",
+          "text": "large-scale graph computations."
+        }
+      ],
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "p-55ebcc2c882ff90d",
+      "type": "para",
+      "text": "Figure [4](#figure-4) shows the significant growth in the number of separate MapReduce programs checked into our primary source code management system over time, from 0 in early 2003 to almost 900 separate instances as of late September 2004. MapReduce has been so successful because it makes it possible to write a simple program and run it efficiently on a thousand machines in the course of half an hour, greatly speeding up the development and prototyping cycle. Furthermore, it allows programmers who have no experience with distributed and/or parallel systems to exploit large amounts of resources easily.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "figure-4",
+      "type": "figure",
+      "num": "4",
+      "src": "assets/figure-4.png",
+      "alt": "Figure 4: MapReduce instances over time",
+      "caption": "Figure 4: MapReduce instances over time",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "table-1",
+      "type": "table",
+      "num": "1",
+      "caption": "Table 1: MapReduce jobs run in August 2004",
+      "head": [],
+      "rows": [
+        [
+          "Number of jobs",
+          "29,423"
+        ],
+        [
+          "Average job completion time",
+          "634 secs"
+        ],
+        [
+          "Machine days used",
+          "79,186 days"
+        ],
+        [
+          "Input data read",
+          "3,288 TB"
+        ],
+        [
+          "Intermediate data produced",
+          "758 TB"
+        ],
+        [
+          "Output data written",
+          "193 TB"
+        ],
+        [
+          "Average worker machines per job",
+          "157"
+        ],
+        [
+          "Average worker deaths per job",
+          "1.2"
+        ],
+        [
+          "Average map tasks per job",
+          "3,351"
+        ],
+        [
+          "Average reduce tasks per job",
+          "55"
+        ],
+        [
+          "Unique *map* implementations",
+          "395"
+        ],
+        [
+          "Unique *reduce* implementations",
+          "269"
+        ],
+        [
+          "Unique *map/reduce* combinations",
+          "426"
+        ]
+      ],
+      "translations": {
+        "zh-CN": {
+          "caption": "表 1：2004 年 8 月运行的 MapReduce 作业",
+          "head": [],
+          "rows": [
+            [
+              "作业数",
+              "29,423"
+            ],
+            [
+              "平均作业完成时间",
+              "634 secs"
+            ],
+            [
+              "使用的机器天数",
+              "79,186 days"
+            ],
+            [
+              "读取的输入数据",
+              "3,288 TB"
+            ],
+            [
+              "生成的中间数据",
+              "758 TB"
+            ],
+            [
+              "写入的输出数据",
+              "193 TB"
+            ],
+            [
+              "每个作业的平均工作机器数",
+              "157"
+            ],
+            [
+              "每个作业的平均工作进程故障数",
+              "1.2"
+            ],
+            [
+              "每个作业的平均 map 任务数",
+              "3,351"
+            ],
+            [
+              "每个作业的平均 reduce 任务数",
+              "55"
+            ],
+            [
+              "不同 map 实现数",
+              "395"
+            ],
+            [
+              "不同 reduce 实现数",
+              "269"
+            ],
+            [
+              "不同 map/reduce 组合数",
+              "426"
+            ]
+          ]
+        }
+      },
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "p-d83d404423d23b51",
+      "type": "para",
+      "text": "At the end of each job, the MapReduce library logs statistics about the computational resources used by the job. In Table [1](#table-1), we show some statistics for a subset of MapReduce jobs run at Google in August 2004.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "SECTION00061000000000000000",
+      "type": "heading",
+      "level": 2,
+      "text": "Large-Scale Indexing",
+      "num": "6.1",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "p-075b9018ec0a032d",
+      "type": "para",
+      "text": "One of our most significant uses of MapReduce to date has been a complete rewrite of the production indexing system that produces the data structures used for the Google web search service. The indexing system takes as input a large set of documents that have been retrieved by our crawling system, stored as a set of GFS files. The raw contents for these documents are more than 20 terabytes of data. The indexing process runs as a sequence of five to ten MapReduce operations. Using MapReduce (instead of the ad-hoc distributed passes in the prior version of the indexing system) has provided several benefits:",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "list-3",
+      "type": "list",
+      "ordered": false,
+      "items": [
+        {
+          "key": "item-1",
+          "text": "The indexing code is simpler, smaller, and easier to understand, because the code that deals with fault tolerance, distribution and parallelization is hidden within the MapReduce library. For example, the size of one phase of the computation dropped from approximately 3800 lines of C++ code to approximately 700 lines when expressed using MapReduce."
+        },
+        {
+          "key": "item-2",
+          "text": "The performance of the MapReduce library is good enough that we can keep conceptually unrelated computations separate, instead of mixing them together to avoid extra passes over the data. This makes it easy to change the indexing process. For example, one change that took a few months to make in our old indexing system took only a few days to implement in the new system."
+        },
+        {
+          "key": "item-3",
+          "text": "The indexing process has become much easier to operate, because most of the problems caused by machine failures, slow machines, and networking hiccups are dealt with automatically by the MapReduce library without operator intervention. Furthermore, it is easy to improve the performance of the indexing process by adding new machines to the indexing cluster."
+        }
+      ],
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "SECTION00070000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Related Work",
+      "num": "7"
+    },
+    {
+      "key": "p-791b088b3cbbf719",
+      "type": "para",
+      "text": "Many systems have provided restricted programming models and used the restrictions to parallelize the computation automatically. For example, an associative function can be computed over all prefixes of an $N$ element array in $\\log N$ time on $N$ processors using parallel prefix computations [[6](#Blelloch89),[9](#Gorlatch96),[13](#ladner80)]. MapReduce can be considered a simplification and distillation of some of these models based on our experience with large real-world computations. More significantly, we provide a fault-tolerant implementation that scales to thousands of processors. In contrast, most of the parallel processing systems have only been implemented on smaller scales and leave the details of handling machine failures to the programmer.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-3634988132fbd8f2",
+      "type": "para",
+      "text": "Bulk Synchronous Programming [[17](#Valiant97)] and some MPI primitives [[11](#MPI)] provide higher-level abstractions that make it easier for programmers to write parallel programs. A key difference between these systems and MapReduce is that MapReduce exploits a restricted programming model to parallelize the user program automatically and to provide transparent fault-tolerance.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-f32eb5a04126be8a",
+      "type": "para",
+      "text": "Our locality optimization draws its inspiration from techniques such as active disks [[12](#Diamond),[15](#Riedel01)], where computation is pushed into processing elements that are close to local disks, to reduce the amount of data sent across I/O subsystems or the network. We run on commodity processors to which a small number of disks are directly connected instead of running directly on disk controller processors, but the general approach is similar.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-2d38bc87483e6686",
+      "type": "para",
+      "text": "Our backup task mechanism is similar to the eager scheduling mechanism employed in the Charlotte System [[3](#Baratloo96)]. One of the shortcomings of simple eager scheduling is that if a given task causes repeated failures, the entire computation fails to complete. We fix some instances of this problem with our mechanism for skipping bad records.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-f1e750fdd23e3420",
+      "type": "para",
+      "text": "The MapReduce implementation relies on an in-house cluster management system that is responsible for distributing and running user tasks on a large collection of shared machines. Though not the focus of this paper, the cluster management system is similar in spirit to other systems such as Condor [[16](#condor-practice)].",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-9b5e72454fb17cee",
+      "type": "para",
+      "text": "The sorting facility that is a part of the MapReduce library is similar in operation to NOW-Sort [[1](#Dusseau97)]. Source machines (map workers) partition the data to be sorted and send it to one of $R$ reduce workers. Each reduce worker sorts its data locally (in memory if possible). Of course NOW-Sort does not have the user-definable Map and Reduce functions that make our library widely applicable.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-a30a106ecc67f5ea",
+      "type": "para",
+      "text": "River [[2](#Arpaci-Dusseau99)] provides a programming model where processes communicate with each other by sending data over distributed queues. Like MapReduce, the River system tries to provide good average case performance even in the presence of non-uniformities introduced by heterogeneous hardware or system perturbations. River achieves this by careful scheduling of disk and network transfers to achieve balanced completion times. MapReduce has a different approach. By restricting the programming model, the MapReduce framework is able to partition the problem into a large number of fine-grained tasks. These tasks are dynamically scheduled on available workers so that faster workers process more tasks. The restricted programming model also allows us to schedule redundant executions of tasks near the end of the job which greatly reduces completion time in the presence of non-uniformities (such as slow or stuck workers).",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-4a7c936dbd17c59a",
+      "type": "para",
+      "text": "BAD-FS [[5](#BADFS)] has a very different programming model from MapReduce, and unlike MapReduce, is targeted to the execution of jobs across a wide-area network. However, there are two fundamental similarities. (1) Both systems use redundant execution to recover from data loss caused by failures. (2) Both use locality-aware scheduling to reduce the amount of data sent across congested network links.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "p-c551561465274020",
+      "type": "para",
+      "text": "TACC [[7](#Fox97)] is a system designed to simplify construction of highly-available networked services. Like MapReduce, it relies on re-execution as a mechanism for implementing fault-tolerance.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "SECTION00080000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Conclusions",
+      "num": "8"
+    },
+    {
+      "key": "p-1fd4febbbaf6c036",
+      "type": "para",
+      "text": "The MapReduce programming model has been successfully used at Google for many different purposes. We attribute this success to several reasons. First, the model is easy to use, even for programmers without experience with parallel and distributed systems, since it hides the details of parallelization, fault-tolerance, locality optimization, and load balancing. Second, a large variety of problems are easily expressible as MapReduce computations. For example, MapReduce is used for the generation of data for Google's production web search service, for sorting, for data mining, for machine learning, and many other systems. Third, we have developed an implementation of MapReduce that scales to large clusters of machines comprising thousands of machines. The implementation makes efficient use of these machine resources and therefore is suitable for use on many of the large computational problems encountered at Google.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "p-665975b02414820a",
+      "type": "para",
+      "text": "We have learned several things from this work. First, restricting the programming model makes it easy to parallelize and distribute computations and to make such computations fault-tolerant. Second, network bandwidth is a scarce resource. A number of optimizations in our system are therefore targeted at reducing the amount of data sent across the network: the locality optimization allows us to read data from local disks, and writing a single copy of the intermediate data to local disk saves network bandwidth. Third, redundant execution can be used to reduce the impact of slow machines, and to handle machine failures and data loss.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "SECTION00090000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Acknowledgements"
+    },
+    {
+      "key": "p-46349ebd9dd9a430",
+      "type": "para",
+      "text": "Josh Levenberg has been instrumental in revising and extending the user-level MapReduce API with a number of new features based on his experience with using MapReduce and other people's suggestions for enhancements. MapReduce reads its input from and writes its output to the Google File System [[8](#Ghemawat03)]. We would like to thank Mohit Aron, Howard Gobioff, Markus Gutschke, David Kramer, Shun-Tak Leung, and Josh Redstone for their work in developing GFS. We would also like to thank Percy Liang and Olcan Sercinoglu for their work in developing the cluster management system used by MapReduce. Mike Burrows, Wilson Hsieh, Josh Levenberg, Sharon Perl, Rob Pike, and Debby Wallach provided helpful comments on earlier drafts of this paper. The anonymous OSDI reviewers, and our shepherd, Eric Brewer, provided many useful suggestions of areas where the paper could be improved. Finally, we thank all the users of MapReduce within Google's engineering organization for providing helpful feedback, suggestions, and bug reports.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "SECTION000100000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "References"
+    },
+    {
+      "key": "Dusseau97",
+      "type": "para",
+      "role": "reference",
+      "text": "1 Andrea C. Arpaci-Dusseau, Remzi H. Arpaci-Dusseau, David E. Culler, Joseph M. Hellerstein, and David A. Patterson. High-performance sorting on networks of workstations. In *Proceedings of the 1997 ACM SIGMOD International Conference on Management of Data*, Tucson, Arizona, May 1997.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Arpaci-Dusseau99",
+      "type": "para",
+      "role": "reference",
+      "text": "2 Remzi H. Arpaci-Dusseau, Eric Anderson, Noah Treuhaft, David E. Culler, Joseph M. Hellerstein, David Patterson, and Kathy Yelick. Cluster I/O with River: Making the fast case common. In *Proceedings of the Sixth Workshop on Input/Output in Parallel and Distributed Systems (IOPADS '99)*, pages 10-22, Atlanta, Georgia, May 1999.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Baratloo96",
+      "type": "para",
+      "role": "reference",
+      "text": "3 Arash Baratloo, Mehmet Karaul, Zvi Kedem, and Peter Wyckoff. Charlotte: Metacomputing on the web. In *Proceedings of the 9th International Conference on Parallel and Distributed Computing Systems*, 1996.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Barroso03",
+      "type": "para",
+      "role": "reference",
+      "text": "4 Luiz A. Barroso, Jeffrey Dean, and Urs Hölzle. Web search for a planet: The Google cluster architecture. *IEEE Micro*, 23(2):22-28, April 2003."
+    },
+    {
+      "key": "BADFS",
+      "type": "para",
+      "role": "reference",
+      "text": "5 John Bent, Douglas Thain, Andrea C.Arpaci-Dusseau, Remzi H. Arpaci-Dusseau, and Miron Livny. Explicit control in a batch-aware distributed file system. In *Proceedings of the 1st USENIX Symposium on Networked Systems Design and Implementation NSDI*, March 2004.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Blelloch89",
+      "type": "para",
+      "role": "reference",
+      "text": "6 Guy E. Blelloch. Scans as primitive parallel operations. *IEEE Transactions on Computers*, C-38(11), November 1989.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Fox97",
+      "type": "para",
+      "role": "reference",
+      "text": "7 Armando Fox, Steven D. Gribble, Yatin Chawathe, Eric A. Brewer, and Paul Gauthier. Cluster-based scalable network services. In *Proceedings of the 16th ACM Symposium on Operating System Principles*, pages 78-91, Saint-Malo, France, 1997.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Ghemawat03",
+      "type": "para",
+      "role": "reference",
+      "text": "8 Sanjay Ghemawat, Howard Gobioff, and Shun-Tak Leung. The Google file system. In *19th Symposium on Operating Systems Principles*, pages 29-43, Lake George, New York, 2003.",
+      "source": [
+        {
+          "page": 12
+        }
+      ]
+    },
+    {
+      "key": "Gorlatch96",
+      "type": "para",
+      "role": "reference",
+      "text": "9 S. Gorlatch. Systematic efficient parallelization of scan and other list homomorphisms. In L. Bouge, P. Fraigniaud, A. Mignotte, and Y. Robert, editors, * Euro-Par'96. Parallel Processing*, Lecture Notes in Computer Science 1124, pages 401-408. Springer-Verlag, 1996.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "TeraSort",
+      "type": "para",
+      "role": "reference",
+      "text": "10 Jim Gray. Sort benchmark home page. https://research.microsoft.com/barc/SortBenchmark/."
+    },
+    {
+      "key": "MPI",
+      "type": "para",
+      "role": "reference",
+      "text": "11 William Gropp, Ewing Lusk, and Anthony Skjellum. *Using MPI: Portable Parallel Programming with the Message-Passing Interface*. MIT Press, Cambridge, MA, 1999.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "Diamond",
+      "type": "para",
+      "role": "reference",
+      "text": "12 L. Huston, R. Sukthankar, R. Wickremesinghe, M. Satyanarayanan, G. R. Ganger, E. Riedel, and A. Ailamaki. Diamond: A storage architecture for early discard in interactive search. In *Proceedings of the 2004 USENIX File and Storage Technologies FAST Conference*, April 2004.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "ladner80",
+      "type": "para",
+      "role": "reference",
+      "text": "13 Richard E. Ladner and Michael J. Fischer. Parallel prefix computation. *Journal of the ACM*, 27(4):831-838, 1980.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "Rabin89",
+      "type": "para",
+      "role": "reference",
+      "text": "14 Michael O. Rabin. Efficient dispersal of information for security, load balancing and fault tolerance. *Journal of the ACM*, 36(2):335-348, 1989.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "Riedel01",
+      "type": "para",
+      "role": "reference",
+      "text": "15 Erik Riedel, Christos Faloutsos, Garth A. Gibson, and David Nagle. Active disks for large-scale data processing. *IEEE Computer*, pages 68-74, June 2001.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "condor-practice",
+      "type": "para",
+      "role": "reference",
+      "text": "16 Douglas Thain, Todd Tannenbaum, and Miron Livny. Distributed computing in practice: The Condor experience. *Concurrency and Computation: Practice and Experience*, 2004.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "Valiant97",
+      "type": "para",
+      "role": "reference",
+      "text": "17 L. G. Valiant. A bridging model for parallel computation. *Communications of the ACM*, 33(8):103-111, 1997.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "Wyllie99",
+      "type": "para",
+      "role": "reference",
+      "text": "18 Jim Wyllie. Spsort: How to sort a terabyte quickly. https://alme1.almaden.ibm.com/cs/spsort.pdf."
+    },
+    {
+      "key": "SECTION000110000000000000000",
+      "type": "heading",
+      "level": 1,
+      "text": "Word Frequency",
+      "num": "A"
+    },
+    {
+      "key": "p-af3a4b5aa7818e89",
+      "type": "para",
+      "text": "This section contains a program that counts the number of occurrences of each unique word in a set of input files specified on the command line.",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    },
+    {
+      "key": "html-5",
+      "type": "html",
+      "role": "code",
+      "html": "<pre><code>\n#include &quot;mapreduce/mapreduce.h&quot;\n\n// User&#x27;s map function\nclass WordCounter : public Mapper {\n public:\n  virtual void Map(const MapInput&amp; input) {\n    const string&amp; text = input.value();\n    const int n = text.size();\n    for (int i = 0; i &lt; n; ) {\n      // Skip past leading whitespace\n      while ((i &lt; n) &amp;&amp; isspace(text[i]))\n        i++;\n\n      // Find word end\n      int start = i;\n      while ((i &lt; n) &amp;&amp; !isspace(text[i]))\n        i++;\n\n      if (start &lt; i)\n        Emit(text.substr(start,i-start),&quot;1&quot;);\n    }\n  }\n};\nREGISTER_MAPPER(WordCounter);\n\n// User&#x27;s reduce function\nclass Adder : public Reducer {\n  virtual void Reduce(ReduceInput* input) {\n    // Iterate over all entries with the\n    // same key and add the values\n    int64 value = 0;\n    while (!input-&gt;done()) {\n      value += StringToInt(input-&gt;value());\n      input-&gt;NextValue();\n    }\n\n    // Emit sum for input-&gt;key()\n    Emit(IntToString(value));\n  }\n};\nREGISTER_REDUCER(Adder);\n\nint main(int argc, char** argv) {\n  ParseCommandLineFlags(argc, argv);\n\n  MapReduceSpecification spec;\n\n  // Store list of input files into &quot;spec&quot;\n  for (int i = 1; i &lt; argc; i++) {\n    MapReduceInput* input = spec.add_input();\n    input-&gt;set_format(&quot;text&quot;);\n    input-&gt;set_filepattern(argv[i]);\n    input-&gt;set_mapper_class(&quot;WordCounter&quot;);\n  }\n\n  // Specify the output files:\n  //    /gfs/test/freq-00000-of-00100\n  //    /gfs/test/freq-00001-of-00100\n  //    ...\n  MapReduceOutput* out = spec.output();\n  out-&gt;set_filebase(&quot;/gfs/test/freq&quot;);\n  out-&gt;set_num_tasks(100);\n  out-&gt;set_format(&quot;text&quot;);\n  out-&gt;set_reducer_class(&quot;Adder&quot;);\n\n  // Optional: do partial sums within map\n  // tasks to save network bandwidth\n  out-&gt;set_combiner_class(&quot;Adder&quot;);\n\n  // Tuning parameters: use at most 2000\n  // machines and 100 MB of memory per task\n  spec.set_machines(2000);\n  spec.set_map_megabytes(100);\n  spec.set_reduce_megabytes(100);\n\n  // Now run it\n  MapReduceResult result;\n  if (!MapReduce(spec, &amp;result)) abort();\n\n  // Done: &#x27;result&#x27; structure contains info\n  // about counters, time taken, number of\n  // machines used, etc.\n\n  return 0;\n}\n</code></pre>",
+      "source": [
+        {
+          "page": 13
+        }
+      ]
+    }
+  ],
+  "extensions": {
+    "continous-reader.presentation": {
+      "publication": "OSDI 2004",
+      "source_note": "13 页原稿 · 重点结构含示例译文，其余保留原文",
+      "translation_note": "本样本用于验证转换约定。原文全文转换；仅重点结构提供人工核对的中文译文。"
+    },
+    "continous-reader.conversion": {
+      "html_aid": "https://usenix.org/legacy/events/osdi04/tech/full_papers/dean/dean_html/index.html",
+      "source_role": "Primary-source HTML extraction aid; PDF retained for checks",
+      "coverage": "full source article including references and available appendices; selective translation",
+      "unmatched_page_keys": [
+        "heading-1",
+        "SECTION00010000000000000000",
+        "SECTION00020000000000000000",
+        "SECTION00021000000000000000",
+        "SECTION00022000000000000000",
+        "SECTION00023000000000000000",
+        "SECTION00023010000000000000",
+        "p-291ea780a253aee6",
+        "p-ef0900b8df3b9ebb",
+        "SECTION00023040000000000000",
+        "SECTION00023050000000000000",
+        "p-3aaf9e8fb528982e",
+        "SECTION00023060000000000000",
+        "p-46e7ee0f041fe34a",
+        "SECTION00030000000000000000",
+        "SECTION00031000000000000000",
+        "SECTION00032000000000000000",
+        "SECTION00033000000000000000",
+        "SECTION00033100000000000000",
+        "SECTION00033200000000000000",
+        "SECTION00034000000000000000",
+        "SECTION00035000000000000000",
+        "SECTION00036000000000000000",
+        "SECTION00040000000000000000",
+        "SECTION00041000000000000000",
+        "SECTION00043000000000000000",
+        "SECTION00045000000000000000",
+        "SECTION00046000000000000000",
+        "SECTION00047000000000000000",
+        "SECTION00048000000000000000",
+        "SECTION00049000000000000000",
+        "SECTION00050000000000000000",
+        "SECTION00052000000000000000",
+        "SECTION00053000000000000000",
+        "SECTION00055000000000000000",
+        "SECTION00060000000000000000",
+        "SECTION00070000000000000000",
+        "SECTION00080000000000000000",
+        "SECTION00090000000000000000",
+        "SECTION000100000000000000000",
+        "Barroso03",
+        "TeraSort",
+        "Wyllie99",
+        "SECTION000110000000000000000"
+      ]
+    }
+  }
+}

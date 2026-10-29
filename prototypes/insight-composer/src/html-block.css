@@ -1,0 +1,41 @@
+.reader-html {
+  --html-text: var(--text-primary);
+  --html-muted: var(--text-secondary);
+  --html-rule: var(--line);
+  --html-surface: var(--selected-surface);
+  min-width: 0;
+  max-width: 100%;
+  margin-block: 32px 40px;
+  font-size: var(--reading-size);
+  line-height: 1.45;
+  color: var(--html-text);
+  scroll-margin-top: 120px;
+}
+.html-content { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.html-content + .html-content { margin-top: 1.2em; }
+.reader-html .html-content figure { margin: 0; }
+.reader-html .html-content figcaption { margin: 0 0 1em; line-height: 1.6; max-width: 36em; }
+.reader-html .html-content p { margin: 0; font-size: inherit; line-height: inherit; text-align: start; }
+.reader-html .html-variant { display: block; font-size: inherit; line-height: inherit; scroll-margin: 130px 20px; }
+.reader-html .html-variant[lang="en"] { font-family: Georgia, "Times New Roman", serif; }
+.reader-html .html-variant[lang="zh-CN"] { font-family: "Noto Serif SC", "SimSun", serif; }
+.reader-html .html-variant + .html-variant { margin-top: .3em; color: var(--html-muted); }
+.reader-html .html-variant.active-paragraph { outline: 1px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.reader-html .html-variant.active-paragraph::before { content: none; }
+.reader-html .html-content img { max-width: 100%; height: auto; }
+.reader-html .html-content pre { white-space: pre-wrap; }
+.html-table-scroll { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; border-block: 1px solid var(--html-rule); }
+.html-table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.reader-html .html-content table { border-collapse: collapse; width: max-content; min-width: 100%; max-width: none; font-size: inherit; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.reader-html .html-content th, .reader-html .html-content td { padding: .2em .3em; vertical-align: middle; border: 0; border-bottom: 1px solid var(--html-rule); text-align: center; }
+.reader-html .html-content th { font-weight: 500; }
+.reader-html .html-content thead { background: var(--html-surface); }
+.reader-html .html-content th[scope="row"], .reader-html .html-content th[scope="rowgroup"] { text-align: start; }
+.reader-html .html-content th .html-variant { white-space: normal; }
+.reader-html .html-content td .html-variant { white-space: normal; }
+.reader-html .html-content .katex { font-size: 1.02em; }
+.reader-html .html-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.reader-html .html-translation-status, .reader-html.html-diagnostic p { font: 13px/1.6 var(--font-ui, sans-serif); color: var(--html-muted); margin-bottom: 12px; }
+.reader-html.html-diagnostic { border: 1px solid var(--html-rule); padding: 16px; }
+.reader-html.html-diagnostic img { max-width: 100%; }
+.reader-html.html-diagnostic code { overflow-wrap: anywhere; }

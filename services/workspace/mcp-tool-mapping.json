@@ -1,0 +1,326 @@
+{
+  "status": "current-32-tool-contract",
+  "date": "2026-10-23",
+  "scope": "current-public-MCP-catalog",
+  "tools": [
+    {
+      "group": "资料库与分类",
+      "name": "query_documents",
+      "old": [
+        "list_documents",
+        "search_documents",
+        "list_collection_documents",
+        "get_document_metadata"
+      ],
+      "access": "read",
+      "note": "action=list/search/metadata；列表统一筛选，不保留重复列表分支"
+    },
+    {
+      "group": "资料库与分类",
+      "name": "update_document",
+      "old": [
+        "update_document_metadata",
+        "archive_document",
+        "restore_document"
+      ],
+      "access": "write",
+      "note": "operation.action=metadata/archive/restore；metadata version 不等于正文 revision"
+    },
+    {
+      "group": "资料库与分类",
+      "name": "list_collections",
+      "old": [
+        "list_collections"
+      ],
+      "access": "read",
+      "note": "保留 parent_id 的省略/null/具体 ID 语义"
+    },
+    {
+      "group": "资料库与分类",
+      "name": "update_collection",
+      "old": [
+        "create_collection",
+        "update_collection",
+        "remove_collection"
+      ],
+      "access": "write",
+      "note": "operation.action=create/update/remove；只删除空集合，不递归"
+    },
+    {
+      "group": "正文、引用与资源",
+      "name": "read_context",
+      "old": [
+        "read_context"
+      ],
+      "access": "read",
+      "note": "保留原有有界 UTF-16 地址与续读合同"
+    },
+    {
+      "group": "正文、引用与资源",
+      "name": "resolve_reference",
+      "old": [
+        "resolve_reference"
+      ],
+      "access": "read",
+      "note": "保留 Q/N/R 内容读取，与引用附近正文读取区分"
+    },
+    {
+      "group": "正文、引用与资源",
+      "name": "read_resources",
+      "old": [
+        "get_document_resource",
+        "get_pdf_pages",
+        "get_authoring_artifacts"
+      ],
+      "access": "read",
+      "note": "kind=asset/pdf_pages/authoring_artifacts；仅描述符及授权 URL"
+    },
+    {
+      "group": "洞见、问答与复习",
+      "name": "query_insights",
+      "old": [
+        "list_insights",
+        "search_insights",
+        "list_archived_insights"
+      ],
+      "access": "read",
+      "note": "query 可省略；state=active/archived/all；保留不同范围及恢复能力"
+    },
+    {
+      "group": "洞见、问答与复习",
+      "name": "update_insight",
+      "old": [
+        "save_insight",
+        "archive_insight",
+        "restore_insight"
+      ],
+      "access": "write",
+      "note": "operation.action=create/update/archive/restore；显式标题、字段保留与版本"
+    },
+    {
+      "group": "洞见、问答与复习",
+      "name": "answer_question",
+      "old": [
+        "answer_question"
+      ],
+      "access": "write",
+      "note": "独立保存答案并解决问题的原子操作"
+    },
+    {
+      "group": "洞见、问答与复习",
+      "name": "set_insight_review",
+      "old": [
+        "set_insight_review"
+      ],
+      "access": "write",
+      "note": "独立复习成员资格及 activity revision"
+    },
+    {
+      "group": "阅读计划与活动",
+      "name": "get_reading_plan",
+      "old": [
+        "get_reading_plan"
+      ],
+      "access": "read",
+      "note": "返回真实顺序和 planVersion"
+    },
+    {
+      "group": "阅读计划与活动",
+      "name": "update_reading_plan",
+      "old": [
+        "add_to_reading_plan",
+        "remove_from_reading_plan",
+        "move_reading_plan_item"
+      ],
+      "access": "write",
+      "note": "operation.action=add/remove/move；保留 expected_plan_version"
+    },
+    {
+      "group": "阅读计划与活动",
+      "name": "query_reading_activity",
+      "old": [
+        "get_flow_summary",
+        "list_reading_history"
+      ],
+      "access": "read",
+      "note": "view=summary/history；保留 timezone、范围和分页语义"
+    },
+    {
+      "group": "请求与修订",
+      "name": "list_change_requests",
+      "old": [
+        "list_change_requests"
+      ],
+      "access": "read",
+      "note": "保存请求不代表执行或授权"
+    },
+    {
+      "group": "请求与修订",
+      "name": "update_change_request",
+      "old": [
+        "create_change_request",
+        "update_change_request",
+        "cancel_change_request",
+        "reopen_change_request"
+      ],
+      "access": "write",
+      "note": "operation.action=create/update/cancel/reopen；保留请求版本、完成态限制"
+    },
+    {
+      "group": "请求与修订",
+      "name": "revise_document",
+      "old": [
+        "revise_document"
+      ],
+      "access": "write",
+      "note": "保留精确修改与未授权时提案语义"
+    },
+    {
+      "group": "请求与修订",
+      "name": "list_revision_proposals",
+      "old": [
+        "list_revision_proposals"
+      ],
+      "access": "read",
+      "note": "仅有界差异摘要"
+    },
+    {
+      "group": "请求与修订",
+      "name": "decide_revision_proposal",
+      "old": [
+        "decide_revision_proposal"
+      ],
+      "access": "write",
+      "note": "明确接受/拒绝已存提案，复核原始 revision"
+    },
+    {
+      "group": "文章关系",
+      "name": "list_document_relations",
+      "old": [
+        "list_document_relations"
+      ],
+      "access": "read",
+      "note": "direction=incoming/outgoing"
+    },
+    {
+      "group": "文章关系",
+      "name": "set_document_relation",
+      "old": [
+        "set_document_relation"
+      ],
+      "access": "write",
+      "note": "保持 link/dismiss/reset、独立关系版本与候选不确定性"
+    },
+    {
+      "group": "术语",
+      "name": "query_glossary",
+      "old": [
+        "list_glossary",
+        "search_glossary",
+        "get_glossary_term"
+      ],
+      "access": "read",
+      "note": "action=list/search/get；保留 UUID、deleted 状态、有界 definition"
+    },
+    {
+      "group": "术语",
+      "name": "update_glossary",
+      "old": [
+        "create_glossary_term",
+        "update_glossary_term",
+        "remove_glossary_term",
+        "restore_glossary_term"
+      ],
+      "access": "write",
+      "note": "operation.action=create/update/remove/restore；仅当前用户明确授权"
+    },
+    {
+      "group": "对象偏好",
+      "name": "get_object_preferences",
+      "old": [
+        "get_object_preferences"
+      ],
+      "access": "read",
+      "note": "保留 documentRevision + workspaceRevision"
+    },
+    {
+      "group": "对象偏好",
+      "name": "update_object_preferences",
+      "old": [
+        "update_object_preferences"
+      ],
+      "access": "write",
+      "note": "保留原子批量、唯一 block_id、显式 null 重置"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "query_uploaded_sources",
+      "old": [
+        "list_uploaded_sources",
+        "get_uploaded_source"
+      ],
+      "access": "read",
+      "note": "action=list/get；按 source_id 或文件名查描述符"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "prepare_source_upload",
+      "old": [
+        "prepare_source_upload"
+      ],
+      "access": "write",
+      "note": "保留短时授权、请求幂等、字节走 HTTP"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "get_authoring_contract",
+      "old": [
+        "get_authoring_contract"
+      ],
+      "access": "read",
+      "note": "保留明确格式入口"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "validate_authoring",
+      "old": [
+        "validate_authoring"
+      ],
+      "access": "read",
+      "note": "纯验证，不建立预览状态"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "create_authoring_preview",
+      "old": [
+        "create_authoring_preview"
+      ],
+      "access": "write",
+      "note": "建立/更新候选，保持同一 draft 和失败诊断"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "inspect_authoring_preview",
+      "old": [
+        "get_authoring_preview",
+        "get_authoring_draft"
+      ],
+      "access": "read",
+      "note": "target=preview/draft；区分不可变候选与当前草稿"
+    },
+    {
+      "group": "上传与 Agent authoring",
+      "name": "publish_authoring_preview",
+      "old": [
+        "publish_authoring_preview"
+      ],
+      "access": "write",
+      "note": "独立发表当前已检查 hash 的候选"
+    }
+  ],
+  "serverVersion": "0.5.0",
+  "retiredMcpNames": [
+    "publish_authoring"
+  ],
+  "compatibility": "none; removed names and old merged parameter shapes are rejected"
+}

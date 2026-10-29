@@ -1,0 +1,29 @@
+.navigation-loading-line {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  z-index: 2;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+.navigation-loading-line[data-phase="fading"] { opacity: 0; }
+.navigation-loading-line > span {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 40%;
+  border-radius: 2px;
+  background: var(--text-primary, #262626);
+  animation: navigation-loading-sweep 1400ms cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@keyframes navigation-loading-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-loading-line[data-phase] { transition: opacity 180ms linear !important; }
+  .navigation-loading-line > span { width: 100%; animation: none !important; transform: none; }
+}

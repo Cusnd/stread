@@ -1,0 +1,29 @@
+{
+  "format": "reader-authoring-1",
+  "key": "layout-example-steps-notes",
+  "meta": {
+    "title": "Layout example: a procedure with its conditions",
+    "language": "en",
+    "translations": { "zh-CN": { "title": "布局示例：步骤与条件" } }
+  },
+  "blocks": [
+    {
+      "key": "context",
+      "type": "para",
+      "text": "This short invented procedure keeps steps, pseudocode and the condition that makes the procedure valid in one object.",
+      "translations": { "zh-CN": { "text": "这个简短的自编过程把步骤、伪代码和成立条件放在同一个对象中。" } }
+    },
+    {
+      "key": "weighted-mean-procedure",
+      "type": "html",
+      "role": "algorithm",
+      "html": "<div class=\"layout-pair\"><div class=\"layout-stack\"><p data-key=\"procedure-title\"><strong>Compute a weighted mean</strong></p><ol><li data-key=\"check-weights\">Check that every weight is nonnegative and the total weight is positive.</li><li data-key=\"weighted-sum\">Multiply each value by its weight, then add those products.</li><li data-key=\"divide\">Divide the sum of products by the total weight.</li></ol></div><div class=\"layout-stack\"><p data-key=\"code-title\"><strong>Pseudocode</strong></p><pre data-key=\"code\"><code>total = sum(weights)\nrequire total &gt; 0\nresult = sum(value * weight) / total</code></pre><p data-key=\"condition\" class=\"note\">The pseudocode assumes one weight per value and that the nonnegative-weight check has already passed. A zero total has no defined weighted mean here.</p></div></div>",
+      "translations": {
+        "zh-CN": {
+          "alignment": "same-structure",
+          "html": "<div class=\"layout-pair\"><div class=\"layout-stack\"><p data-key=\"procedure-title\"><strong>计算加权平均数</strong></p><ol><li data-key=\"check-weights\">确认每个权重非负，且权重总和大于零。</li><li data-key=\"weighted-sum\">将各数值乘以对应权重，再把乘积相加。</li><li data-key=\"divide\">用乘积之和除以权重总和。</li></ol></div><div class=\"layout-stack\"><p data-key=\"code-title\"><strong>伪代码</strong></p><pre data-key=\"code\"><code>total = sum(weights)\nrequire total &gt; 0\nresult = sum(value * weight) / total</code></pre><p data-key=\"condition\" class=\"note\">伪代码假定每个数值都有对应权重，并且已通过非负检查。这里权重总和为零时，加权平均数没有定义。</p></div></div>"
+        }
+      }
+    }
+  ]
+}

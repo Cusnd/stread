@@ -1,0 +1,23 @@
+{
+  "format": "reader-authoring-1",
+  "key": "layout-example-multi-figure",
+  "meta": { "title": "Layout example: related figures", "language": "en" },
+  "blocks": [
+    {
+      "key": "context",
+      "type": "para",
+      "text": "This invented three-stage illustration preserves six items while changing how their membership is shown. Read the panels from left to right, or from top to bottom when they stack."
+    },
+    {
+      "key": "grouping-stages",
+      "type": "html",
+      "role": "figure",
+      "html": "<figure><div class=\"layout-grid\"><figure><img src=\"images/scattered.png\" alt=\"Six separate items: two A, two B and two C\"><figcaption data-key=\"panel-a\"><strong>(a) Separate items.</strong> All six items are visible.</figcaption></figure><figure><img src=\"images/paired.png\" alt=\"Three pairs labelled A, B and C\"><figcaption data-key=\"panel-b\"><strong>(b) Shared membership.</strong> Each pair has one label.</figcaption></figure><figure><img src=\"images/grouped.png\" alt=\"Three category boxes, each retaining two items\"><figcaption data-key=\"panel-c\"><strong>(c) Category view.</strong> Each box retains two items.</figcaption></figure></div><figcaption data-key=\"shared-caption\">Grouping changes the presentation, not the membership or the count. Panel labels remain real content when the layout wraps.</figcaption></figure>"
+    },
+    {
+      "key": "comparison",
+      "type": "para",
+      "text": "Use separate figure blocks instead when panels have independent arguments, source locations or discussions. A shared caption is useful only when it describes the group."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+.reader-preview-host { display: contents; }
+.reader-preview-label { flex: none; color: #646664; border-left: 1px solid #d9dbd7; padding-left: calc(9px * var(--ui-scale, 1)); font-size: calc(11px * var(--ui-scale, 1)); white-space: nowrap; }
+.reader-preview-error { position: fixed; z-index: 100; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; max-width: min(720px, calc(100vw - 36px)); padding: 10px 14px; border: 1px solid #d7d8d3; border-radius: 6px; background: #fffefb; color: #413b32; box-shadow: 0 4px 18px #24282d12; font-size: 13px; }
+.reader-preview-problems { min-width: 0; }
+.reader-preview-problems summary { white-space: nowrap; cursor: pointer; }
+.reader-preview-problems > div { max-height: min(45vh, 360px); overflow: auto; text-align: left; overflow-wrap: anywhere; }
+.reader-preview-problems p { margin: 7px 0; }
+.reader-preview-problems ul { margin: 10px 0 0; padding-left: 18px; }
+.reader-preview-problems li + li { margin-top: 12px; }
+.reader-preview-problem-location { display: flex; flex-wrap: wrap; gap: 4px 9px; font-size: 11px; }
+.reader-preview-error button { white-space: nowrap; }

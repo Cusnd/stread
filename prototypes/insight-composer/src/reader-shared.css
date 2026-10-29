@@ -1,0 +1,58 @@
+/* One visual system for structured modules and semantic HTML. Local content owns layout only. */
+.paper-reader {
+  --reader-space-1: .3em;
+  --reader-space-2: .65em;
+  --reader-space-3: 1.1em;
+  --reader-object-text: var(--reading-size);
+  --reader-caption-text: var(--reading-size);
+}
+.paper-reader .reader-object.reader-html { font-size: var(--reader-object-text); }
+.paper-reader .article .reader-object .figure-text .paper-text { font-size: var(--reader-object-text); }
+.paper-reader .article :is(.paper-figure, .paper-table, .reader-html) :is(.paper-text, .html-variant)[lang="en"] { font-family: Georgia, "Times New Roman", serif; }
+.paper-reader .article :is(.paper-figure, .paper-table, .reader-html) :is(.paper-text, .html-variant)[lang="zh-CN"] { font-family: "Noto Serif SC", "SimSun", serif; }
+.paper-reader :is(.paper-table table, .reader-html .html-content table) {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 100%;
+  max-width: none;
+  font-size: var(--reader-object-text);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+.paper-reader :is(.paper-table th, .paper-table td, .reader-html .html-content th, .reader-html .html-content td) {
+  padding: .2em .3em;
+  min-width: 0;
+  vertical-align: middle;
+  text-align: center;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.paper-reader :is(.paper-table th, .reader-html .html-content th) { background: var(--selected-surface); font-weight: 500; }
+.paper-reader :is(.paper-table table .paper-text, .reader-html .html-content table .html-variant) { font-size: inherit; line-height: inherit; min-width: 0; white-space: normal; }
+.paper-reader .paper-table td:first-child .paper-text { min-width: 0; white-space: normal; }
+.paper-reader :is(.paper-table th[scope="row"], .reader-html .html-content th[scope="row"], .reader-html .html-content th[scope="rowgroup"]) { text-align: start; }
+.paper-reader .article :is(.paper-figure figcaption .paper-text, .paper-table figcaption .paper-text, .reader-html .html-content figcaption, .reader-html .html-content caption) {
+  font-size: var(--reader-caption-text);
+  line-height: 1.6;
+  font-family: inherit;
+  text-align: start;
+  white-space: pre-line;
+}
+.reader-html .html-content caption { caption-side: top; padding-bottom: var(--reader-space-2); }
+.reader-html .html-content { container-type: inline-size; }
+.reader-html .html-local-layout-stack { display: grid; gap: var(--reader-space-3); }
+.reader-html :is(.html-local-layout-pair, .html-local-layout-grid) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--reader-space-3); }
+.reader-html .html-local-layout-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 14em), 1fr)); }
+/* Explicit author semantics override shared cell and row-header defaults. */
+.paper-reader .article .reader-html .html-content .html-local-text-start { text-align: start; }
+.paper-reader .article .reader-html .html-content .html-local-text-end { text-align: end; }
+.paper-reader .article .reader-html .html-content .html-local-scalar .html-variant { white-space: nowrap; }
+.paper-reader .article .reader-html .html-content .html-local-group-start > :is(th, td),
+.paper-reader .article .reader-html .html-content .html-local-ruled { border-top: 1px solid var(--line); }
+.reader-html .html-local-note { color: var(--text-secondary); }
+.reader-html .html-content :is(pre, code) { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+.reader-html .html-content pre { white-space: pre; margin: 0; padding: var(--reader-space-2); background: var(--selected-surface); overflow: auto; font-size: inherit; line-height: 1.55; }
+.paper-reader .article .reader-html .html-content pre .html-variant { font-family: inherit; white-space: pre; }
+@container (max-width: 36em) {
+  .reader-html :is(.html-local-layout-pair, .html-local-layout-grid) { grid-template-columns: minmax(0, 1fr); }
+}

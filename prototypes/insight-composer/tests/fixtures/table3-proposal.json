@@ -1,0 +1,4055 @@
+{
+  "kind": "research-proposal-not-runtime-document",
+  "target_schema": 2,
+  "source_document": {
+    "id": "doc_attention_is_all_you_need_v7",
+    "revision": 1,
+    "language": "en",
+    "document_sha256": "65350fe181bd96015cbb55335005f5fa6579d16abe4cc8187dbcb9b0464ea282",
+    "pdf_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+  },
+  "normalization_decisions": [
+    "One logical header row: verified presentation-only line splits become newline-separated labels.",
+    "Only anchor cells are stored; source row/col spans are retained.",
+    "Empty-state meaning is attached only to real source cells, based on the caption.",
+    "Source and Chinese text reused from the reviewed sample; no renderer or migration was executed."
+  ],
+  "table": {
+    "id": "S6.T3",
+    "type": "table",
+    "num": "3",
+    "columns": [
+      {
+        "id": "t3-col-label"
+      },
+      {
+        "id": "t3-col-n"
+      },
+      {
+        "id": "t3-col-dmodel"
+      },
+      {
+        "id": "t3-col-dff"
+      },
+      {
+        "id": "t3-col-h"
+      },
+      {
+        "id": "t3-col-dk"
+      },
+      {
+        "id": "t3-col-dv"
+      },
+      {
+        "id": "t3-col-dropout"
+      },
+      {
+        "id": "t3-col-ls"
+      },
+      {
+        "id": "t3-col-train"
+      },
+      {
+        "id": "t3-col-ppl"
+      },
+      {
+        "id": "t3-col-bleu"
+      },
+      {
+        "id": "t3-col-params"
+      }
+    ],
+    "head": [
+      {
+        "id": "t3-row-head",
+        "cells": [
+          {
+            "id": "t3-h-label",
+            "column_id": "t3-col-label",
+            "text": "",
+            "role": "data"
+          },
+          {
+            "id": "t3-h-n",
+            "column_id": "t3-col-n",
+            "text": "$N$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "$d_{\\text{model}}$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-dff",
+            "column_id": "t3-col-dff",
+            "text": "$d_{\\text{ff}}$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-h",
+            "column_id": "t3-col-h",
+            "text": "$h$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-dk",
+            "column_id": "t3-col-dk",
+            "text": "$d_{k}$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-dv",
+            "column_id": "t3-col-dv",
+            "text": "$d_{v}$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "$P_{drop}$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-ls",
+            "column_id": "t3-col-ls",
+            "text": "$\\epsilon_{ls}$",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-train",
+            "column_id": "t3-col-train",
+            "text": "train\nsteps",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "PPL\n(dev)",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "BLEU\n(dev)",
+            "role": "column-header",
+            "scope": "col"
+          },
+          {
+            "id": "t3-h-params",
+            "column_id": "t3-col-params",
+            "text": "params\n$\\times 10^{6}$",
+            "role": "column-header",
+            "scope": "col"
+          }
+        ]
+      }
+    ],
+    "rows": [
+      {
+        "id": "t3-row-base",
+        "group": "t3-group-base",
+        "cells": [
+          {
+            "id": "t3-base-label",
+            "column_id": "t3-col-label",
+            "text": "base",
+            "role": "row-header",
+            "scope": "row"
+          },
+          {
+            "id": "t3-base-n",
+            "column_id": "t3-col-n",
+            "text": "6",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "512",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-dff",
+            "column_id": "t3-col-dff",
+            "text": "2048",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-h",
+            "column_id": "t3-col-h",
+            "text": "8",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-dk",
+            "column_id": "t3-col-dk",
+            "text": "64",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-dv",
+            "column_id": "t3-col-dv",
+            "text": "64",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "0.1",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-ls",
+            "column_id": "t3-col-ls",
+            "text": "0.1",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-train",
+            "column_id": "t3-col-train",
+            "text": "100K",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.92",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.8",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-base-label"
+            ]
+          },
+          {
+            "id": "t3-base-params",
+            "column_id": "t3-col-params",
+            "text": "65",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-base-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-a1",
+        "group": "t3-group-a",
+        "cells": [
+          {
+            "id": "t3-a1-label",
+            "column_id": "t3-col-label",
+            "text": "(A)",
+            "role": "row-header",
+            "row_span": 4,
+            "scope": "rowgroup"
+          },
+          {
+            "id": "t3-a1-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a1-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a1-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a1-h",
+            "column_id": "t3-col-h",
+            "text": "1",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a1-dk",
+            "column_id": "t3-col-dk",
+            "text": "512",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a1-dv",
+            "column_id": "t3-col-dv",
+            "text": "512",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a1-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a1-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a1-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a1-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.29",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a1-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "24.9",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a1-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-a2",
+        "group": "t3-group-a",
+        "cells": [
+          {
+            "id": "t3-a2-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a2-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a2-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a2-h",
+            "column_id": "t3-col-h",
+            "text": "4",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a2-dk",
+            "column_id": "t3-col-dk",
+            "text": "128",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a2-dv",
+            "column_id": "t3-col-dv",
+            "text": "128",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a2-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a2-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a2-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a2-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.00",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a2-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.5",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a2-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-a3",
+        "group": "t3-group-a",
+        "cells": [
+          {
+            "id": "t3-a3-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a3-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a3-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a3-h",
+            "column_id": "t3-col-h",
+            "text": "16",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a3-dk",
+            "column_id": "t3-col-dk",
+            "text": "32",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a3-dv",
+            "column_id": "t3-col-dv",
+            "text": "32",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a3-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a3-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a3-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a3-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.91",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a3-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.8",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a3-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-a4",
+        "group": "t3-group-a",
+        "cells": [
+          {
+            "id": "t3-a4-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a4-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a4-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a4-h",
+            "column_id": "t3-col-h",
+            "text": "32",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a4-dk",
+            "column_id": "t3-col-dk",
+            "text": "16",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a4-dv",
+            "column_id": "t3-col-dv",
+            "text": "16",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a4-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a4-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a4-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-a4-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.01",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a4-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.4",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-a1-label"
+            ]
+          },
+          {
+            "id": "t3-a4-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-a1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-b1",
+        "group": "t3-group-b",
+        "cells": [
+          {
+            "id": "t3-b1-label",
+            "column_id": "t3-col-label",
+            "text": "(B)",
+            "role": "row-header",
+            "row_span": 2,
+            "scope": "rowgroup"
+          },
+          {
+            "id": "t3-b1-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-dk",
+            "column_id": "t3-col-dk",
+            "text": "16",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-b1-label"
+            ]
+          },
+          {
+            "id": "t3-b1-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b1-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.16",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-b1-label"
+            ]
+          },
+          {
+            "id": "t3-b1-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.1",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-b1-label"
+            ]
+          },
+          {
+            "id": "t3-b1-params",
+            "column_id": "t3-col-params",
+            "text": "58",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-b1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-b2",
+        "group": "t3-group-b",
+        "cells": [
+          {
+            "id": "t3-b2-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-dk",
+            "column_id": "t3-col-dk",
+            "text": "32",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-b1-label"
+            ]
+          },
+          {
+            "id": "t3-b2-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-b1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-b2-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.01",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-b1-label"
+            ]
+          },
+          {
+            "id": "t3-b2-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.4",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-b1-label"
+            ]
+          },
+          {
+            "id": "t3-b2-params",
+            "column_id": "t3-col-params",
+            "text": "60",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-b1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c1",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c1-label",
+            "column_id": "t3-col-label",
+            "text": "(C)",
+            "role": "row-header",
+            "row_span": 7,
+            "scope": "rowgroup"
+          },
+          {
+            "id": "t3-c1-n",
+            "column_id": "t3-col-n",
+            "text": "2",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c1-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c1-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "6.11",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c1-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "23.7",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c1-params",
+            "column_id": "t3-col-params",
+            "text": "36",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c2",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c2-n",
+            "column_id": "t3-col-n",
+            "text": "4",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c2-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c2-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.19",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c2-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.3",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c2-params",
+            "column_id": "t3-col-params",
+            "text": "50",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c3",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c3-n",
+            "column_id": "t3-col-n",
+            "text": "8",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c3-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c3-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.88",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c3-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.5",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c3-params",
+            "column_id": "t3-col-params",
+            "text": "80",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c4",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c4-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c4-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "256",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c4-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c4-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c4-dk",
+            "column_id": "t3-col-dk",
+            "text": "32",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c4-dv",
+            "column_id": "t3-col-dv",
+            "text": "32",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c4-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c4-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c4-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c4-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.75",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c4-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "24.5",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c4-params",
+            "column_id": "t3-col-params",
+            "text": "28",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c5",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c5-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c5-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "1024",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c5-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c5-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c5-dk",
+            "column_id": "t3-col-dk",
+            "text": "128",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c5-dv",
+            "column_id": "t3-col-dv",
+            "text": "128",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c5-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c5-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c5-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c5-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.66",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c5-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "26.0",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c5-params",
+            "column_id": "t3-col-params",
+            "text": "168",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c6",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c6-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-dff",
+            "column_id": "t3-col-dff",
+            "text": "1024",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c6-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c6-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.12",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c6-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.4",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c6-params",
+            "column_id": "t3-col-params",
+            "text": "53",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-c7",
+        "group": "t3-group-c",
+        "cells": [
+          {
+            "id": "t3-c7-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-dff",
+            "column_id": "t3-col-dff",
+            "text": "4096",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c7-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-c1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-c7-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.75",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c7-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "26.2",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-c1-label"
+            ]
+          },
+          {
+            "id": "t3-c7-params",
+            "column_id": "t3-col-params",
+            "text": "90",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-c1-label"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "t3-row-d1",
+        "group": "t3-group-d",
+        "cells": [
+          {
+            "id": "t3-d1-label",
+            "column_id": "t3-col-label",
+            "text": "(D)",
+            "role": "row-header",
+            "row_span": 4,
+            "scope": "rowgroup"
+          },
+          {
+            "id": "t3-d1-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "0.0",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d1-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d1-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.77",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d1-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "24.6",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d1-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-d2",
+        "group": "t3-group-d",
+        "cells": [
+          {
+            "id": "t3-d2-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "0.2",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d2-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d2-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.95",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d2-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.5",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d2-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-d3",
+        "group": "t3-group-d",
+        "cells": [
+          {
+            "id": "t3-d3-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-ls",
+            "column_id": "t3-col-ls",
+            "text": "0.0",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d3-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d3-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.67",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d3-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.3",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d3-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-d4",
+        "group": "t3-group-d",
+        "cells": [
+          {
+            "id": "t3-d4-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dmodel",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-dff",
+            "column_id": "t3-col-dff",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dff",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-h",
+            "column_id": "t3-col-h",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-h",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dropout",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-ls",
+            "column_id": "t3-col-ls",
+            "text": "0.2",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d4-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-d4-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "5.47",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d4-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.7",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-d1-label"
+            ]
+          },
+          {
+            "id": "t3-d4-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-d1-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-e",
+        "group": "t3-group-e",
+        "cells": [
+          {
+            "id": "t3-e-label",
+            "column_id": "t3-col-label",
+            "text": "(E)",
+            "role": "row-header",
+            "scope": "row"
+          },
+          {
+            "id": "t3-e-n",
+            "column_id": "t3-col-n",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-e-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-n",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-e-note",
+            "column_id": "t3-col-dmodel",
+            "text": "positional embedding instead of sinusoids",
+            "role": "data",
+            "col_span": 7,
+            "headers": [
+              "t3-h-dmodel",
+              "t3-h-dff",
+              "t3-h-h",
+              "t3-h-dk",
+              "t3-h-dv",
+              "t3-h-dropout",
+              "t3-h-ls",
+              "t3-e-label"
+            ]
+          },
+          {
+            "id": "t3-e-train",
+            "column_id": "t3-col-train",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-e-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-train",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-e-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "4.92",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-e-label"
+            ]
+          },
+          {
+            "id": "t3-e-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "25.7",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-e-label"
+            ]
+          },
+          {
+            "id": "t3-e-params",
+            "column_id": "t3-col-params",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-e-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-params",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "t3-row-big",
+        "group": "t3-group-big",
+        "cells": [
+          {
+            "id": "t3-big-label",
+            "column_id": "t3-col-label",
+            "text": "big",
+            "role": "row-header",
+            "scope": "row"
+          },
+          {
+            "id": "t3-big-n",
+            "column_id": "t3-col-n",
+            "text": "6",
+            "role": "data",
+            "headers": [
+              "t3-h-n",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-dmodel",
+            "column_id": "t3-col-dmodel",
+            "text": "1024",
+            "role": "data",
+            "headers": [
+              "t3-h-dmodel",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-dff",
+            "column_id": "t3-col-dff",
+            "text": "4096",
+            "role": "data",
+            "headers": [
+              "t3-h-dff",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-h",
+            "column_id": "t3-col-h",
+            "text": "16",
+            "role": "data",
+            "headers": [
+              "t3-h-h",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-dk",
+            "column_id": "t3-col-dk",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dk",
+              "t3-big-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dk",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-big-dv",
+            "column_id": "t3-col-dv",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-dv",
+              "t3-big-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-dv",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-big-dropout",
+            "column_id": "t3-col-dropout",
+            "text": "0.3",
+            "role": "data",
+            "headers": [
+              "t3-h-dropout",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-ls",
+            "column_id": "t3-col-ls",
+            "text": "",
+            "role": "data",
+            "headers": [
+              "t3-h-ls",
+              "t3-big-label"
+            ],
+            "empty": {
+              "kind": "same-as",
+              "ref": "t3-base-ls",
+              "evidence": {
+                "field": "caption",
+                "quote": "Unlisted values are identical to those of the base model."
+              }
+            }
+          },
+          {
+            "id": "t3-big-train",
+            "column_id": "t3-col-train",
+            "text": "300K",
+            "role": "data",
+            "headers": [
+              "t3-h-train",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-ppl",
+            "column_id": "t3-col-ppl",
+            "text": "**4.33**",
+            "role": "data",
+            "headers": [
+              "t3-h-ppl",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-bleu",
+            "column_id": "t3-col-bleu",
+            "text": "**26.4**",
+            "role": "data",
+            "headers": [
+              "t3-h-bleu",
+              "t3-big-label"
+            ]
+          },
+          {
+            "id": "t3-big-params",
+            "column_id": "t3-col-params",
+            "text": "213",
+            "role": "data",
+            "headers": [
+              "t3-h-params",
+              "t3-big-label"
+            ]
+          }
+        ]
+      }
+    ],
+    "caption": "Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metrics are on the English-to-German translation development set, newstest2013. Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities.",
+    "caption_pos": "above",
+    "source": [
+      {
+        "page": 9
+      }
+    ],
+    "translations": {
+      "zh-CN": {
+        "cells": {
+          "t3-h-label": "",
+          "t3-h-n": "$N$",
+          "t3-h-dmodel": "$d_{\\text{model}}$",
+          "t3-h-dff": "$d_{\\text{ff}}$",
+          "t3-h-h": "$h$",
+          "t3-h-dk": "$d_{k}$",
+          "t3-h-dv": "$d_{v}$",
+          "t3-h-dropout": "$P_{drop}$",
+          "t3-h-ls": "$\\epsilon_{ls}$",
+          "t3-h-train": "训练步数",
+          "t3-h-ppl": "困惑度（开发集）",
+          "t3-h-bleu": "BLEU（开发集）",
+          "t3-h-params": "参数量\n$\\times 10^{6}$",
+          "t3-base-label": "基础模型",
+          "t3-base-n": "6",
+          "t3-base-dmodel": "512",
+          "t3-base-dff": "2048",
+          "t3-base-h": "8",
+          "t3-base-dk": "64",
+          "t3-base-dv": "64",
+          "t3-base-dropout": "0.1",
+          "t3-base-ls": "0.1",
+          "t3-base-train": "100K",
+          "t3-base-ppl": "4.92",
+          "t3-base-bleu": "25.8",
+          "t3-base-params": "65",
+          "t3-a1-label": "(A)",
+          "t3-a1-n": "",
+          "t3-a1-dmodel": "",
+          "t3-a1-dff": "",
+          "t3-a1-h": "1",
+          "t3-a1-dk": "512",
+          "t3-a1-dv": "512",
+          "t3-a1-dropout": "",
+          "t3-a1-ls": "",
+          "t3-a1-train": "",
+          "t3-a1-ppl": "5.29",
+          "t3-a1-bleu": "24.9",
+          "t3-a1-params": "",
+          "t3-a2-n": "",
+          "t3-a2-dmodel": "",
+          "t3-a2-dff": "",
+          "t3-a2-h": "4",
+          "t3-a2-dk": "128",
+          "t3-a2-dv": "128",
+          "t3-a2-dropout": "",
+          "t3-a2-ls": "",
+          "t3-a2-train": "",
+          "t3-a2-ppl": "5.00",
+          "t3-a2-bleu": "25.5",
+          "t3-a2-params": "",
+          "t3-a3-n": "",
+          "t3-a3-dmodel": "",
+          "t3-a3-dff": "",
+          "t3-a3-h": "16",
+          "t3-a3-dk": "32",
+          "t3-a3-dv": "32",
+          "t3-a3-dropout": "",
+          "t3-a3-ls": "",
+          "t3-a3-train": "",
+          "t3-a3-ppl": "4.91",
+          "t3-a3-bleu": "25.8",
+          "t3-a3-params": "",
+          "t3-a4-n": "",
+          "t3-a4-dmodel": "",
+          "t3-a4-dff": "",
+          "t3-a4-h": "32",
+          "t3-a4-dk": "16",
+          "t3-a4-dv": "16",
+          "t3-a4-dropout": "",
+          "t3-a4-ls": "",
+          "t3-a4-train": "",
+          "t3-a4-ppl": "5.01",
+          "t3-a4-bleu": "25.4",
+          "t3-a4-params": "",
+          "t3-b1-label": "(B)",
+          "t3-b1-n": "",
+          "t3-b1-dmodel": "",
+          "t3-b1-dff": "",
+          "t3-b1-h": "",
+          "t3-b1-dk": "16",
+          "t3-b1-dv": "",
+          "t3-b1-dropout": "",
+          "t3-b1-ls": "",
+          "t3-b1-train": "",
+          "t3-b1-ppl": "5.16",
+          "t3-b1-bleu": "25.1",
+          "t3-b1-params": "58",
+          "t3-b2-n": "",
+          "t3-b2-dmodel": "",
+          "t3-b2-dff": "",
+          "t3-b2-h": "",
+          "t3-b2-dk": "32",
+          "t3-b2-dv": "",
+          "t3-b2-dropout": "",
+          "t3-b2-ls": "",
+          "t3-b2-train": "",
+          "t3-b2-ppl": "5.01",
+          "t3-b2-bleu": "25.4",
+          "t3-b2-params": "60",
+          "t3-c1-label": "(C)",
+          "t3-c1-n": "2",
+          "t3-c1-dmodel": "",
+          "t3-c1-dff": "",
+          "t3-c1-h": "",
+          "t3-c1-dk": "",
+          "t3-c1-dv": "",
+          "t3-c1-dropout": "",
+          "t3-c1-ls": "",
+          "t3-c1-train": "",
+          "t3-c1-ppl": "6.11",
+          "t3-c1-bleu": "23.7",
+          "t3-c1-params": "36",
+          "t3-c2-n": "4",
+          "t3-c2-dmodel": "",
+          "t3-c2-dff": "",
+          "t3-c2-h": "",
+          "t3-c2-dk": "",
+          "t3-c2-dv": "",
+          "t3-c2-dropout": "",
+          "t3-c2-ls": "",
+          "t3-c2-train": "",
+          "t3-c2-ppl": "5.19",
+          "t3-c2-bleu": "25.3",
+          "t3-c2-params": "50",
+          "t3-c3-n": "8",
+          "t3-c3-dmodel": "",
+          "t3-c3-dff": "",
+          "t3-c3-h": "",
+          "t3-c3-dk": "",
+          "t3-c3-dv": "",
+          "t3-c3-dropout": "",
+          "t3-c3-ls": "",
+          "t3-c3-train": "",
+          "t3-c3-ppl": "4.88",
+          "t3-c3-bleu": "25.5",
+          "t3-c3-params": "80",
+          "t3-c4-n": "",
+          "t3-c4-dmodel": "256",
+          "t3-c4-dff": "",
+          "t3-c4-h": "",
+          "t3-c4-dk": "32",
+          "t3-c4-dv": "32",
+          "t3-c4-dropout": "",
+          "t3-c4-ls": "",
+          "t3-c4-train": "",
+          "t3-c4-ppl": "5.75",
+          "t3-c4-bleu": "24.5",
+          "t3-c4-params": "28",
+          "t3-c5-n": "",
+          "t3-c5-dmodel": "1024",
+          "t3-c5-dff": "",
+          "t3-c5-h": "",
+          "t3-c5-dk": "128",
+          "t3-c5-dv": "128",
+          "t3-c5-dropout": "",
+          "t3-c5-ls": "",
+          "t3-c5-train": "",
+          "t3-c5-ppl": "4.66",
+          "t3-c5-bleu": "26.0",
+          "t3-c5-params": "168",
+          "t3-c6-n": "",
+          "t3-c6-dmodel": "",
+          "t3-c6-dff": "1024",
+          "t3-c6-h": "",
+          "t3-c6-dk": "",
+          "t3-c6-dv": "",
+          "t3-c6-dropout": "",
+          "t3-c6-ls": "",
+          "t3-c6-train": "",
+          "t3-c6-ppl": "5.12",
+          "t3-c6-bleu": "25.4",
+          "t3-c6-params": "53",
+          "t3-c7-n": "",
+          "t3-c7-dmodel": "",
+          "t3-c7-dff": "4096",
+          "t3-c7-h": "",
+          "t3-c7-dk": "",
+          "t3-c7-dv": "",
+          "t3-c7-dropout": "",
+          "t3-c7-ls": "",
+          "t3-c7-train": "",
+          "t3-c7-ppl": "4.75",
+          "t3-c7-bleu": "26.2",
+          "t3-c7-params": "90",
+          "t3-d1-label": "(D)",
+          "t3-d1-n": "",
+          "t3-d1-dmodel": "",
+          "t3-d1-dff": "",
+          "t3-d1-h": "",
+          "t3-d1-dk": "",
+          "t3-d1-dv": "",
+          "t3-d1-dropout": "0.0",
+          "t3-d1-ls": "",
+          "t3-d1-train": "",
+          "t3-d1-ppl": "5.77",
+          "t3-d1-bleu": "24.6",
+          "t3-d1-params": "",
+          "t3-d2-n": "",
+          "t3-d2-dmodel": "",
+          "t3-d2-dff": "",
+          "t3-d2-h": "",
+          "t3-d2-dk": "",
+          "t3-d2-dv": "",
+          "t3-d2-dropout": "0.2",
+          "t3-d2-ls": "",
+          "t3-d2-train": "",
+          "t3-d2-ppl": "4.95",
+          "t3-d2-bleu": "25.5",
+          "t3-d2-params": "",
+          "t3-d3-n": "",
+          "t3-d3-dmodel": "",
+          "t3-d3-dff": "",
+          "t3-d3-h": "",
+          "t3-d3-dk": "",
+          "t3-d3-dv": "",
+          "t3-d3-dropout": "",
+          "t3-d3-ls": "0.0",
+          "t3-d3-train": "",
+          "t3-d3-ppl": "4.67",
+          "t3-d3-bleu": "25.3",
+          "t3-d3-params": "",
+          "t3-d4-n": "",
+          "t3-d4-dmodel": "",
+          "t3-d4-dff": "",
+          "t3-d4-h": "",
+          "t3-d4-dk": "",
+          "t3-d4-dv": "",
+          "t3-d4-dropout": "",
+          "t3-d4-ls": "0.2",
+          "t3-d4-train": "",
+          "t3-d4-ppl": "5.47",
+          "t3-d4-bleu": "25.7",
+          "t3-d4-params": "",
+          "t3-e-label": "(E)",
+          "t3-e-n": "",
+          "t3-e-note": "以可学习的位置嵌入替代正弦编码",
+          "t3-e-train": "",
+          "t3-e-ppl": "4.92",
+          "t3-e-bleu": "25.7",
+          "t3-e-params": "",
+          "t3-big-label": "大型模型",
+          "t3-big-n": "6",
+          "t3-big-dmodel": "1024",
+          "t3-big-dff": "4096",
+          "t3-big-h": "16",
+          "t3-big-dk": "",
+          "t3-big-dv": "",
+          "t3-big-dropout": "0.3",
+          "t3-big-ls": "",
+          "t3-big-train": "300K",
+          "t3-big-ppl": "**4.33**",
+          "t3-big-bleu": "**26.4**",
+          "t3-big-params": "213"
+        },
+        "caption": "Transformer 架构的不同变体。未列出的数值与基础模型相同。所有指标均来自英德翻译开发集 newstest2013。所列困惑度按照我们的字节对编码，以 word-piece 为单位计算，不应与按词计算的困惑度直接比较。",
+        "source_hash": "sha256:3e56cb670b7ef19ab51a4ecf4390a786cf6e0cbdf9716871a425c2a82ef368bf"
+      }
+    }
+  }
+}

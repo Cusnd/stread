@@ -1,0 +1,23 @@
+{
+  "format": "reader-authoring-1",
+  "key": "example-paper",
+  "meta": {
+    "title": "Example paper",
+    "language": "en",
+    "translations": { "zh-CN": { "title": "示例论文" } }
+  },
+  "source": {
+    "path": "source.pdf",
+    "media_type": "application/pdf",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "blocks": [
+    {
+      "key": "p1",
+      "type": "para",
+      "text": "Let $x_i \\in \\mathbb{R}$; then $x_i^2 \\ge 0$.",
+      "translations": { "zh-CN": { "text": "设 $x_i \\in \\mathbb{R}$，则 $x_i^2 \\ge 0$。" } },
+      "source": [{ "page": 1 }]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+@media (min-width: 851px) {
+  .reader-app .pdf-drawer { width: var(--pdf-panel-width, 560px); }
+  .reader-app.pdf-open .reader-main.has-panel { margin-right: var(--pdf-panel-width, 560px); }
+}
+
+.pdf-resize-handle { position: absolute; z-index: 2; inset: 0 auto 0 0; width: 11px; cursor: col-resize; touch-action: none; outline: none; }
+.pdf-resize-handle::after { content: ""; position: absolute; top: 50%; left: 0; width: 4px; height: 36px; margin-top: -18px; border-radius: 0 3px 3px 0; background: #b7bab8; opacity: 0; transition: opacity 130ms ease; }
+.pdf-resize-handle:hover::after, .pdf-resize-handle:focus-visible::after, .pdf-resize-handle[data-resizing]::after { opacity: 1; }
+.pdf-resize-handle:focus-visible::after { background: #383c39; box-shadow: 0 0 0 2px var(--surface-reading); }
+.pdf-drawer[data-state="closed"] .pdf-resize-handle { visibility: hidden; }
+.reader-app[data-pdf-resizing], .reader-app[data-pdf-resizing] * { cursor: col-resize !important; }
+.reader-app[data-pdf-resizing] .reader-main, .reader-app[data-pdf-resizing] .reading-layout { transition: none !important; }
+.reader-app[data-pdf-resizing] .pdf-resize-handle::after { transition: none; }
+@media (max-width: 850px) { .pdf-resize-handle { display: none; } }
+@media (prefers-reduced-motion: reduce) { .pdf-resize-handle::after { transition: none; } }

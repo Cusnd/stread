@@ -1,0 +1,59 @@
+# Dependencies and build products
+node_modules/
+dist/
+.build/
+.desktop/
+/release/
+coverage/
+*.tsbuildinfo
+
+# Local diagnostics and generated test profiles
+.audit/
+.codex/
+.openai/local/
+/tmp/
+/research/
+**/evidence/
+playwright-report/
+test-results/
+*.log
+
+# Local workspace/profile data and database sidecars
+.data/
+/services/workspace/data/
+reader-session.json
+desktop-state.json
+connection.json
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-wal
+*.db-shm
+
+# Credentials and local configuration (examples remain publishable)
+.env
+.env.*
+!.env.example
+!.env.*.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.keys/
+.secrets/
+*private-key*.pem
+*-private*.pem
+*.key
+*.p12
+*.pfx
+
+# Tool and operating-system caches
+__pycache__/
+*.py[cod]
+.wrangler/
+.DS_Store
+Thumbs.db
+
+# services/workspace/generated is intentionally tracked public MCP documentation.
+# tests/fixtures contains bounded synthetic or source-contract data, not profiles.

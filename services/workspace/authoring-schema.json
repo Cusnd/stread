@@ -1,0 +1,925 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Continuous Reader authoring input",
+  "description": "Author-facing input only. Runtime IDs, revisions, text offsets and translation fingerprints are generated. Paragraph/heading/list text, table cells and captions render inline TeX in $...$ in each language; bare x_i or F^n stays literal. Display math uses tex without $$; HTML math uses an empty span with data-tex. Escape TeX backslashes in JSON. Semantic, resource, source-geometry and rendering checks supplement this schema.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "reader-authoring-1"
+    },
+    "key": {
+      "$ref": "#/$defs/key"
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "navigation": {
+      "$ref": "#/$defs/auxiliaryNavigation"
+    },
+    "blocks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100000,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/heading"
+          },
+          {
+            "$ref": "#/$defs/para"
+          },
+          {
+            "$ref": "#/$defs/list"
+          },
+          {
+            "$ref": "#/$defs/math"
+          },
+          {
+            "$ref": "#/$defs/figure"
+          },
+          {
+            "$ref": "#/$defs/table"
+          },
+          {
+            "$ref": "#/$defs/html"
+          }
+        ]
+      }
+    },
+    "extensions": {
+      "$ref": "#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "key",
+    "meta",
+    "blocks"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^(?!source$)[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 200000
+    },
+    "navigationText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "A nonblank, single-line plain-text navigation label; no HTML, Markdown or formula markup."
+    },
+    "navigationTranslation": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/navigationText"
+        }
+      },
+      "required": ["text"],
+      "additionalProperties": false
+    },
+    "navigationItem": {
+      "type": "object",
+      "properties": {
+        "targetKey": {
+          "$ref": "#/$defs/key",
+          "description": "The stable author key of an existing top-level block."
+        },
+        "text": {
+          "$ref": "#/$defs/navigationText"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/navigationTranslation"
+          }
+        }
+      },
+      "required": ["targetKey", "text", "level"],
+      "additionalProperties": false
+    },
+    "auxiliaryNavigation": {
+      "type": "object",
+      "description": "Optional author-supplied navigation, used when the source has no eligible headings. It does not create headings, alter the body or enter the source text index. Targets must be unique and follow top-level block order.",
+      "properties": {
+        "kind": {
+          "const": "auxiliary"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/$defs/navigationItem"
+          }
+        }
+      },
+      "required": ["kind", "items"],
+      "additionalProperties": false
+    },
+    "marker": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Optional namespaced, ignorable metadata. It cannot redefine rendering or source identity."
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "box": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "required": [
+        "page"
+      ],
+      "additionalProperties": false
+    },
+    "locations": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/location"
+      }
+    },
+    "matrix": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1000,
+        "items": {
+          "type": "string",
+          "maxLength": 100000
+        }
+      }
+    },
+    "resource": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Document-relative uploaded resource path; traversal, absolute paths and URLs are forbidden."
+    },
+    "textTranslation": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "text"
+          ]
+        }
+      ]
+    },
+    "titleTranslation": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "title"
+          ]
+        }
+      ]
+    },
+    "mathTranslation": {
+      "type": "object",
+      "properties": {
+        "tex": {
+          "$ref": "#/$defs/text"
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "tex"
+          ]
+        }
+      ]
+    },
+    "tableTranslation": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/$defs/matrix"
+        },
+        "rows": {
+          "$ref": "#/$defs/matrix"
+        },
+        "caption": {
+          "$ref": "#/$defs/text"
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "head"
+          ]
+        },
+        {
+          "required": [
+            "rows"
+          ]
+        },
+        {
+          "required": [
+            "caption"
+          ]
+        }
+      ]
+    },
+    "figureTranslation": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "$ref": "#/$defs/text"
+        },
+        "caption": {
+          "$ref": "#/$defs/text"
+        },
+        "image_text": {
+          "$ref": "#/$defs/text"
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "alt"
+          ]
+        },
+        {
+          "required": [
+            "caption"
+          ]
+        },
+        {
+          "required": [
+            "image_text"
+          ]
+        }
+      ]
+    },
+    "htmlTranslation": {
+      "type": "object",
+      "properties": {
+        "html": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120000
+        },
+        "reviewed": {
+          "type": "boolean"
+        },
+        "alignment": {
+          "const": "same-structure"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "html"
+          ]
+        }
+      ]
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "authors": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/titleTranslation"
+          }
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/resource"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "media_type": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "pages": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "listItem": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/textTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "heading": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "heading"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "num": {
+          "$ref": "#/$defs/marker"
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/textTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "text",
+        "level"
+      ],
+      "additionalProperties": false
+    },
+    "para": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "para"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "cont": {
+          "type": "boolean"
+        },
+        "num": {
+          "$ref": "#/$defs/marker"
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/textTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "list": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "list"
+        },
+        "ordered": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100000,
+          "items": {
+            "$ref": "#/$defs/listItem"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "ordered",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "math": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "math"
+        },
+        "tex": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30000
+        },
+        "tag": {
+          "$ref": "#/$defs/marker"
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/mathTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "tex"
+      ],
+      "additionalProperties": false
+    },
+    "figure": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "figure"
+        },
+        "src": {
+          "$ref": "#/$defs/resource"
+        },
+        "alt": {
+          "$ref": "#/$defs/text"
+        },
+        "caption": {
+          "$ref": "#/$defs/text"
+        },
+        "image_text": {
+          "$ref": "#/$defs/text"
+        },
+        "num": {
+          "$ref": "#/$defs/marker"
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/figureTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "src"
+      ],
+      "additionalProperties": false
+    },
+    "table": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "table"
+        },
+        "head": {
+          "$ref": "#/$defs/matrix"
+        },
+        "rows": {
+          "$ref": "#/$defs/matrix"
+        },
+        "caption": {
+          "$ref": "#/$defs/text"
+        },
+        "caption_pos": {
+          "enum": [
+            "above",
+            "below"
+          ]
+        },
+        "align": {
+          "type": "string",
+          "pattern": "^[lcr]+$"
+        },
+        "num": {
+          "$ref": "#/$defs/marker"
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/tableTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "head",
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "html": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "source": {
+          "$ref": "#/$defs/locations"
+        },
+        "placement": {
+          "enum": [
+            "frontmatter",
+            "body"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Open semantic role. Unknown reader roles receive an advisory warning, not a rejection."
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "type": {
+          "const": "html"
+        },
+        "html": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120000
+        },
+        "css": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "html_profile": {
+          "const": "reader-html-2",
+          "description": "Compatibility hint only. Omit this field; the compiler supplies the shared profile."
+        },
+        "num": {
+          "$ref": "#/$defs/marker"
+        },
+        "fallback": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "$ref": "#/$defs/resource"
+            },
+            "alt": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "additionalProperties": false
+        },
+        "translations": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/language"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/htmlTranslation"
+          }
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "html"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

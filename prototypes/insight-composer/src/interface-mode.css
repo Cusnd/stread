@@ -1,0 +1,11 @@
+.interface-mode-control { min-width: 0; margin: 0 0 calc(24px * var(--ui-scale, 1)); padding: 0; border: 0; }
+.interface-mode-control legend { margin-bottom: calc(11px * var(--ui-scale, 1)); padding: 0; color: var(--text-primary, #252525); font-size: calc(13px * var(--ui-scale, 1)); }
+.interface-mode-options { display: flex; width: fit-content; max-width: 100%; padding: calc(3px * var(--ui-scale, 1)); gap: calc(3px * var(--ui-scale, 1)); border: 1px solid var(--line, #e5e5e5); border-radius: calc(6px * var(--ui-scale, 1)); background: var(--selected-surface, #f4f4f4); }
+.interface-mode-option { position: relative; min-width: 0; cursor: pointer; }
+.interface-mode-option input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.interface-mode-option > span { display: block; padding: calc(7px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1)); border-radius: calc(4px * var(--ui-scale, 1)); color: var(--text-secondary, #6b6b6b); font-size: calc(12px * var(--ui-scale, 1)); line-height: 1.5; white-space: nowrap; transition: color 130ms ease, background-color 130ms ease, box-shadow 130ms ease; }
+.interface-mode-option:hover > span { color: var(--text-primary, #252525); }
+.interface-mode-option input:checked + span { color: var(--text-primary, #252525); background: var(--surface-floating, #fff); box-shadow: 0 1px 3px #24282d12; }
+.interface-mode-option input:focus-visible + span { outline: 2px solid var(--text-primary, #252525); outline-offset: 2px; }
+.interface-mode-storage-note { margin: calc(9px * var(--ui-scale, 1)) 0 0; color: var(--text-secondary, #6b6b6b); font-size: calc(11px * var(--ui-scale, 1)); line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .interface-mode-option > span { transition: none; } }

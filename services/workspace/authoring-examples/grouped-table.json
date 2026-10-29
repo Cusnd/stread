@@ -1,0 +1,29 @@
+{
+  "format": "reader-authoring-1",
+  "key": "layout-example-grouped-table",
+  "meta": {
+    "title": "Layout example: a table with a shared note",
+    "language": "en",
+    "translations": { "zh-CN": { "title": "布局示例：表格与共用说明" } }
+  },
+  "blocks": [
+    {
+      "key": "context",
+      "type": "para",
+      "text": "The measurements below are invented only to demonstrate table structure. They are not research results.",
+      "translations": { "zh-CN": { "text": "以下测量值仅为演示表格结构而编写，不是真实研究结果。" } }
+    },
+    {
+      "key": "grouped-measurements",
+      "type": "html",
+      "role": "table",
+      "html": "<div class=\"layout-stack\"><table class=\"ruled\"><caption data-key=\"caption\">Two settings measured twice</caption><thead><tr><th data-key=\"setting\" scope=\"col\" rowspan=\"2\">Setting</th><th data-key=\"measurement\" scope=\"colgroup\" colspan=\"2\">Measurement</th></tr><tr><th data-key=\"run\" scope=\"col\" headers=\"measurement\">Run</th><th data-key=\"value\" scope=\"col\" headers=\"measurement\">Value</th></tr></thead><tbody><tr><th data-key=\"setting-a\" scope=\"rowgroup\" rowspan=\"2\" headers=\"setting\">A</th><td data-key=\"run-a1\" headers=\"setting-a run\">1</td><td data-key=\"value-a1\" class=\"scalar\" headers=\"setting-a value\">0.82</td></tr><tr><td data-key=\"run-a2\" headers=\"setting-a run\">2</td><td data-key=\"value-a2\" class=\"scalar\" headers=\"setting-a value\">0.84</td></tr></tbody><tbody><tr class=\"group-start\"><th data-key=\"setting-b\" scope=\"rowgroup\" rowspan=\"2\" headers=\"setting\">B</th><td data-key=\"run-b1\" headers=\"setting-b run\">1</td><td data-key=\"value-b1\" class=\"scalar\" headers=\"setting-b value\">0.91</td></tr><tr><td data-key=\"run-b2\" headers=\"setting-b run\">2</td><td data-key=\"value-b2\" class=\"scalar\" headers=\"setting-b value\"></td></tr></tbody></table><p data-key=\"table-note\" class=\"note\">A blank means no measurement was recorded for that run. It does not mean zero, and the value must not be shifted from another cell.</p></div>",
+      "translations": {
+        "zh-CN": {
+          "alignment": "same-structure",
+          "html": "<div class=\"layout-stack\"><table class=\"ruled\"><caption data-key=\"caption\">两种设置的两次测量</caption><thead><tr><th data-key=\"setting\" scope=\"col\" rowspan=\"2\">设置</th><th data-key=\"measurement\" scope=\"colgroup\" colspan=\"2\">测量</th></tr><tr><th data-key=\"run\" scope=\"col\" headers=\"measurement\">轮次</th><th data-key=\"value\" scope=\"col\" headers=\"measurement\">数值</th></tr></thead><tbody><tr><th data-key=\"setting-a\" scope=\"rowgroup\" rowspan=\"2\" headers=\"setting\">A</th><td data-key=\"run-a1\" headers=\"setting-a run\">1</td><td data-key=\"value-a1\" class=\"scalar\" headers=\"setting-a value\">0.82</td></tr><tr><td data-key=\"run-a2\" headers=\"setting-a run\">2</td><td data-key=\"value-a2\" class=\"scalar\" headers=\"setting-a value\">0.84</td></tr></tbody><tbody><tr class=\"group-start\"><th data-key=\"setting-b\" scope=\"rowgroup\" rowspan=\"2\" headers=\"setting\">B</th><td data-key=\"run-b1\" headers=\"setting-b run\">1</td><td data-key=\"value-b1\" class=\"scalar\" headers=\"setting-b value\">0.91</td></tr><tr><td data-key=\"run-b2\" headers=\"setting-b run\">2</td><td data-key=\"value-b2\" class=\"scalar\" headers=\"setting-b value\"></td></tr></tbody></table><p data-key=\"table-note\" class=\"note\">空白表示该轮没有记录测量值，不表示零，也不能从其他单元格挪入数值。</p></div>"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,706 @@
+{
+  "format": "mcp-branch-examples-1",
+  "registryHash": "e70efc5c56bfc3c4878f566d97df4ad1d9beb13af4021d2cc0f7c133675b881a",
+  "notice": "Illustrative schema-valid placeholders; not business-valid calls, authorization or reusable request IDs. Generated without executing tools.",
+  "examples": [
+    {
+      "name": "list_document_relations",
+      "arguments": {
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "set_document_relation",
+      "arguments": {
+        "document_id": "example",
+        "relation_id": "example",
+        "expected_version": 1,
+        "action": "link",
+        "request_id": "example-request-do-not-reuse"
+      }
+    },
+    {
+      "name": "read_context",
+      "arguments": {}
+    },
+    {
+      "name": "read_context",
+      "arguments": {
+        "view": "outline",
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "read_context",
+      "arguments": {
+        "view": "content",
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "read_resources",
+      "arguments": {
+        "kind": "asset",
+        "document_id": "example",
+        "path": "example"
+      }
+    },
+    {
+      "name": "read_resources",
+      "arguments": {
+        "kind": "pdf_pages",
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "read_resources",
+      "arguments": {
+        "kind": "authoring_artifacts",
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "prepare_source_upload",
+      "arguments": {
+        "filename": "example",
+        "authorized": true,
+        "request_id": "example-request-do-not-reuse"
+      }
+    },
+    {
+      "name": "query_uploaded_sources",
+      "arguments": {
+        "action": "list"
+      }
+    },
+    {
+      "name": "query_uploaded_sources",
+      "arguments": {
+        "action": "get",
+        "source_id": "example"
+      }
+    },
+    {
+      "name": "get_authoring_contract",
+      "arguments": {}
+    },
+    {
+      "name": "validate_authoring",
+      "arguments": {
+        "authoring_source_id": "example"
+      }
+    },
+    {
+      "name": "create_authoring_preview",
+      "arguments": {
+        "authoring_source_id": "example",
+        "request_id": "example-request-do-not-reuse"
+      }
+    },
+    {
+      "name": "inspect_authoring_preview",
+      "arguments": {
+        "target": "preview",
+        "preview_id": "example"
+      }
+    },
+    {
+      "name": "inspect_authoring_preview",
+      "arguments": {
+        "target": "draft",
+        "draft_id": "example"
+      }
+    },
+    {
+      "name": "publish_authoring_preview",
+      "arguments": {
+        "preview_id": "example",
+        "expected_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "request_id": "example-request-do-not-reuse",
+        "review": {
+          "source_review": "example",
+          "layout_review": "example",
+          "interaction_review": "example"
+        }
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "replace",
+            "block_id": "example",
+            "field": "title",
+            "value": "example"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "replace",
+            "block_id": "example",
+            "field": "head",
+            "row": 0,
+            "column": 0,
+            "value": "example"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "replace",
+            "block_id": "example",
+            "field": "head",
+            "value": [
+              [
+                "example"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "replace_range",
+            "block_id": "example",
+            "start": 0,
+            "end": 0,
+            "expected_text": "example",
+            "value": "example",
+            "field": "title"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "replace_range",
+            "block_id": "example",
+            "start": 0,
+            "end": 0,
+            "expected_text": "example",
+            "value": "example",
+            "field": "head",
+            "row": 0,
+            "column": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "insert",
+            "before_block_id": "example",
+            "block": {
+              "type": "heading"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "insert",
+            "after_block_id": "example",
+            "block": {
+              "type": "heading"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "remove",
+            "block_id": "example"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "move",
+            "block_id": "example",
+            "before_block_id": "example"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revise_document",
+      "arguments": {
+        "document_id": "example",
+        "expected_revision": 1,
+        "request_id": "example-request-do-not-reuse",
+        "operations": [
+          {
+            "kind": "move",
+            "block_id": "example",
+            "after_block_id": "example"
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_revision_proposals",
+      "arguments": {}
+    },
+    {
+      "name": "decide_revision_proposal",
+      "arguments": {
+        "proposal_id": "example",
+        "request_id": "example-request-do-not-reuse",
+        "decision": "accept"
+      }
+    },
+    {
+      "name": "list_change_requests",
+      "arguments": {}
+    },
+    {
+      "name": "resolve_reference",
+      "arguments": {
+        "reference": "#Q00001"
+      }
+    },
+    {
+      "name": "answer_question",
+      "arguments": {
+        "document_id": "example",
+        "insight_id": "example",
+        "expected_version": 1,
+        "request_id": "example-request-do-not-reuse",
+        "answer": {
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "example"
+            }
+          ]
+        },
+        "authorized": true
+      }
+    },
+    {
+      "name": "query_documents",
+      "arguments": {
+        "action": "list"
+      }
+    },
+    {
+      "name": "query_documents",
+      "arguments": {
+        "action": "search",
+        "query": "example"
+      }
+    },
+    {
+      "name": "query_documents",
+      "arguments": {
+        "action": "metadata",
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "update_document",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "metadata",
+          "document_id": "example",
+          "expected_version": 1,
+          "patch": {}
+        }
+      }
+    },
+    {
+      "name": "update_document",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "archive",
+          "document_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "update_document",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "restore",
+          "document_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "list_collections",
+      "arguments": {}
+    },
+    {
+      "name": "update_collection",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "create",
+          "label": "example"
+        }
+      }
+    },
+    {
+      "name": "update_collection",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "update",
+          "collection_id": "example",
+          "expected_version": 1,
+          "patch": {}
+        }
+      }
+    },
+    {
+      "name": "update_collection",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "remove",
+          "collection_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "query_insights",
+      "arguments": {}
+    },
+    {
+      "name": "update_insight",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "create",
+          "document_id": "example",
+          "insight": {
+            "type": "annotation",
+            "body": "example",
+            "color": "example"
+          }
+        }
+      }
+    },
+    {
+      "name": "update_insight",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "update",
+          "document_id": "example",
+          "expected_version": 1,
+          "insight": {
+            "id": "example"
+          }
+        }
+      }
+    },
+    {
+      "name": "update_insight",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "archive",
+          "document_id": "example",
+          "insight_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "update_insight",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "restore",
+          "document_id": "example",
+          "insight_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "set_insight_review",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "document_id": "example",
+        "insight_id": "example",
+        "action": "add",
+        "expected_activity_revision": 0
+      }
+    },
+    {
+      "name": "get_reading_plan",
+      "arguments": {}
+    },
+    {
+      "name": "update_reading_plan",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "add",
+          "document_id": "example",
+          "expected_plan_version": 0
+        }
+      }
+    },
+    {
+      "name": "update_reading_plan",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "remove",
+          "document_id": "example",
+          "expected_plan_version": 0
+        }
+      }
+    },
+    {
+      "name": "update_reading_plan",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "move",
+          "document_id": "example",
+          "expected_plan_version": 0,
+          "direction": "up"
+        }
+      }
+    },
+    {
+      "name": "query_reading_activity",
+      "arguments": {
+        "view": "summary"
+      }
+    },
+    {
+      "name": "query_reading_activity",
+      "arguments": {
+        "view": "history"
+      }
+    },
+    {
+      "name": "update_change_request",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "create",
+          "document_id": "example",
+          "category": "correction",
+          "body": "example",
+          "revision": 1
+        }
+      }
+    },
+    {
+      "name": "update_change_request",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "update",
+          "document_id": "example",
+          "change_request_id": "example",
+          "expected_version": 1,
+          "patch": {}
+        }
+      }
+    },
+    {
+      "name": "update_change_request",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "cancel",
+          "document_id": "example",
+          "change_request_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "update_change_request",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "reopen",
+          "document_id": "example",
+          "change_request_id": "example",
+          "expected_version": 1
+        }
+      }
+    },
+    {
+      "name": "get_object_preferences",
+      "arguments": {
+        "document_id": "example"
+      }
+    },
+    {
+      "name": "update_object_preferences",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "document_id": "example",
+        "document_revision": 1,
+        "expected_workspace_revision": 0,
+        "objects": [
+          {
+            "block_id": "example"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query_glossary",
+      "arguments": {
+        "action": "list"
+      }
+    },
+    {
+      "name": "query_glossary",
+      "arguments": {
+        "action": "search",
+        "query": "example"
+      }
+    },
+    {
+      "name": "query_glossary",
+      "arguments": {
+        "action": "get",
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    {
+      "name": "update_glossary",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "create",
+          "term": "example",
+          "definition": "example"
+        }
+      }
+    },
+    {
+      "name": "update_glossary",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "update",
+          "id": "00000000-0000-4000-8000-000000000001",
+          "expected_revision": 1,
+          "patch": {}
+        }
+      }
+    },
+    {
+      "name": "update_glossary",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "remove",
+          "id": "00000000-0000-4000-8000-000000000001",
+          "expected_revision": 1
+        }
+      }
+    },
+    {
+      "name": "update_glossary",
+      "arguments": {
+        "request_id": "example-request-do-not-reuse",
+        "authorized": true,
+        "operation": {
+          "action": "restore",
+          "id": "00000000-0000-4000-8000-000000000001",
+          "expected_revision": 1
+        }
+      }
+    }
+  ]
+}

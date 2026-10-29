@@ -1,0 +1,1794 @@
+{
+  "format": "reader-authoring-1",
+  "key": "crispr",
+  "meta": {
+    "title": "Genome editing: the road of CRISPR/Cas9 from bench to clinic",
+    "language": "en",
+    "authors": "Ayman Eid, Magdy M Mahfouz"
+  },
+  "source": {
+    "path": "source.pdf",
+    "sha256": "5d906ad63310a9b593c1035513758e48b64a45fd3591a393bad2a01177b94cb9",
+    "pages": 11
+  },
+  "blocks": [
+    {
+      "key": "Abs1",
+      "type": "heading",
+      "level": 1,
+      "text": "Abstract"
+    },
+    {
+      "key": "Abs1-p0",
+      "type": "para",
+      "text": "Molecular scissors engineered for site-specific modification of the genome hold great promise for effective functional analyses of genes, genomes and epigenomes and could improve our understanding of the molecular underpinnings of disease states and facilitate novel therapeutic applications. Several platforms for molecular scissors that enable targeted genome engineering have been developed, including zinc-finger nucleases (ZFNs), transcription activator-like effector nucleases (TALENs) and, most recently, clustered regularly interspaced palindromic repeats (CRISPR)/CRISPR-associated-9 (Cas9). The CRISPR/Cas9 system’s simplicity, facile engineering and amenability to multiplexing make it the system of choice for many applications. CRISPR/Cas9 has been used to generate disease models to study genetic diseases. Improvements are urgently needed for various aspects of the CRISPR/Cas9 system, including the system’s precision, delivery and control over the outcome of the repair process. Here, we discuss the current status of genome engineering and its implications for the future of biological research and gene therapy.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "Sec1",
+      "type": "heading",
+      "level": 1,
+      "text": "Introduction"
+    },
+    {
+      "key": "Sec1-p0",
+      "type": "para",
+      "text": "Sequencing of the human genome marked an important milestone in studying the genetic basis of disease states.[1](#ref-CR1) Advances in sequencing technologies have made it possible to sequence the entire human genome in a week for only 1000 USD using HiSeq X Ten and HiSeq X five systems.[2](#ref-CR2) A great deal of information about gene sequences and variations among individuals and different backgrounds is currently available.[3](#ref-CR3) However, knowledge of the functions of genes and their variants is still lacking owing to the absence of technologies enabling site-specific alterations of gene sequences that would facilitate experimental determination of their molecular functions. Genome engineering, in which the genetic material is manipulated at the single-base level, has facilitated the functional characterization of genes and the development and study of disease models. Genome engineering began in the late 1970s, when methods were developed to exchange pieces of DNA in yeast via the homologous recombination system.[4](#ref-CR4), [5](#ref-CR5) These techniques enabled the generation of single and multiple knockouts for use in functional characterization of genes. In the late 1980s, Capecchi and colleagues[6](#ref-CR6) developed gene-targeting technologies using embryonic stem cells proficient in homologous recombination. The Capecchi technology has facilitated the study of disease models in mice and contributed significantly to drug discovery and development.[6](#ref-CR6) Frustratingly, however, because gene targeting is possible only in homologous recombination (HR)-proficient cells, the application of this technology to other cell types and eukaryotic systems has been rather limited.[7](#ref-CR7)",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "Sec1-p1",
+      "type": "para",
+      "text": "To overcome this limitation, several groups have sought methods to introduce site-specific double-strand breaks (DSBs) and harness the cellular repair machinery to allow genome engineering in every cell type.[8](#ref-CR8) The ability to generate DSBs in genomes in a site-specific manner would allow the manipulation of the genetic material, enabling the user to dictate the desired genetic outcome.[9](#ref-CR9) Genomic DSBs are repaired by either the error-prone non-homologous end-joining (NHEJ) pathway, in which the two ends of the break are stitched back together with insertion or deletion of nucleotides (indels), or highly precise homology-directed repair (HDR), in which a DNA template with ends homologous to the break site is supplied and used to copy information across the break ([Figure 1](#Fig1)).[10](#ref-CR10) NHEJ repair is quite useful in generating functional gene knockouts and is therefore quite useful in functional genomic studies. In contrast, HDR is used mainly in genome editing to rewrite the DNA sequence and generate gene or protein variants.[11](#ref-CR11) Manipulations of these two processes may be able to unlock the potential of functional genomics and genomic medicine. Thus, the challenge confronting the field is the generation of site-specific DSBs.",
+      "source": [
+        {
+          "page": 1
+        }
+      ]
+    },
+    {
+      "key": "Fig1",
+      "type": "figure",
+      "num": "1",
+      "src": "assets/figure-1.jpg",
+      "alt": "Figure 1",
+      "caption": "Site-specific nucleases (SSNs) generate site-specific genomic double-strand breaks (DSBs). SSNs including zinc-finger nucleases (ZFNs), transcription activator-like effector nucleases (TALENs) or clustered regularly interspaced palindromic repeats/CRISPR-associated-9 (CRISPR/Cas9) systems can be used to generate a site-specific DSB. Non-homologous end-joining (NHEJ) or homology-directed repair (HDR) can be used to repair the break. NHEJ is an imprecise repair process and generates indels that can be useful in generating functional knockouts. HDR is a precise repair process and is used mainly in editing the DNA sequence. HDR requires the supply of a repair template to copy information across the break during the repair process. HDR is not efficient in most cellular systems.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "Sec1-p3",
+      "type": "para",
+      "text": "Enzymes that are capable of creating DSBs in a site-specific manner and can be engineered to bind user-defined DNA sequences do not exist in nature. However, such enzymes can be designed, produced *in vitro* and delivered to cells, where they will generate site-specific breaks. To this end, researchers focused on identifying DNA-binding modules that could be engineered to bind to a user-specified sequence and DNA-cleaving catalytic domains.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "Sec2",
+      "type": "heading",
+      "level": 1,
+      "text": "Zinc-finger nucleases"
+    },
+    {
+      "key": "Sec2-p0",
+      "type": "para",
+      "text": "Subsequent research efforts focused on generating hybrid proteins with two parts: a programmable DNA-binding module and a DNA-cleaving module. Zinc-finger arrays that can be selected and engineered to bind to a user-defined sequence represented a major advance.[12](#ref-CR12), [13](#ref-CR13) One such DNA-binding module is based on arrays, each of which is capable of binding to a nucleotide triplet that can provide specificity to a single locus in the genome.[14](#ref-CR14) Several restriction endonucleases are capable of a complete cut through the DNA at either blunt or staggered ends. Therefore, zinc-finger nucleases (ZFNs) were generated as hybrid proteins by fusion of a DNA-binding module composed of several zinc-finger arrays with the DNA-cleaving module from the restriction endonuclease *Fok*I ([Figure 2a](#Fig2)).[12](#ref-CR12) *Fok*I provides greater specificity because cleavage by this enzyme is based on dimer formation between its catalytic domains. To allow dimer formation, two zinc-finger *Fok*I hybrid proteins must be generated and simultaneously codelivered; one monomer binds to the forward strand of the DNA, and the second monomer binds to the reverse strand.[15](#ref-CR15) Furthermore, the two *Fok*I monomers must be in close proximity to allow dimer formation, catalytic activity and generation of DSBs.[16](#ref-CR16) Thus, the specificity of a ZFN is determined by the forward-strand sequence conferred by the left ZF DNA-binding module, the reverse-strand sequence conferred by the right ZF DNA-binding module and the spacer sequence between the two binding sites. The spacer sequence is determined by the linker between the ZF DNA-binding array and the *Fok*I catalytic domain. As a general rule, longer linkers require longer spacers and vice versa.[17](#ref-CR17) As a result of the combined effects of these three elements, the specificity of ZFN binding within the genome is quite high. The major obstacle to the use of this system is that it requires engineering and generation of ZF arrays capable of binding to any user-defined sequence.[18](#ref-CR18) This process is quite expensive and laborious and suffers from low reproducibility.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "Fig2",
+      "type": "html",
+      "role": "figure",
+      "num": "2",
+      "html": "<figure class=\"layout-stack\"><img src=\"assets/figure-2.jpg\" alt=\"Figure 2\"><figcaption data-key=\"caption\">Different molecular scissors platforms including zinc-finger nucleases (ZFNs), transcription activator-like effector nucleases (TALENs) and clustered regularly interspaced palindromic repeats/CRISPR-associated-9 (CRISPR/Cas9). (<strong>a</strong>) ZFNs are hybrid proteins between zinc-finger arrays and the catalytic domain of <em>FokI</em> endonuclease. Each ZF array is capable of binding to three nucleotides in the target sequence. Dimerization of the <em>Fok</em>I catalytic domain leads to the formation of double-strand breaks (DSBs). (<strong>b</strong>) TALENs possess a modular central repeat domain that can be engineered to bind any user-selected sequence. Engineering of the sequences and order of RVDs can confer user-defined sequence specificities. TALENs are hybrid proteins between the TAL effector backbone and the catalytic domain of <em>FokI</em> endonuclease. TALENs require two monomers to bind to the sense and antisense strands, respectively. (<strong>c</strong>) The CRISPR/Cas9 two-component system is composed of Cas9 endonuclease and the single-guide RNA (sgRNA) molecule. Engineering of 20 nucleotides in the sgRNA can confer user-selected specificity. Cas9 nuclease domains cleave both strands within the target sequence preceding the protospacer-associated motif (PAM) NGG trinucleotide sequence.</figcaption></figure>",
+      "translations": {
+        "zh-CN": {
+          "html": "<figure class=\"layout-stack\"><img alt=\"Figure 2\" src=\"assets/figure-2.jpg\"/><figcaption data-key=\"caption\">不同的分子剪刀平台，包括锌指核酸酶（ZFNs）、转录激活因子样效应物核酸酶（TALENs），以及成簇规律间隔短回文重复序列/CRISPR 相关蛋白 9（CRISPR/Cas9）。(a) ZFN 是由锌指阵列与 FokI 核酸内切酶催化结构域构成的融合蛋白。每个锌指阵列可以结合靶序列中的三个核苷酸。FokI 催化结构域的二聚化促成双链断裂（DSBs）。(b) TALEN 具有模块化的中央重复结构域，可通过工程改造使其结合使用者选择的任意序列。改变重复可变双残基（RVDs）的序列和排列顺序，可赋予使用者定义的序列特异性。TALEN 是由 TAL 效应物骨架与 FokI 核酸内切酶催化结构域构成的融合蛋白，需要两个单体分别结合正义链和反义链。(c) CRISPR/Cas9 双组分系统由 Cas9 核酸内切酶和单导向 RNA（sgRNA）分子组成。改造 sgRNA 中的 20 个核苷酸可赋予使用者选择的特异性。Cas9 的核酸酶结构域切割靶序列中、位于原间隔序列邻近基序（PAM）NGG 三核苷酸序列之前的两条 DNA 链。</figcaption></figure>",
+          "alignment": "same-structure"
+        }
+      },
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "Sec2-p2",
+      "type": "para",
+      "text": "In addition to ZFNs, two platforms have been developed in the past few years: transcription activator-like effector nucleases (TALENs) and clustered regularly interspaced palindromic repeats (CRISPR)/CRISPR-associated-9 (Cas9) ([Figure 2](#Fig2)). Owing to its facile engineering, reproducibility and affordability, CRISPR/Cas9 has become the system of choice. CRISPR/Cas9 is poised to transform biological research and the development of therapeutics for debilitating human conditions and diseases. In this review, we provide a brief background of genome-engineering platforms, with a special emphasis on the CRISPR/Cas9 system, highlight areas of required improvement and discuss the potential of this system for gene therapy.",
+      "source": [
+        {
+          "page": 2
+        }
+      ]
+    },
+    {
+      "key": "Sec3",
+      "type": "heading",
+      "level": 1,
+      "text": "Transcription activator-like effector nucleases"
+    },
+    {
+      "key": "Sec3-p0",
+      "type": "para",
+      "text": "Nature often surprises us with the conservation of intricate molecular systems across kingdoms of life. The *Xanthomonas* phytopathogen infects a wide host range of plant species, leading to severe diseases and crop loss.[19](#ref-CR19) At the molecular level, *Xanthomonas* uses the type III secretion system to inject effector proteins into plant cells to overcome and reprogram the cellular machinery of the host.[20](#ref-CR20) A group of these effector proteins, called transcription activator-like effectors (TALEs), are targeted to the nucleus, where they bind to promoter regions to activate host susceptibility genes to their own benefit.[21](#ref-CR21) TALEs have distinct structural features, including a central repeat domain consisting of repeats of 33–39 amino acids. These repeats are nearly identical except for two residues at positions 12 and 13 of each repeat that are called repeat variable di-residues (RVDs). TALEs also possess an N-terminal secretion signal and an acidic transcriptional activation domain at the C-terminus, in addition to a bi-partite nuclear localization signal. The code for repeat DNA binding was cracked by two groups using experimental and bioinformatics methods.[22](#ref-CR22), [23](#ref-CR23) In this code, each RVD dictates the binding of the repeat to one nucleotide in the target DNA sequence according to the following relationships: HD binds to C, NI binds to A, NG binds to T and NN or NK binds to G. The structural basis of TALE binding to DNA revealed the contributions of the RVD residues to each DNA nucleotide: residue 12 stabilizes the contacts with the nucleotide residue, and residue 13 achieves recognition.[24](#ref-CR24) Several other combinations of RVDs provide binding specificities with various efficiencies. TAL-like proteins from *Ralstonia solanacearum* have enriched the repertoire of RVDs and their binding capacities, thereby providing a rich resource for bioengineering.[25](#ref-CR25) By controlling the number and order of repeats and their RVD sequences, TALE proteins can be engineered to bind any user-defined sequence.[26](#ref-CR26), [27](#ref-CR27), [28](#ref-CR28)",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "Sec3-p1",
+      "type": "para",
+      "text": "*Xanthomonas* and *Ralstonia* phytopathogens have provided a bioengineering bounty, and the TAL and TALE-like proteins provide programmable DNA-binding modules for a wide variety of genome-engineering applications.[29](#ref-CR29) TALEs are capable of binding to methylated DNA; consequently, epigenetic changes do not compromise their binding activities.[27](#ref-CR27), [30](#ref-CR30) Similar to ZFNs, TALENs are hybrid proteins composed of DNA-binding modules derived from TALE proteins and the *Fok*I catalytic domain for the generation of site-specific DSBs. To introduce a site-specific DSB into the genome, two TALENs must be engineered to bind to the forward and reverse strands with an optimal spacer sequence to allow dimerization of the *Fok*I domain, resulting in the formation of DSBs ([Figure 2b](#Fig2)).[27](#ref-CR27) Engineering two TALENs for every single target, although predictable and much more efficient than ZFNs, is a time-consuming process.[24](#ref-CR24), [31](#ref-CR31) In addition, TALENs are large proteins, making delivery into the nucleus inefficient and challenging, particularly in the context of biomedical applications.[32](#ref-CR32), [33](#ref-CR33), [34](#ref-CR34), [35](#ref-CR35)",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "Sec4",
+      "type": "heading",
+      "level": 1,
+      "text": "Clustered regularly interspaced palindromic repeats (CRISPR)/CRISPR-associated-9"
+    },
+    {
+      "key": "Sec4-p0",
+      "type": "para",
+      "text": "Bacteria and archaea fend off invading nucleic acids from phages and conjugative plasmids using the CRISPR/Cas systems.[36](#ref-CR36) The CRISPR adaptive immunity systems function through the orchestrated and cooperative activities of many proteins to target invading nucleic acids, including DNA or RNA. Recently, the CRISPR systems were classified into two major classes, class 1 and class 2, based on the differences in the mechanisms of action of their components.[37](#ref-CR37) Class 1 CRISPR systems are composed of multi-subunit CRISPR RNA effectors complexes and include type I, type III and the putative new type IV CRISPR systems. In contrast, class 2 systems are composed of a single-subunit CRISPR RNA effector and include type II and the newly classified type V CRISPR systems. CRISPR/Cas systems function as molecular immunity machinery to preserve a molecular record of previous invaders in the form of a short spacer sequence.[38](#ref-CR38) This spacer sequence is used in future invasions to target and destroy invading nucleic acids (CRISPR RNA or crRNA).[39](#ref-CR39) There are different types of CRISPR/Cas systems that mainly target DNA and or RNA molecules in a variety of ways using multi-ribonucleoprotein complexes.[40](#ref-CR40) The simplest of these systems, type II, requires only the Cas9 protein that is guided by a RNA molecule composed of CRISPR and *trans*-activating CRISPR RNA (tracrRNA).[41](#ref-CR41), [42](#ref-CR42), [43](#ref-CR43), [44](#ref-CR44) This RNA molecule is engineered to possess the essential sequences, in the form of single-guide RNA (sgRNA), to bind and direct the Cas9 endonuclease. The ribonucleoprotein complex of Cas9 and sgRNA scans the DNA, recognizes the complementary DNA sequence and make a cut preceding the protospacer-associated motif (PAM) NGG sequence ([Figure 2c](#Fig2)).[42](#ref-CR42), [44](#ref-CR44) The PAM sequence, which is indispensable for cleavage of DNA by Cas9, distinguishes self from non-self DNA; consequently, bacterial and archaeal species do not cleave their own DNA. The CRISPR/Cas9 system utilizes sgRNA to identify the complementary sequence in the DNA and subsequently generate DSBs. Therefore, the CRISPR/Cas9 system depends on the highly predictable Watson–Crick base pairing between RNA and DNA that is easy to engineer.[43](#ref-CR43), [44](#ref-CR44) Application of this system to the editing of eukaryotic genomes requires only the engineering of the short sgRNA; thus, no protein engineering is required.[44](#ref-CR44) Consequently, the system is quite simple, efficient, robust, amenable to multiplexing and library construction and applicable across all transformable species. However, the system does have some limitations, including off-target activities of the Cas9 protein,[45](#ref-CR45) that are of great concern in the context of clinical applications. Off-target activities vary among cell types and species.[46](#ref-CR46) Therefore, several attempts have been made to improve the specificity of the system, including the generation of paired nickases or chimeras containing a catalytically inactive Cas9 protein (dCas9) and the catalytic domain of the *Fok*I endonuclease, similar to the context and requirements for the ZFN and TALEN platforms.[47](#ref-CR47), [48](#ref-CR48), [49](#ref-CR49) Paired nickases are Cas9 variants with single functional nuclease domains capable of generating single DNA nicks; the use of a pair of sgRNAs leads to the formation of DSBs via the formation of two relatively close nicks.[50](#ref-CR50) Paired nickases have improved the specificity of the CRISPR/Cas9 system; however, single nicks in the DNA are not always faithfully repaired and can be deleterious at some stages.[49](#ref-CR49)",
+      "source": [
+        {
+          "page": 3
+        }
+      ]
+    },
+    {
+      "key": "Sec4-p1",
+      "type": "para",
+      "text": "fdCas9, fCas9 and RFNs, variants of fusions between the FokI catalytic domain and catalytically inactive Cas9 (dCas9) protein, have significantly improved the precision of systems for genome engineering.[47](#ref-CR47), [48](#ref-CR48), [49](#ref-CR49) Other attempts to titrate the ratio between the sgRNA molecules and the Cas9 protein, or to produce other truncated forms of the sgRNAs, have also proven effective in improving the specificity of the system.[51](#ref-CR51) Our ability to detect all off-target activities is constrained by the detection limits of the methods available for this purpose, including deep sequencing and other recently reported methods.[52](#ref-CR52), [53](#ref-CR53) Therefore, novel Cas9 variants with improved specificity are urgently needed to ensure safer applications of this system in genomic medicine, particularly in germline cells, where slight changes in the genome sequence or the epigenetic state can have profound effects on progeny.[54](#ref-CR54), [55](#ref-CR55) Thus, development of a highly precise Cas9 that is small and has flexible PAM requirements would significantly improve a wide range of applications.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "Sec4-p2",
+      "type": "para",
+      "text": "The CRISPR/Cas9 system has been used to edit the genomes of a diverse array of mammalian cell types and organisms with high efficiency and precision. Generating a range of Cas9 variants would help reduce the limitations of the system, making it possible to use each Cas9 variant for a specific purpose.[55](#ref-CR55) For example, recently the Cpf1 Cas9 variant was identified and used for genome-engineering applications. Its features include the generation of DSBs with staggered ends that can improve the efficiency of HDR.[55](#ref-CR55) Cpf1 is also smaller in size than wild-type Cas9. The CRISPR/Cas9 molecular tool kit will be expanded in the near future to include Cas9 variants and sgRNA structures and molecules designed for specific purposes. Moreover, novel classes of site-specific nucleases that are similar to CRISPR/Cas9, whose engineering depends on the Watson–Crick base pairing, might replace the current system.[56](#ref-CR56) The CRISPR/Cas9 system will enable different modalities of targeted gene mutagenesis and editing ([Figure 3](#Fig3)). Certainly, the future of genome engineering is bright, and we now have the tools to answer myriad basic questions and engineer genomes to treat genetic diseases and understand their underlying molecular basis. [Table 1](#Tab1) shows a systematic comparison of the three platforms.[57](#ref-CR57)",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "Fig3",
+      "type": "figure",
+      "num": "3",
+      "src": "assets/figure-3.jpg",
+      "alt": "Figure 3",
+      "caption": "Different modalities of non-homologous end-joining (NHEJ) and homology-directed repair (HDR)-mediated repair processes. (**a**) NHEJ, an error-prone repair mechanism, is capable of generating targeted gene mutagenesis, homologue-specific mutagenesis, deletion of tandem genes and large chromosomal deletions. Example 1 shows targeted mutagenesis by the application of a single-guide RNA (sgRNA1). Example 2 shows the targeting of a duplicate gene using a homolog-specific sgRNA (sgRNA2). Example 3 shows the deletion of tandem genes by the application of a single sgRNA present in the tandem genes (sgRNA3). Example 4 shows the deletion of a chromosomal segment by the application of two sgRNAs (sgRNA2 and sgRNA3). (**b**) HDR, a precise repair mechanism, is capable of generating gene replacements, gene fusions, gene insertions and gene variants. The HDR process depends on the simultaneous delivery of a repair template and the generation of double-strand breaks (DSBs). Different repair outcomes can be generated by manipulating the repair template and homology arms. Example 1 shows targeted gene replacement in which the entire gene is replaced by a repair template with homology arms for replacement. Example 2 shows that sequences can be fused to the gene by supplying a repair template with homology arms suitable for gene fusions. Example 3 shows targeted gene insertions in which the gene is inserted using a repair template with homology arms to the site of insertion.",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "Tab1",
+      "type": "table",
+      "num": "1",
+      "caption": "Systematic comparison of the ZFN, TALEN and CRISPR/Cas9 genome-engineering platforms\n\nAbbreviations: CRISPR/Cas9, clustered regularly interspaced palindromic repeats/CRISPR-associated-9; sgRNA, single-guide RNA; TALEN, transcription activator-like effector nuclease; ZFN, zinc-finger nuclease.",
+      "head": [
+        [
+          "",
+          "*ZFN*",
+          "*TALEN*",
+          "*CRISPR/Cas9*"
+        ]
+      ],
+      "rows": [
+        [
+          "Construction",
+          "Protein engineering for every single target",
+          "Protein engineering for every single target",
+          "20-Nucleotide sequence of sgRNA"
+        ],
+        [
+          "Targeting",
+          "Protein–DNA interaction, less predictable",
+          "Protein–DNA interaction, less predictable",
+          "DNA–RNA interactions, highly predictable"
+        ],
+        [
+          "Delivery",
+          "Two ZFNs around the target sequence are required",
+          "Two TALENs around the target sequence are required",
+          "sgRNA complementary to the target sequence with Cas9 protein"
+        ],
+        [
+          "Multiplexing",
+          "Challenging",
+          "Challenging",
+          "Highly feasible"
+        ],
+        [
+          "Feasibility of library construction and transformation for genome-wide screens",
+          "Technically challenging",
+          "Technically challenging",
+          "Highly feasible"
+        ],
+        [
+          "Affordability",
+          "Resource intensive and time consuming",
+          "Affordable but time consuming",
+          "Highly affordable"
+        ]
+      ],
+      "translations": {
+        "zh-CN": {
+          "caption": "ZFN、TALEN 和 CRISPR/Cas9 基因组工程平台的系统比较\n\n缩写：CRISPR/Cas9，成簇规律间隔短回文重复序列/CRISPR 相关蛋白 9；sgRNA，单导向 RNA；TALEN，转录激活因子样效应物核酸酶；ZFN，锌指核酸酶。",
+          "head": [
+            [
+              "",
+              "*ZFN*",
+              "*TALEN*",
+              "*CRISPR/Cas9*"
+            ]
+          ],
+          "rows": [
+            [
+              "构建",
+              "每个靶点都需要进行蛋白质工程改造",
+              "每个靶点都需要进行蛋白质工程改造",
+              "sgRNA 中的 20 个核苷酸序列"
+            ],
+            [
+              "靶向",
+              "蛋白质与 DNA 相互作用，可预测性较低",
+              "蛋白质与 DNA 相互作用，可预测性较低",
+              "DNA 与 RNA 相互作用，可预测性高"
+            ],
+            [
+              "递送",
+              "靶序列两侧需要两个 ZFN",
+              "靶序列两侧需要两个 TALEN",
+              "与靶序列互补的 sgRNA 及 Cas9 蛋白"
+            ],
+            [
+              "多重靶向",
+              "具有挑战性",
+              "具有挑战性",
+              "可行性高"
+            ],
+            [
+              "用于全基因组筛选的文库构建与转化的可行性",
+              "技术上具有挑战性",
+              "技术上具有挑战性",
+              "可行性高"
+            ],
+            [
+              "成本可承受性",
+              "资源消耗大且耗时",
+              "成本可承受，但耗时",
+              "成本可承受性高"
+            ]
+          ]
+        }
+      },
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "Sec5",
+      "type": "heading",
+      "level": 1,
+      "text": "CRISPR/Cas9 on-target activities",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "Sec5-p0",
+      "type": "para",
+      "text": "Extensive research efforts have focused on reducing the off-target activities of the CRISPR/Cas9 system, an important goal. Very recently, Cas9 high-fidelity variants with alterations that reduce nonspecific DNA contacts were reported.[58](#ref-CR58) Similarly, an enhanced variant of Sp Cas9 (eSpCas9) has been generated that exhibits reduced off-target activities and robust on-target activities.[59](#ref-CR59) Furthermore, Cpf1 endonuclease has recently been characterized as an all-in-one CRISPR machine that produces staggered ends at DSBs.[55](#ref-CR55), [60](#ref-CR60), [61](#ref-CR61), [62](#ref-CR62) Equally important, however, is control over the repair process to ensure that the on-target effects will produce the desired genetic changes.[63](#ref-CR63) Usually, these precise changes can be produced via HDR that is quite challenging. Attempts to increase the frequency of HDR relative to NHEJ using chemical inhibitors have achieved some success.[64](#ref-CR64) To increase the frequency of HDR, DSBs should be generated when the HDR process is dominant or NHEJ is inhibited.[65](#ref-CR65) Because HDR depends on the availability of the repair template to copy information across the break, the simultaneous delivery and availability of the repair template at the time the DSB is made are essential for a successful outcome.[66](#ref-CR66) Unsuccessful HDR could lead to deleterious consequences; therefore, research efforts aimed at improving and controlling this repair process hold the key to expanding the applications of these technologies to the treatment of genetic diseases in which single-base changes must be made or sequences must be replaced.[67](#ref-CR67) It should be emphasized that undesired outcomes of HDR in gene therapy would complicate the treatment because these alterations would be mosaic and could not be targeted by future treatments.",
+      "source": [
+        {
+          "page": 4
+        }
+      ]
+    },
+    {
+      "key": "Sec6",
+      "type": "heading",
+      "level": 1,
+      "text": "Targeted transcriptional regulation",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "Sec6-p0",
+      "type": "para",
+      "text": "Most of the interest in molecular scissors relates to their ability to generate precise DSBs in the genome that can then be harnessed for functional studies or treatment purposes. ZFs, TALEs and Cas9 can be engineered to retain their programmable ability to bind any user-defined sequence in the genome but lack any nuclease function. Therefore, chimeric proteins using ZFs or TALEs as DNA-binding modules and other catalytic transcriptional regulatory domains are of immediate use for spatiotemporal control of transcription throughout the genome.[68](#ref-CR68) These domains were fused to catalytically inactive Cas9 to generate CRISPR/Cas9-based synthetic transcriptional regulators.[69](#ref-CR69) These chimeric proteins serve as synthetic transcriptional regulators to control the expression of single or multiple genes, thereby providing powerful platforms for functional studies of genes and genomes in their native context and under different physiological and developmental conditions.[70](#ref-CR70) Spatiotemporal control over gene expression using transcriptional activators and repressors or chromatin modifiers, in a cell type-specific manner and at desired times and levels, would be quite useful in delineating the function of single genes, gene circuits, networks and interacting pathways.[71](#ref-CR71) Such platforms will be indispensable for robust functional genomics applications across diverse eukaryotic species in which knockouts of single or multiple genes would be lethal or deleterious to the target organism. Intriguingly, CRISPR interference has been applied in large-scale genome-wide screens with minimal off-targeting activities, indicating its potential use in functional genomics studies across diverse eukaryotic species. [72](#ref-CR72), [73](#ref-CR73)",
+      "source": [
+        {
+          "page": 5
+        }
+      ]
+    },
+    {
+      "key": "Sec7",
+      "type": "heading",
+      "level": 1,
+      "text": "Challenges in therapeutic applications of molecular scissors",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "Sec7-p0",
+      "type": "para",
+      "text": "Major improvements are needed before molecular scissors platforms find wide application in genomic medicine. As we discussed previously, the genetic nature of a disease, the required correction, the molecular scissors platform used, the delivery method and the targeted cells and organs are all factors that influence the efficacy of treatment and determine the likelihood of clinical benefit.[10](#ref-CR10) Improvements in the efficiencies of repair mechanisms could unlock the potential of these methods to treat a wide range of genetic diseases. Treatments based on NHEJ repair of target sequences are likely to be achieved ([Figure 3a](#Fig3)).[1](#ref-CR1) However, because many other treatments are based on HDR, in which a template molecule is supplied to replace the undesirable sequence, major improvements in the efficiency of HDR are needed ([Figure 3b](#Fig3)). The primary challenge is that HDR is active primarily in mitotic cells, in contrast to NHEJ that is active in nearly all cell types.[66](#ref-CR66) Therefore, nondividing and postmitotic cells are recalcitrant to targeted engineering via HDR. Whether other strategies can induce HDR in nondividing cells or targeted gene corrections can be achieved via NHEJ remains to be determined.[65](#ref-CR65) Improvements in our ability to control the efficiency of these two repair mechanisms in various cell types would improve their applicability in genetic medicine.",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "Sec7-p1",
+      "type": "para",
+      "text": "Reducing the off-target effects of Cas9 nuclease is a major goal in efforts to improve the precision of gene corrections. Several studies have reported an elevated rate of off-target effects of Cas9[74](#ref-CR74), [75](#ref-CR75), [76](#ref-CR76) that could pose devastating risks to the patient. Off-target effects could, for example, generate multiple oncogenic mutations in the genome, and edited oncogenic cells could overtake the unedited cells and cause severe complications.[63](#ref-CR63) This is a complex issue that should be thoroughly studied in target cell types under treatment conditions. As previously mentioned, several strategies have been employed to improve the precision of Cas9 cutting, including the generation of paired nickases and chimeric fusions of the *Fok*I catalytic domain to catalytically inactive Cas9 (dCas9). These strategies have improved precision and reduced off-target effects at known Cas9 off-targets.[47](#ref-CR47), [48](#ref-CR48), [49](#ref-CR49), [51](#ref-CR51) However, off-target activities depend on several parameters, including the amount of Cas9 protein available, the structure and nature of the sgRNA sequence, the targeted cell type and the cellular state.[77](#ref-CR77), [78](#ref-CR78) Off-target activities vary among different cell types and organisms, indicating the need for rigorous studies. Determining the actual frequency of off-target activities is challenging owing to the detection limits of current methodologies.[79](#ref-CR79) The few studies that have performed whole-genome sequencing have observed less off-target activity than might be expected. Overcoming off-target activities by employing multiple strategies and developing highly sensitive detection methods is of paramount importance to the application of Cas9 in genomic medicine.[53](#ref-CR53), [78](#ref-CR78), [80](#ref-CR80) Alternatively, other Cas9 variants with improved specificities might be generated, or other novel classes of endonucleases might be used.[81](#ref-CR81)",
+      "source": [
+        {
+          "page": 6
+        }
+      ]
+    },
+    {
+      "key": "Sec8",
+      "type": "heading",
+      "level": 1,
+      "text": "Gene therapy for genetic diseases",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec8-p0",
+      "type": "para",
+      "text": "The availability of genetic information regarding complex diseases has enabled the application of genome-editing technologies to the treatment of nonmonogenic complex disorders, including cardiovascular diseases, HIV and Alzheimer’s disease.[82](#ref-CR82) Inducing mutations that are capable of reversing diseases is increasingly possible using technologies such as the CRISPR/Cas9 platform. The production of protein variants with healthy phenotypes depends largely on the use of HDR to replace a gene sequence with a supplied fragment carrying the intended correction. However, the treatment of diseases such as HIV depends on generating a nonfunctional allele of the gene that can be efficiently achieved by NHEJ.[83](#ref-CR83) Genome-wide association studies have mapped and linked noncoding regions of the genome to disease phenotypes.[84](#ref-CR84) Manipulating these noncoding sequences using genome-engineering reagents would enable the reversal of disease states. Targeted gene therapy involves the manipulation of the genetic material to delete and replace causal mutations or to induce host mutations that provide protective functions. The most translatable and easy to treat diseases are monogenic diseases in which the generation of a dysfunctional copy of the causative gene would reverse the disease state.[85](#ref-CR85), [86](#ref-CR86) Polygenic diseases that require simultaneous multiple alterations of the genome are more challenging to treat.[87](#ref-CR87), [88](#ref-CR88) Targeted gene corrections have been demonstrated in somatic and germline cells of animal models.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec8-p1",
+      "type": "para",
+      "text": "The treatment of particular disease states depends on an understanding of their genetic basis. Thus, molecular scissors can be applied to edit the genome and dictate a desired genetic outcome that can reverse the illness. Editing of the sequence depends on the application of either NHEJ or HDR.[11](#ref-CR11) NHEJ is quite efficient and occurs at all cell-cycle stages.[66](#ref-CR66) In contrast, HDR is quite challenging, particularly when inserting a large DNA sequence to replace the diseased allele.[64](#ref-CR64), [89](#ref-CR89) The nature of the disease, nature of the desired modification, repair method used, topology of the target and template sequences and cell state will determine the success rate of gene therapy.[90](#ref-CR90) Therefore, such approaches must first be demonstrated in model organisms to address all of these issues and provide solutions before proceeding to clinical trials. Furthermore, information is needed about how much editing is required for the treatments and the fitness of the treated versus nontreated cells. An increased editing requirement will increase the challenge.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec8-p2",
+      "type": "para",
+      "text": "Another important factor is whether the treatment of targeted cells is performed *ex vivo*, in which cells are taken from the patient, treated with molecular scissors and then reintroduced into the body, or *in vivo*, in which molecular scissors are directly applied to the targeted cells to achieve the desired genetic manipulations.[90](#ref-CR90) Furthermore, in what form are the molecular scissors delivered: DNA, RNA or proteins? For safety reasons, proteins are most desirable because DNA can integrate into the genome and generate unintended mutations that might cause complications.[75](#ref-CR75), [90](#ref-CR90) RNA would be much safer than DNA, but the direct application of RNA might be technically challenging. Several blood disorders, including severe combined immunodeficiency, Fanconi anemia, Wiskott–Aldrich syndrome and sickle-cell anemia, have been treated *ex vivo* using molecular scissors based on ZFN platforms.[85](#ref-CR85), [91](#ref-CR91) The HIV co-receptor CCR5 has been mutated in T cells using NHEJ, and proof of concept has been demonstrated in a mouse model; a phase I clinical trial of engineering of CCR5 in human T cells is currently underway.[83](#ref-CR83) Intriguingly, a clinical trial has demonstrated that gene editing can be safe and effective in humans to treat and tackle HIV.[83](#ref-CR83) ZFNs are in clinical trials for multiple human diseases, and coverage of these trials is provided in a recent excellent review.[92](#ref-CR92) CRISPR/Cas9 molecular scissors have been successfully used to treat tyrosinemia and prevent cardiovascular disease.[93](#ref-CR93) Many clinical trials using the CRISPR/Cas9 system are being planned or are underway to treat a variety of human diseases.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec9",
+      "type": "heading",
+      "level": 1,
+      "text": "Antiviral therapies",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec9-p0",
+      "type": "para",
+      "text": "The CRISPR/Cas9 system was initially discovered as a molecular immunity mechanism against the genetic material of invading pathogens. Thus, it should be possible to use the same strategy in other kingdoms of life, including mammals and plants. CRISPR/Cas9 was recently used to confer molecular immunity against infectious viruses in plants. This method has been used to target tomato leaf curl virus (TYLCV) that causes a devastating disease that can lead to nearly absolute crop loss. Interestingly, the CRISPR/Cas9 system is capable of simultaneously conferring immunity against multiple DNA viruses.[94](#ref-CR94) Moreover, one sgRNA sequence designed to bind a conserved intergenic region was capable of providing immunity against several members of the geminivirus family. In mammalian systems, CRISPR/Cas9 has been used against HIV genomic targets and latent provirus in the genome. CRISPR/Cas9 has also been used against hepatitis virus B and C.[83](#ref-CR83), [95](#ref-CR95), [96](#ref-CR96)",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec9-p1",
+      "type": "para",
+      "text": "To develop antiviral therapies, the CRISPR/Cas9 system can be engineered to target the virus sequence for destruction or to engineer host sequences essential for successful infection of the virus. Moreover, the CRISPR/Cas9 system might be applied to diseased individuals to treat viral infection by eliminating the sequences essential for viral replication, for example, the LTR sequences essential for HIV replication.[91](#ref-CR91) Recently, a clinical trial demonstrated that disruption of the CCR5 gene by ZFNs and autologous reintroduction of CD4T cells with a dysfunctional CCR5 gene led to a significant reduction in viral load and was safe, raising the possibility of using the CRISPR/Cas9 system for gene therapy against AIDS.[91](#ref-CR91) Furthermore, several human viral infections are associated with cancers, including hepatitis virus B and C in liver cancers, human papillomavirus in cervical cancer, and Epstein–Barr virus in nasopharyngeal carcinoma.[95](#ref-CR95) Targeting these oncogenic viruses for degradation and disruption may represent an effective strategy for preventing or reversing cancer progression. Thus, applying the CRISPR/Cas9 system to the destruction of oncogenic viruses may provide an effective means of treating these types of cancers. All of these therapies depend greatly on the development of an effective method for the delivery of CRISPR/Cas9 reagents into target cells. Although quite challenging, progress is being made, and ultimately it may be possible to deliver these reagents into all types of cells in diseased individuals.",
+      "source": [
+        {
+          "page": 7
+        }
+      ]
+    },
+    {
+      "key": "Sec10",
+      "type": "heading",
+      "level": 1,
+      "text": "CRISPR/Cas9 systems and disease models",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "Sec10-p0",
+      "type": "para",
+      "text": "Sequence-based information about the genetic basis of disease helps to generate disease mouse models. The ease and speed with which these models can be generated is unprecedented, enabling functional studies of many genetic diseases.[97](#ref-CR97) CRISPR/Cas9 technology allows the study of complex genetic diseases, including human cancer, in which multiple mutations and chromosomal translocations are present in the genome.[74](#ref-CR74), [98](#ref-CR98) Because cancer is quite complex and usually involves hundreds of genetic changes, including point mutations, deletions and chromosomal translocations, it has been quite challenging to generate mouse models for studying tumors and their progression.[99](#ref-CR99), [100](#ref-CR100) Because the cancer genome and epigenome in various cells are quite complex, with a vast number of single-nucleotide polymorphisms and chromosomal rearrangements, the CRISPR/Cas9 system would be extremely useful for generating next-generation mouse models in which genomic alterations are generated to mimic cancer states ([Figure 3](#Fig3)).[41](#ref-CR41), [99](#ref-CR99) With the use of the CRISPR/Cas9 system, it is increasingly possible to generate mouse models carrying all of these genetic and epigenetic changes, thus allowing rigorous molecular analysis of the molecular underpinnings of tumor progression and the identification of oncogenes and tumor suppressor genes.[101](#ref-CR101) Such a model would enable the validation of cancer-related genes identified in The Cancer Genome Atlas. Furthermore, the CRISPR/Cas9 system has been used to efficiently *ex vivo* engineer hematopoietic stem cells, and the edited cells have been retransplanted into mice.[102](#ref-CR102) Such mouse models should be useful in studies of hematopoietic malignancy. Pigs, rats and nonhuman primates were recently shown to be amenable to CRISPR/Cas9-based targeted engineering. Disease models in these organisms will be useful in studies of the genetic basis of complex polygenic diseases. Pigs are a superior disease model owing to their physiological similarities to humans;[103](#ref-CR103) however, because of their size and high cost, as well as the difficulty of generating disease models, they have not been widely adopted. With the use of CRISPR/Cas9, however, it is expected that pigs will be adopted as relevant disease models. Two recent reports demonstrated CRISPR/Cas9-mediated gene editing in cynomolgus and rhesus monkeys.[104](#ref-CR104) Such a system would be quite useful in many applications, including studies of learning and cognition. Intriguingly, the CRISPR/Cas9 system has been applied to revert the chromosomal inversion in the *F8* gene, and inversion-corrected induced pluripotent stem cells have been isolated with frequencies of up to 6.7%, with no detectable off-target activities.[105](#ref-CR105) This study is quite intriguing because it demonstrates the feasibility of correcting large chromosomal rearrangements in hemophilia A patient cells and suggest therapeutic potential. CRISPR/Cas9 machinery has also been used to remove a mutated exon 23 from the dystrophin gene and partial recovery of functional dystrophin, indicating therapeutic potential to treat Duchenne muscular dystrophy.[106](#ref-CR106)",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "Sec11",
+      "type": "heading",
+      "level": 1,
+      "text": "Ethical concerns"
+    },
+    {
+      "key": "Sec11-p0",
+      "type": "para",
+      "text": "CRISPR/Cas9 technology is still in its infancy, and many questions remain to be answered. However, the facile engineering, affordability and efficiency of the CRISPR/Cas9 genome editing pose ethical concerns. The use of this powerful technology could create major ethical concerns if it were used for the wrong purposes.[107](#ref-CR107) Germline editing has been performed in diverse model species to generate disease models or to study the molecular underpinnings of specific gene functions. More recently, primate germline engineering has also been reported. One example of a potentially problematic application of this technology is the editing of the human germline to adjust genes related to IQ.[108](#ref-CR108) Thus, the power of CRISPR/Cas9 has reached a stage where fiction is becoming a reality. Despite such concerns, however, UK scientists have gained license to use the CRISPR/Cas9 technology to edit human embryos.[109](#ref-CR109) Scientists understand that regulation may be necessary, but research efforts and funding need to continue. Policymakers may be aware of the power and opportunities this technology brings to human life.[110](#ref-CR110) Therefore, discussions are focused on reaching enabling regulation such that research and generation of knowledge is neither disrupted nor compromised.[110](#ref-CR110) It remains to be determined whether regulations would prevent the spread of the CRISPR/Cas9 machinery in vector organisms such as mosquitoes, in which gene drives might lead to the spread of the mutated strains that could eventually overtake wild-type populations. Such regulations may also apply to prevent spreading the machinery through bacteria and potential compromise of beneficial bacteria. These regulations may help alleviate public concerns, promote funding of research aimed at generating knowledge and balance hope and fear.",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "Sec12",
+      "type": "heading",
+      "level": 1,
+      "text": "Future perspectives",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "Sec12-p0",
+      "type": "para",
+      "text": "The CRISPR/Cas9 system is poised to revolutionize functional biology, biotechnology and genomic medicine. Applications of this technology across diverse eukaryotic species will significantly improve our knowledge of the molecular underpinnings of key cellular processes. Furthermore, it will enable the generation of disease models and improve the efficiency of drug discovery and development. Molecular surgery, in which nucleotides are stitched to edit causative disease sequences, will become possible. Genome editing is finally close to being able to be used at the clinical bedside, and improving the efficiency, specificity and safety of gene editing reagents will unlock myriad applications in genetic medicine. This will undoubtedly improve human life by enabling treatment of diseases that are currently beyond our control and personalized medicine for effective treatment of individuals. Germline engineering applications are troublesome, but every advancement in human civilization entails unique risks; regulations should empower research aimed at improving these tools and understanding the genetic basis of human diseases while preventing applications intended to ‘improve’ the species or produce ‘super-humans’. Assuming that these technologies are handled and applied appropriately, CRISPR/Cas9-based genomic surgeries will undoubtedly improve human life).",
+      "source": [
+        {
+          "page": 8
+        }
+      ]
+    },
+    {
+      "key": "Bib1",
+      "type": "heading",
+      "level": 1,
+      "text": "References"
+    },
+    {
+      "key": "ref-CR1",
+      "type": "para",
+      "role": "reference",
+      "text": "1 Sanseau P . Impact of human genome sequencing for in silico target discovery. *Drug Discov Today* 2001; **6**: 316–323.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR2",
+      "type": "para",
+      "role": "reference",
+      "text": "2 Oetting WS . Impact of next generation sequencing: the 2009 Human Genome Variation Society Scientific Meeting. *Hum Mutat* 2010; **31**: 500–503.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR3",
+      "type": "para",
+      "role": "reference",
+      "text": "3 Lander ES . Initial impact of the sequencing of the human genome. *Nature* 2011; **470**: 187–197.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR4",
+      "type": "para",
+      "role": "reference",
+      "text": "4 Hinnen A, Hicks JB, Fink GR . Transformation of yeast. *Proc Natl Acad Sci USA* 1978; **75**: 1929–1933.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR5",
+      "type": "para",
+      "role": "reference",
+      "text": "5 Scherer S, Davis RW . Replacement of chromosome segments with altered DNA sequences constructed *in vitro*. *Proc Natl Acad Sci USA* 1979; **76**: 4951–4955.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR6",
+      "type": "para",
+      "role": "reference",
+      "text": "6 Mansour SL, Thomas KR, Capecchi MR . Disruption of the proto-oncogene int-2 in mouse embryo-derived stem cells: a general strategy for targeting mutations to non-selectable genes. *Nature* 1988; **336**: 348–352.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR7",
+      "type": "para",
+      "role": "reference",
+      "text": "7 Mahfouz MM, Li L . TALE nucleases and next generation GM crops. *GM Crops* 2011; **2**: 99–103.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR8",
+      "type": "para",
+      "role": "reference",
+      "text": "8 Bibikova M, Carroll D, Segal DJ, Trautman JK, Smith J, Kim YG *et al*. Stimulation of homologous recombination through targeted cleavage by chimeric nucleases. *Mol Cell Biol* 2001; **21**: 289–297.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR9",
+      "type": "para",
+      "role": "reference",
+      "text": "9 Chapman JR, Taylor MR, Boulton SJ . Playing the end game: DNA double-strand break repair pathway choice. *Mol Cell* 2012; **47**: 497–510.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR10",
+      "type": "para",
+      "role": "reference",
+      "text": "10 Ciccia A, Elledge SJ . The DNA damage response: making it safe to play with knives. *Mol Cell* 2010; **40**: 179–204.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR11",
+      "type": "para",
+      "role": "reference",
+      "text": "11 Krejci L, Altmannova V, Spirek M, Zhao X . Homologous recombination and its regulation. *Nucleic Acids Res* 2012; **40**: 5795–5818.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR12",
+      "type": "para",
+      "role": "reference",
+      "text": "12 Kim YG, Cha J, Chandrasegaran S . Hybrid restriction enzymes: zinc finger fusions to Fok I cleavage domain. *Proc Natl Acad Sci USA* 1996; **93**: 1156–1160.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR13",
+      "type": "para",
+      "role": "reference",
+      "text": "13 Pavletich NP, Pabo CO . Crystal structure of a five-finger GLI-DNA complex: new perspectives on zinc fingers. *Science* 1993; **261**: 1701–1707.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR14",
+      "type": "para",
+      "role": "reference",
+      "text": "14 Bibikova M, Beumer K, Trautman JK, Carroll D . Enhancing gene targeting with designed zinc finger nucleases. *Science* 2003; **300**: 764.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR15",
+      "type": "para",
+      "role": "reference",
+      "text": "15 Bitinaite J, Wah DA, Aggarwal AK, Schildkraut I . FokI dimerization is required for DNA cleavage. *Proc Natl Acad Sci USA* 1998; **95**: 10570–10575.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR16",
+      "type": "para",
+      "role": "reference",
+      "text": "16 Urnov FD, Rebar EJ, Holmes MC, Zhang HS, Gregory PD . Genome editing with engineered zinc finger nucleases. *Nat Rev Genet* 2010; **11**: 636–646.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR17",
+      "type": "para",
+      "role": "reference",
+      "text": "17 Cathomen T, Joung JK . Zinc-finger nucleases: the next generation emerges. *Mol Ther* 2008; **16**: 1200–1207.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR18",
+      "type": "para",
+      "role": "reference",
+      "text": "18 Durai S, Mani M, Kandavelou K, Wu J, Porteus MH, Chandrasegaran S . Zinc finger nucleases: custom-designed molecular scissors for genome engineering of plant and mammalian cells. *Nucleic Acids Res* 2005; **33**: 5978–5990.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR19",
+      "type": "para",
+      "role": "reference",
+      "text": "19 Rademaker JL, Louws FJ, Schultz MH, Rossbach U, Vauterin L, Swings J *et al*. A comprehensive species to strain taxonomic framework for xanthomonas. *Phytopathology* 2005; **95**: 1098–1111.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR20",
+      "type": "para",
+      "role": "reference",
+      "text": "20 Romer P, Hahn S, Jordan T, Strauss T, Bonas U, Lahaye T . Plant pathogen recognition mediated by promoter activation of the pepper Bs3 resistance gene. *Science* 2007; **318**: 645–648.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR21",
+      "type": "para",
+      "role": "reference",
+      "text": "21 Kay S, Hahn S, Marois E, Hause G, Bonas U . A bacterial effector acts as a plant transcription factor and induces a cell size regulator. *Science* 2007; **318**: 648–651.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR22",
+      "type": "para",
+      "role": "reference",
+      "text": "22 Moscou MJ, Bogdanove AJ . A simple cipher governs DNA recognition by TAL effectors. *Science* 2009; **326**: 1501.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR23",
+      "type": "para",
+      "role": "reference",
+      "text": "23 Boch J, Scholze H, Schornack S, Landgraf A, Hahn S, Kay S *et al*. Breaking the code of DNA binding specificity of TAL-type III effectors. *Science* 2009; **326**: 1509–1512.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR24",
+      "type": "para",
+      "role": "reference",
+      "text": "24 Deng D, Yan C, Pan X, Mahfouz M, Wang J, Zhu JK *et al*. Structural basis for sequence-specific recognition of DNA by TAL effectors. *Science* 2012; **335**: 720–723.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR25",
+      "type": "para",
+      "role": "reference",
+      "text": "25 Li L, Atef A, Piatek A, Ali Z, Piatek M, Aouida M *et al*. Characterization and DNA-binding specificities of Ralstonia TAL-like effectors. *Mol Plant* 2013; **6**: 1318–1330.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR26",
+      "type": "para",
+      "role": "reference",
+      "text": "26 Christian M, Cermak T, Doyle EL, Schmidt C, Zhang F, Hummel A *et al*. Targeting DNA double-strand breaks with TAL effector nucleases. *Genetics* 2010; **186**: 757–761.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR27",
+      "type": "para",
+      "role": "reference",
+      "text": "27 Mahfouz MM, Li L, Shamimuzzaman M, Wibowo A, Fang X, Zhu JK . *De novo*-engineered transcription activator-like effector (TALE) hybrid nuclease with novel DNA binding specificity creates double-strand breaks. *Proc Natl Acad Sci USA* 2011; **108**: 2623–2628.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR28",
+      "type": "para",
+      "role": "reference",
+      "text": "28 Li L, Piatek MJ, Atef A, Piatek A, Wibowo A, Fang X *et al*. Rapid and highly efficient construction of TALE-based transcriptional regulators and nucleases for genome modification. *Plant Mol Biol* 2012; **78**: 407–416.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR29",
+      "type": "para",
+      "role": "reference",
+      "text": "29 Miller JC, Tan S, Qiao G, Barlow KA, Wang J, Xia DF *et al*. A TALE nuclease architecture for efficient genome editing. *Nat Biotechnol* 2011; **29**: 143–148.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR30",
+      "type": "para",
+      "role": "reference",
+      "text": "30 Deng D, Yin P, Yan C, Pan X, Gong X, Qi S *et al*. Recognition of methylated DNA by TAL effectors. *Cell Res* 2012; **22**: 1502–1504.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR31",
+      "type": "para",
+      "role": "reference",
+      "text": "31 Mahfouz MM, Piatek A, Stewart CN Jr. . Genome engineering via TALENs and CRISPR/Cas9 systems: challenges and perspectives. *Plant Biotechnol J* 2014; **12**: 1006–1014.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR32",
+      "type": "para",
+      "role": "reference",
+      "text": "32 Ding Q, Lee Y-K, Schaefer EAK, Peters DT, Veres A, Kim K *et al*. A TALEN genome-editing system for generating human stem cell-based disease models. *Cell Stem Cell* 2013; **12**: 238–251.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR33",
+      "type": "para",
+      "role": "reference",
+      "text": "33 Tesson L, Usal C, Ménoret S, Leung E, Niles BJ, Remy S *et al*. Knockout rats generated by embryo microinjection of TALENs. *Nat Biotechnol* 2011; **29**: 695–696.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR34",
+      "type": "para",
+      "role": "reference",
+      "text": "34 Aouida M, Piatek MJ, Bangarusamy DK, Mahfouz MM . Activities and specificities of homodimeric TALENs in Saccharomyces cerevisiae. *Curr Genet* 2014; **60**: 61–74.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR35",
+      "type": "para",
+      "role": "reference",
+      "text": "35 Ding Q, Lee YK, Schaefer EA, Peters DT, Veres A, Kim K *et al*. A TALEN genome-editing system for generating human stem cell-based disease models. *Cell Stem Cell* 2013; **12**: 238–251.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR36",
+      "type": "para",
+      "role": "reference",
+      "text": "36 Bolotin A, Quinquis B, Sorokin A, Ehrlich SD . Clustered regularly interspaced short palindrome repeats (CRISPRs) have spacers of extrachromosomal origin. *Microbiology.* 2005; **151** (Pt 8): 2551–2561.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR37",
+      "type": "para",
+      "role": "reference",
+      "text": "37 Makarova KS, Wolf YI, Alkhnbashi OS, Costa F, Shah SA, Saunders SJ *et al*. An updated evolutionary classification of CRISPR-Cas systems. *Nat Rev Microbiol* 2015; **13**: 722–736.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR38",
+      "type": "para",
+      "role": "reference",
+      "text": "38 Barrangou R, Fremaux C, Deveau H, Richards M, Boyaval P, Moineau S *et al*. CRISPR provides acquired resistance against viruses in prokaryotes. *Science* 2007; **315**: 1709–1712.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ref-CR39",
+      "type": "para",
+      "role": "reference",
+      "text": "39 Marraffini LA, Sontheimer EJ . CRISPR interference: RNA-directed adaptive immunity in bacteria and archaea. *Nat Rev Genet* 2010; **11**: 181–190.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR40",
+      "type": "para",
+      "role": "reference",
+      "text": "40 Jiang W, Marraffini LA . CRISPR-Cas: new tools for genetic manipulations from bacterial immunity systems. *Annu Rev Microbiol* 2015; **69**: 209–228.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR41",
+      "type": "para",
+      "role": "reference",
+      "text": "41 Cong L, Ran FA, Cox D, Lin S, Barretto R, Habib N *et al*. Multiplex genome engineering using CRISPR/Cas systems. *Science* 2013; **339**: 819–823.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR42",
+      "type": "para",
+      "role": "reference",
+      "text": "42 Mali P, Yang L, Esvelt KM, Aach J, Guell M, DiCarlo JE *et al*. RNA-guided human genome engineering via Cas9. *Science* 2013; **339**: 823–826.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR43",
+      "type": "para",
+      "role": "reference",
+      "text": "43 Gasiunas G, Barrangou R, Horvath P, Siksnys V . Cas9-crRNA ribonucleoprotein complex mediates specific DNA cleavage for adaptive immunity in bacteria. *Proc Natl Acad Sci USA* 2012; **109**: E2579–E2586.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR44",
+      "type": "para",
+      "role": "reference",
+      "text": "44 Jinek M, Chylinski K, Fonfara I, Hauer M, Doudna JA, Charpentier E . A programmable dual-RNA-guided DNA endonuclease in adaptive bacterial immunity. *Science* 2012; **337**: 816–821.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR45",
+      "type": "para",
+      "role": "reference",
+      "text": "45 Fu Y, Foden JA, Khayter C, Maeder ML, Reyon D, Joung JK *et al*. High-frequency off-target mutagenesis induced by CRISPR-Cas nucleases in human cells. *Nat Biotechnol* 2013; **31**: 822–826.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR46",
+      "type": "para",
+      "role": "reference",
+      "text": "46 Tan EP, Li Y, Velasco-Herrera Mdel C, Yusa K, Bradley A . Off-target assessment of CRISPR-Cas9 guiding RNAs in human iPS and mouse ES cells. *Genesis* 2015; **53**: 225–236.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR47",
+      "type": "para",
+      "role": "reference",
+      "text": "47 Tsai SQ, Wyvekens N, Khayter C, Foden JA, Thapar V, Reyon D *et al*. Dimeric CRISPR RNA-guided FokI nucleases for highly specific genome editing. *Nat Biotechnol* 2014; **32**: 569–576.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR48",
+      "type": "para",
+      "role": "reference",
+      "text": "48 Aouida M, Eid A, Ali Z, Cradick T, Lee C, Deshmukh H *et al*. Efficient fdCas9 synthetic endonuclease with improved specificity for precise genome engineering. *PLoS ONE* 2015; **10**: e0133373.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR49",
+      "type": "para",
+      "role": "reference",
+      "text": "49 Guilinger JP, Thompson DB, Liu DR . Fusion of catalytically inactive Cas9 to FokI nuclease improves the specificity of genome modification. *Nat Biotechnol* 2014; **32**: 577–582.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR50",
+      "type": "para",
+      "role": "reference",
+      "text": "50 Ran FA, Hsu PD, Lin CY, Gootenberg JS, Konermann S, Trevino AE *et al*. Double nicking by RNA-guided CRISPR Cas9 for enhanced genome editing specificity. *Cell* 2013; **154**: 1380–1389.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR51",
+      "type": "para",
+      "role": "reference",
+      "text": "51 Fu Y, Sander JD, Reyon D, Cascio VM, Joung JK . Improving CRISPR-Cas nuclease specificity using truncated guide RNAs. *Nat Biotechnol* 2014; **32**: 279–284.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR52",
+      "type": "para",
+      "role": "reference",
+      "text": "52 Koo T, Lee J, Kim JS . Measuring and reducing off-target activities of programmable nucleases including CRISPR-Cas9. *Mol Cells* 2015; **38**: 475–481.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR53",
+      "type": "para",
+      "role": "reference",
+      "text": "53 Wang X, Wang Y, Wu X, Wang J, Wang Y, Qiu Z *et al*. Unbiased detection of off-target cleavage by CRISPR-Cas9 and TALENs using integrase-defective lentiviral vectors. *Nat Biotechnol* 2015; **33**: 175–178.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR54",
+      "type": "para",
+      "role": "reference",
+      "text": "54 Mahfouz MM . RNA-directed DNA methylation: mechanisms and functions. *Plant Signal Behav* 2010; **5**: 806–816.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR55",
+      "type": "para",
+      "role": "reference",
+      "text": "55 Zetsche B, Gootenberg JS, Abudayyeh OO, Slaymaker IM, Makarova KS, Essletzbichler P *et al*. Cpf1 is a single RNA-guided endonuclease of a class 2 CRISPR-Cas system. *Cell* 2015; **163**: 759–771.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR56",
+      "type": "para",
+      "role": "reference",
+      "text": "56 Swarts DC, Jore MM, Westra ER, Zhu Y, Janssen JH, Snijders AP *et al*. DNA-guided DNA interference by a prokaryotic Argonaute. *Nature* 2014; **507**: 258–261.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR57",
+      "type": "para",
+      "role": "reference",
+      "text": "57 Cox DB, Platt RJ, Zhang F . Therapeutic genome editing: prospects and challenges. *Nat Med* 2015; **21**: 121–131.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR58",
+      "type": "para",
+      "role": "reference",
+      "text": "58 Kleinstiver BP, Pattanayak V, Prew MS, Tsai SQ, Nguyen NT, Zheng Z *et al*. High-fidelity CRISPR-Cas9 nucleases with no detectable genome-wide off-target effects. *Nature* 2016; **529**: 490–495.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR59",
+      "type": "para",
+      "role": "reference",
+      "text": "59 Slaymaker IM, Gao L, Zetsche B, Scott DA, Yan WX, Zhang F . Rationally engineered Cas9 nucleases with improved specificity. *Science* 2016; **351**: 84–88.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR60",
+      "type": "para",
+      "role": "reference",
+      "text": "60 Yamano T, Nishimasu H, Zetsche B, Hirano H, Slaymaker IM, Li Y *et al*. Crystal structure of Cpf1 in complex with guide RNA and target DNA. *Cell* 2016; **165**: 949–962.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR61",
+      "type": "para",
+      "role": "reference",
+      "text": "61 Dong D, Ren K, Qiu X, Zheng J, Guo M, Guan X *et al*. The crystal structure of Cpf1 in complex with CRISPR RNA. *Nature* 2016; **532**: 522–526.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR62",
+      "type": "para",
+      "role": "reference",
+      "text": "62 Fonfara I, Richter H, Bratovic M, Le Rhun A, Charpentier E . The CRISPR-associated DNA-cleaving enzyme Cpf1 also processes precursor CRISPR RNA. *Nature* 2016; **532**: 517–521.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR63",
+      "type": "para",
+      "role": "reference",
+      "text": "63 Cox DB, Platt RJ, Zhang F . Therapeutic genome editing: prospects and challenges. *Nat Med* 2015; **21**: 121–131.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR64",
+      "type": "para",
+      "role": "reference",
+      "text": "64 Robert F, Barbeau M, Ethier S, Dostie J, Pelletier J . Pharmacological inhibition of DNA-PK stimulates Cas9-mediated genome editing. *Genome Med* 2015; **7**: 93.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR65",
+      "type": "para",
+      "role": "reference",
+      "text": "65 Rothkamm K, Kruger I, Thompson LH, Lobrich M . Pathways of DNA double-strand break repair during the mammalian cell cycle. *Mol Cell Biol* 2003; **23**: 5706–5715.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR66",
+      "type": "para",
+      "role": "reference",
+      "text": "66 Moynahan ME, Jasin M . Mitotic homologous recombination maintains genomic stability and suppresses tumorigenesis. *Nat Rev Mol Cell Biol* 2010; **11**: 196–207.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR67",
+      "type": "para",
+      "role": "reference",
+      "text": "67 Trobridge GD, Miller DG, Jacobs MA, Allen JM, Kiem HP, Kaul R *et al*. Foamy virus vector integration sites in normal human cells. *Proc Natl Acad Sci USA* 2006; **103**: 1498–1503.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR68",
+      "type": "para",
+      "role": "reference",
+      "text": "68 Mahfouz MM, Li L, Piatek M, Fang X, Mansour H, Bangarusamy DK *et al*. Targeted transcriptional repression using a chimeric TALE-SRDX repressor protein. *Plant Mol Biol* 2012; **78**: 311–321.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR69",
+      "type": "para",
+      "role": "reference",
+      "text": "69 Piatek A, Ali Z, Baazim H, Li L, Abulfaraj A, Al-Shareef S *et al*. RNA-guided transcriptional regulation in planta via synthetic dCas9-based transcription factors. *Plant Biotechnol J* 2015; **13**: 578–589.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR70",
+      "type": "para",
+      "role": "reference",
+      "text": "70 Mahfouz MM, Li L . TALE nucleases and next generation GM crops. *GM Crop* 2011; **2**: 99–103.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR71",
+      "type": "para",
+      "role": "reference",
+      "text": "71 Polstein LR, Perez-Pinera P, Kocak DD, Vockley CM, Bledsoe P, Song L *et al*. Genome-wide specificity of DNA binding, gene regulation, and chromatin remodeling by TALE- and CRISPR/Cas9-based transcriptional activators. *Genome Res* 2015; **25**: 1158–1169.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR72",
+      "type": "para",
+      "role": "reference",
+      "text": "72 Konermann S, Brigham MD, Trevino AE, Joung J, Abudayyeh OO, Barcena C *et al*. Genome-scale transcriptional activation by an engineered CRISPR-Cas9 complex. *Nature* 2015; **517**: 583–588.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR73",
+      "type": "para",
+      "role": "reference",
+      "text": "73 Gilbert LA, Horlbeck MA, Adamson B, Villalta JE, Chen Y, Whitehead EH *et al*. Genome-scale CRISPR-mediated control of gene repression and activation. *Cell* 2014; **159**: 647–661.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR74",
+      "type": "para",
+      "role": "reference",
+      "text": "74 Frock RL, Hu J, Meyers RM, Ho YJ, Kii E, Alt FW . Genome-wide detection of DNA double-stranded breaks induced by engineered nucleases. *Nat Biotechnol* 2015; **33**: 179–186.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR75",
+      "type": "para",
+      "role": "reference",
+      "text": "75 Hsu PD, Scott DA, Weinstein JA, Ran FA, Konermann S, Agarwala V *et al*. DNA targeting specificity of RNA-guided Cas9 nucleases. *Nat Biotechnol* 2013; **31**: 827–832.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR76",
+      "type": "para",
+      "role": "reference",
+      "text": "76 Lin Y, Cradick TJ, Brown MT, Deshmukh H, Ranjan P, Sarode N *et al*. CRISPR/Cas9 systems have off-target activity with insertions or deletions between target DNA and guide RNA sequences. *Nucleic Acids Res* 2014; **42**: 7473–7485.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR77",
+      "type": "para",
+      "role": "reference",
+      "text": "77 O'Geen H, Yu AS, Segal DJ . How specific is CRISPR/Cas9 really? *Curr Opin Chem Biol* 2015; **29**: 72–78.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR78",
+      "type": "para",
+      "role": "reference",
+      "text": "78 Jo YI, Suresh B, Kim H, Ramakrishna S . CRISPR/Cas9 system as an innovative genetic engineering tool: Enhancements in sequence specificity and delivery methods. *Biochim Biophys Acta* 2015; **1856**: 234–243.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR79",
+      "type": "para",
+      "role": "reference",
+      "text": "79 Josephs EA, Kocak DD, Fitzgibbon CJ, McMenemy J, Gersbach CA, Marszalek PE . Structure and specificity of the RNA-guided endonuclease Cas9 during DNA interrogation, target binding and cleavage. *Nucleic Acids Res* 2015; **43**: 8924–8941.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR80",
+      "type": "para",
+      "role": "reference",
+      "text": "80 Tsai SQ, Zheng Z, Nguyen NT, Liebers M, Topkar VV, Thapar V *et al*. GUIDE-seq enables genome-wide profiling of off-target cleavage by CRISPR-Cas nucleases. *Nat Biotechnol* 2015; **33**: 187–197.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR81",
+      "type": "para",
+      "role": "reference",
+      "text": "81 Davis KM, Pattanayak V, Thompson DB, Zuris JA, Liu DR . Small molecule-triggered Cas9 protein with improved genome-editing specificity. *Nat Chem Biol* 2015; **11**: 316–318.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR82",
+      "type": "para",
+      "role": "reference",
+      "text": "82 Hu W, Kaminski R, Yang F, Zhang Y, Cosentino L, Li F *et al*. RNA-directed gene editing specifically eradicates latent and prevents new HIV-1 infection. *Proc Natl Acad Sci USA* 2014; **111**: 11461–11466.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR83",
+      "type": "para",
+      "role": "reference",
+      "text": "83 Tebas P, Stein D, Tang WW, Frank I, Wang SQ, Lee G *et al*. Gene editing of CCR5 in autologous CD4 T cells of persons infected with HIV. *N Engl J Med* 2014; **370**: 901–910.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR84",
+      "type": "para",
+      "role": "reference",
+      "text": "84 Paul DS, Soranzo N, Beck S . Functional interpretation of non-coding sequence variation: concepts and challenges. *Bioessays* 2014; **36**: 191–199.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR85",
+      "type": "para",
+      "role": "reference",
+      "text": "85 Howe SJ, Mansour MR, Schwarzwaelder K, Bartholomae C, Hubank M, Kempski H *et al*. Insertional mutagenesis combined with acquired somatic mutations causes leukemogenesis following gene therapy of SCID-X1 patients. *J Clin Invest* 2008; **118**: 3143–3150.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR86",
+      "type": "para",
+      "role": "reference",
+      "text": "86 Aiuti A, Biasco L, Scaramuzza S, Ferrua F, Cicalese MP, Baricordi C *et al*. Lentiviral hematopoietic stem cell gene therapy in patients with Wiskott-Aldrich syndrome. *Science* 2013; **341**: 1233151.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR87",
+      "type": "para",
+      "role": "reference",
+      "text": "87 Cohen J, Pertsemlidis A, Kotowski IK, Graham R, Garcia CK, Hobbs HH . Low LDL cholesterol in individuals of African descent resulting from frequent nonsense mutations in PCSK9. *Nat Genet* 2005; **37**: 161–165.",
+      "source": [
+        {
+          "page": 10
+        }
+      ]
+    },
+    {
+      "key": "ref-CR88",
+      "type": "para",
+      "role": "reference",
+      "text": "88 TG and HDL Working Group of the Exome Sequencing Project, National Heart, Lung and Blood Institute, Crosby J, Peloso GM, Auer PL *et al*. Loss-of-function mutations in APOC3, triglycerides, and coronary disease. *N Engl J Med* 2014; **371**: 22–31.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR89",
+      "type": "para",
+      "role": "reference",
+      "text": "89 Wu Y, Zhou H, Fan X, Zhang Y, Zhang M, Wang Y *et al*. Correction of a genetic disease by CRISPR-Cas9-mediated gene editing in mouse spermatogonial stem cells. *Cell Res* 2015; **25**: 67–79.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR90",
+      "type": "para",
+      "role": "reference",
+      "text": "90 Kotterman MA, Schaffer DV . Engineering adeno-associated viruses for clinical gene therapy. *Nat Rev Genet* 2014; **15**: 445–451.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR91",
+      "type": "para",
+      "role": "reference",
+      "text": "91 Holt N, Wang J, Kim K, Friedman G, Wang X, Taupin V *et al*. Human hematopoietic stem/progenitor cells modified by zinc-finger nucleases targeted to CCR5 control HIV-1 *in vivo*. *Nat Biotechnol* 2010; **28**: 839–847.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR92",
+      "type": "para",
+      "role": "reference",
+      "text": "92 Jo YI, Kim H, Ramakrishna S . Recent developments and clinical studies utilizing engineered zinc finger nuclease technology. *Cell Mol Life Sci* 2015; **72**: 3819–3830.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR93",
+      "type": "para",
+      "role": "reference",
+      "text": "93 Yin H, Xue W, Chen S, Bogorad RL, Benedetti E, Grompe M *et al*. Genome editing with Cas9 in adult mice corrects a disease mutation and phenotype. *Nat Biotechnol* 2014; **32**: 551–553.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR94",
+      "type": "para",
+      "role": "reference",
+      "text": "94 Ali Z, Abulfaraj A, Idris A, Ali S, Tashkandi M, Mahfouz MM . CRISPR/Cas9-mediated viral interference in plants. *Genome Biol* 2015; **16**: 238.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR95",
+      "type": "para",
+      "role": "reference",
+      "text": "95 Bloom K, Ely A, Mussolino C, Cathomen T, Arbuthnot P . Inactivation of hepatitis B virus replication in cultured cells and *in vivo* with engineered transcription activator-like effector nucleases. *Mol Ther* 2013; **21**: 1889–1897.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR96",
+      "type": "para",
+      "role": "reference",
+      "text": "96 Lin SR, Yang HC, Kuo YT, Liu CJ, Yang TY, Sung KC *et al*. The CRISPR/Cas9 system facilitates clearance of the intrahepatic HBV templates *in vivo*. *Mol Ther Nucleic Acids* 2014; **3**: e186.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR97",
+      "type": "para",
+      "role": "reference",
+      "text": "97 Li H, Haurigot V, Doyon Y, Li T, Wong SY, Bhagwat AS *et al*. *In vivo* genome editing restores haemostasis in a mouse model of haemophilia. *Nature* 2011; **475**: 217–221.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR98",
+      "type": "para",
+      "role": "reference",
+      "text": "98 Cho SW, Kim S, Kim Y, Kweon J, Kim HS, Bae S *et al*. Analysis of off-target effects of CRISPR/Cas-derived RNA-guided endonucleases and nickases. *Genome Res* 2014; **24**: 132–141.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR99",
+      "type": "para",
+      "role": "reference",
+      "text": "99 Weber J, Ollinger R, Friedrich M, Ehmer U, Barenboim M, Steiger K *et al*. CRISPR/Cas9 somatic multiplex-mutagenesis for high-throughput functional cancer genomics in mice. *Proc Natl Acad Sci USA* 2015; **112**: 13982–13987.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR100",
+      "type": "para",
+      "role": "reference",
+      "text": "100 Sanchez-Rivera FJ, Jacks T . Applications of the CRISPR-Cas9 system in cancer biology. *Nat Rev Cancer* 2015; **15**: 387–395.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR101",
+      "type": "para",
+      "role": "reference",
+      "text": "101 Sachdeva M, Sachdeva N, Pal M, Gupta N, Khan IA, Majumdar M *et al*. CRISPR/Cas9: molecular tool for gene therapy to target genome and epigenome in the treatment of lung cancer. *Cancer Gene Ther* 2015; **22**: 509–517.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR102",
+      "type": "para",
+      "role": "reference",
+      "text": "102 Genovese P, Schiroli G, Escobar G, Di Tomaso T, Firrito C, Calabria A *et al*. Targeted genome editing in human repopulating haematopoietic stem cells. *Nature* 2014; **510**: 235–240.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR103",
+      "type": "para",
+      "role": "reference",
+      "text": "103 Peng Y, Clark KJ, Campbell JM, Panetta MR, Guo Y, Ekker SC . Making designer mutants in model organisms. *Development* 2014; **141**: 4042–4054.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR104",
+      "type": "para",
+      "role": "reference",
+      "text": "104 Niu Y, Shen B, Cui Y, Chen Y, Wang J, Wang L *et al*. Generation of gene-modified cynomolgus monkey via Cas9/RNA-mediated gene targeting in one-cell embryos. *Cell* 2014; **156**: 836–843.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR105",
+      "type": "para",
+      "role": "reference",
+      "text": "105 Park CY, Kim DH, Son JS, Sung JJ, Lee J, Bae S *et al*. Functional correction of large factor VIII gene chromosomal inversions in hemophilia A patient-derived iPSCs using CRISPR-Cas9. *Cell Stem Cell* 2015; **17**: 213–220.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR106",
+      "type": "para",
+      "role": "reference",
+      "text": "106 Nelson CE, Hakim CH, Ousterout DG, Thakore PI, Moreb EA, Castellanos Rivera RM *et al*. *In vivo* genome editing improves muscle function in a mouse model of Duchenne muscular dystrophy. *Science* 2016; **351**: 403–407.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR107",
+      "type": "para",
+      "role": "reference",
+      "text": "107 Krishan K, Kanchan T, Singh B . Human genome editing and ethical considerations. *Sci Eng Ethics* 2015; **22**: 597–599.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR108",
+      "type": "para",
+      "role": "reference",
+      "text": "108 Jordan B . The return of germline gene therapy. *Med Sci (Paris)* 2015; **31**: 691–695.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR109",
+      "type": "para",
+      "role": "reference",
+      "text": "109 Callaway E . UK scientists gain licence to edit genes in human embryos. *Nature* 2016; **530**: 18.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "ref-CR110",
+      "type": "para",
+      "role": "reference",
+      "text": "110 Bosley KS, Botchan M, Bredenoord AL, Carroll D, Charo RA, Charpentier E *et al*. CRISPR germline engineering—the community speaks. *Nat Biotechnol* 2015; **33**: 478–486.",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "Ack1",
+      "type": "heading",
+      "level": 1,
+      "text": "Acknowledgements"
+    },
+    {
+      "key": "Ack1-p0",
+      "type": "para",
+      "text": "We thank members of the genome-engineering laboratory at KAUST for discussions. Research in the MMM laboratory for genome engineering is supported by King Abdullah University of Science and Technology.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "ethics-0",
+      "type": "para",
+      "role": "ethics",
+      "text": "The authors declare no conflict of interest.",
+      "source": [
+        {
+          "page": 9
+        }
+      ]
+    },
+    {
+      "key": "rights-0",
+      "type": "para",
+      "role": "rights",
+      "text": "This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 4.0 International License. The images or other third party material in this article are included in the article’s Creative Commons license, unless indicated otherwise in the credit line; if the material is not included under the Creative Commons license, users will need to obtain permission from the license holder to reproduce the material. To view a copy of this license, visit [http://creativecommons.org/licenses/by-nc-nd/4.0/](http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+      "source": [
+        {
+          "page": 11
+        }
+      ]
+    },
+    {
+      "key": "rights-1",
+      "type": "para",
+      "role": "rights",
+      "text": "[Reprints and permissions](https://s100.copyright.com/AppDispatchServlet?title=Genome%20editing%3A%20the%20road%20of%20CRISPR%2FCas9%20from%20bench%20to%20clinic&author=Ayman%20Eid%20et%20al&contentID=10.1038%2Femm.2016.111&copyright=The%20Author%28s%29&publication=2092-6413&publicationDate=2016-10-14&publisherName=SpringerNature&orderBeanReset=true&oa=CC%20BY-NC-ND)"
+    }
+  ],
+  "extensions": {
+    "continous-reader.presentation": {
+      "publication": "Experimental & Molecular Medicine 48, e265 · 2016",
+      "source_note": "11 页原稿 · 重点结构含示例译文，其余保留原文",
+      "translation_note": "本样本用于验证转换约定。原文全文转换；仅重点结构提供人工核对的中文译文。"
+    },
+    "continous-reader.conversion": {
+      "html_aid": "https://www.nature.com/articles/emm2016111",
+      "source_role": "Primary-source HTML extraction aid; PDF retained for checks",
+      "coverage": "full source article including references and available appendices; selective translation",
+      "unmatched_page_keys": [
+        "Abs1",
+        "Sec1",
+        "Sec2",
+        "Sec3",
+        "Sec4",
+        "Sec11",
+        "Bib1",
+        "Ack1",
+        "rights-1"
+      ]
+    }
+  }
+}

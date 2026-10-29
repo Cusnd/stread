@@ -1,0 +1,47 @@
+{
+  "name": "continuous-reader",
+  "version": "0.1.3",
+  "private": true,
+  "type": "module",
+  "main": "electron/bootstrap.cjs",
+  "description": "Continuous Reader desktop document workspace",
+  "author": "Continuous Reader",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "node scripts/dev.mjs",
+    "build": "npm --prefix prototypes/insight-composer run build",
+    "start": "node services/workspace/server.mjs",
+    "test": "node scripts/test.mjs",
+    "test:service": "npm --prefix services/workspace test",
+    "test:reader": "node --test prototypes/insight-composer/tests/*.test.mjs",
+    "mcp": "node services/workspace/stdio.mjs",
+    "desktop:prepare": "node electron/prepare-runtime.mjs",
+    "desktop:dev": "node electron/dev.mjs",
+    "desktop:demo": "node electron/demo.mjs",
+    "desktop:preview": "electron .",
+    "desktop:update:keygen": "node electron/update-keygen.mjs",
+    "desktop:update:build": "node electron/prepare-runtime.mjs --reuse && node electron/build-update.mjs",
+    "desktop:runtime:lock": "node electron/prepare-runtime.mjs --refresh-lock",
+    "desktop:pack": "npm run desktop:prepare && node electron/build-update.mjs --baseline-only && electron-builder --win --x64",
+    "desktop:unpacked": "npm run desktop:prepare && node electron/build-update.mjs --baseline-only && electron-builder --dir --win --x64",
+    "test:desktop": "node --test electron/tests/*.test.*",
+    "local:history": "node services/workspace/sync-cli.mjs",
+    "licenses": "node scripts/generate-third-party-notices.mjs"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.15.3"
+  },
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cusnd/stread.git"
+  },
+  "homepage": "https://github.com/Cusnd/stread#readme",
+  "bugs": {
+    "url": "https://github.com/Cusnd/stread/issues"
+  }
+}

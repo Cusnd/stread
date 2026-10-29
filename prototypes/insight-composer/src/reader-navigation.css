@@ -1,0 +1,99 @@
+/* Reader chrome: separate document, reading mode and tools by space, not cards. */
+.reader-app { --nav-width: calc(232px * var(--ui-scale, 1)); }
+.reader-app .toc.polished-toc { width: var(--nav-width); padding: calc(26px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1)); background: var(--surface-navigation); box-shadow: none; }
+.reader-app .polished-toc .toc-title { flex: none; padding: 0 calc(14px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1)); font-size: calc(11px * var(--ui-scale, 1)); color: #484a4b; font-weight: 600; }
+.reader-app .polished-toc .toc-title a:hover { color: var(--text-primary); }
+.reader-app .polished-toc a:focus-visible { outline-color: #353637; }
+.reader-app .polished-toc .toc-section.active { background: transparent; color: #1f2122; font-weight: 600; }
+.reader-app .polished-toc .toc-section.active::before { background: #292b2c; }
+.reader-app .polished-toc .toc-sub a:hover { color: #1f2122; }
+.reader-app.toc-temporary .toc.polished-toc { width: calc(232px * var(--ui-scale, 1)); box-shadow: 8px 0 24px #24282d0a; }
+.reader-app .topbar.reader-topbar {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
+  gap: calc(28px * var(--ui-scale, 1));
+  height: calc(56px * var(--ui-scale, 1));
+  min-height: 0;
+  padding: 0 calc(20px * var(--ui-scale, 1));
+  background: var(--surface-reading);
+}
+.reader-app .reader-topbar .topbar-left { min-width: 0; gap: calc(8px * var(--ui-scale, 1)); }
+.reader-app:not(.paper-reader) .topbar.reader-topbar { grid-template-columns: minmax(0, 1fr) auto; }
+.reader-app .reader-topbar .document-name { display: block; min-width: 0; max-width: none; margin-left: calc(6px * var(--ui-scale, 1)); font-size: calc(12px * var(--ui-scale, 1)); font-weight: 600; color: #252627; letter-spacing: -.01em; }
+.reader-app .reader-topbar .reader-tools { justify-self: end; display: flex; flex-wrap: nowrap; align-items: center; gap: calc(4px * var(--ui-scale, 1)); }
+.reader-app .reader-topbar .tool-button, .reader-app .reader-topbar .icon-button { display: inline-flex; align-items: center; justify-content: center; height: calc(32px * var(--ui-scale, 1)); min-height: 0; border-radius: calc(5px * var(--ui-scale, 1)); color: #424445; }
+.reader-app .reader-topbar .icon-button { width: calc(32px * var(--ui-scale, 1)); }
+.reader-app .reader-topbar .tool-button { padding: 0 calc(9px * var(--ui-scale, 1)); gap: calc(6px * var(--ui-scale, 1)); font-size: calc(12px * var(--ui-scale, 1)); }
+/* Text-only actions retain their labels when older reader layouts compact tools. */
+.reader-app .reader-topbar .reader-tools .tool-button > span { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+/* The CJK ink sits below its centered font box. Align the visible label with
+   the SVG center, and scale the optical correction with the rest of the chrome. */
+.reader-app .reader-topbar .reader-tools .tool-button > :is(span, small) { line-height: 1; transform: translateY(calc(-1px * var(--ui-scale, 1))); }
+.reader-app .reader-topbar .tool-button:hover:not(:disabled), .reader-app .reader-topbar .icon-button:hover, .reader-app .reader-topbar .reader-more[data-state="open"] { color: var(--text-primary); background: var(--hover-surface); }
+.reader-app .reader-topbar .tool-button.selected { color: var(--selected-text); background: var(--surface-floating); box-shadow: inset 0 0 0 1px var(--border-floating), var(--action-shadow); }
+.reader-app .reader-topbar :is(button, a):focus-visible { outline-color: #353637; }
+.reader-app .reader-topbar .tool-button:disabled { color: var(--text-disabled); }
+.reader-app .reader-topbar .topbar-divider { display: block; height: calc(16px * var(--ui-scale, 1)); margin-inline: calc(6px * var(--ui-scale, 1)); background: var(--line); }
+.reader-app .reader-topbar .insight-tool small { display: inline; color: #81878b; font-weight: 400; font-size: calc(10px * var(--ui-scale, 1)); }
+.reader-app .reader-topbar .toc-toggle { color: #363839; }
+.reader-app .reader-mode-switch { display: flex; align-self: stretch; gap: calc(4px * var(--ui-scale, 1)); border: 0; padding: 0; margin: 0; min-inline-size: 0; }
+.reader-mode-option { --reader-mode-padding: calc(15px * var(--ui-scale, 1)); display: flex; align-items: stretch; position: relative; cursor: pointer; }
+.reader-mode-option input { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; }
+.reader-mode-option input + span { position: relative; display: flex; align-items: center; padding: 0 var(--reader-mode-padding); color: #67696a; font-size: calc(12px * var(--ui-scale, 1)); white-space: nowrap; transition: color 140ms ease; }
+.reader-mode-option input + span::after { content: ""; position: absolute; height: 2px; left: var(--reader-mode-padding); right: var(--reader-mode-padding); bottom: 0; border-radius: 2px 2px 0 0; background: transparent; }
+.reader-mode-option:hover input + span { color: var(--text-primary); }
+.reader-mode-option input:checked + span { color: #202122; font-weight: 600; }
+.reader-mode-option input:checked + span::after { background: #292b2c; }
+.reader-mode-option input:focus-visible + span { outline: 2px solid #353637; outline-offset: -5px; border-radius: 5px; }
+.reader-navigation-menu { z-index: 85; min-width: calc(196px * var(--ui-scale, 1)); max-width: calc(100vw - 24px); padding: calc(5px * var(--ui-scale, 1)); border: 1px solid var(--line); border-radius: calc(7px * var(--ui-scale, 1)); background: var(--surface-floating); box-shadow: 0 6px 24px #24282d12, 0 2px 6px #24282d08; transform-origin: var(--radix-dropdown-menu-content-transform-origin); animation: reader-menu-in 140ms ease-out; }
+.reader-navigation-menu[data-state="closed"] { animation: reader-menu-out 100ms ease-in; pointer-events: none; }
+.reader-navigation-menu-item { display: flex; align-items: center; gap: calc(9px * var(--ui-scale, 1)); min-height: calc(34px * var(--ui-scale, 1)); padding: calc(7px * var(--ui-scale, 1)) calc(9px * var(--ui-scale, 1)); border-radius: 4px; outline: 0; cursor: pointer; color: #353738; font-size: calc(12px * var(--ui-scale, 1)); user-select: none; }
+.reader-navigation-menu-item[data-highlighted] { background: #f0f2f1; color: var(--text-primary); }
+.reader-navigation-menu-item[data-disabled] { color: var(--text-disabled); pointer-events: none; }
+.reader-navigation-menu .reader-menu-secondary { display: none; }
+.reader-navigation-menu-item > svg { flex: none; width: calc(17px * var(--ui-scale, 1)); height: calc(17px * var(--ui-scale, 1)); color: #515455; }
+.reader-navigation-menu-item > span:not(.reader-navigation-menu-check) { flex: 1; }
+.reader-navigation-menu-check { display: flex; color: #252627; }
+.reader-navigation-menu-item:focus-visible { outline: 1px solid #353637; outline-offset: -1px; }
+.reader-navigation-menu kbd { font: inherit; font-size: calc(10px * var(--ui-scale, 1)); color: #7d858a; }
+@keyframes reader-menu-in { from { opacity: 0; transform: translateY(-3px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes reader-menu-out { to { opacity: 0; transform: translateY(-2px) scale(.99); } }
+@media (max-width: 1150px) {
+  .reader-app { --nav-width: calc(210px * var(--ui-scale, 1)); }
+  .reader-app .topbar.reader-topbar { grid-template-columns: minmax(100px, 1fr) auto auto; gap: calc(18px * var(--ui-scale, 1)); padding-inline: calc(14px * var(--ui-scale, 1)); }
+  .reader-app .reader-topbar .tool-button { padding-inline: calc(8px * var(--ui-scale, 1)); }
+  .reader-app .reader-topbar .topbar-divider { margin-inline: calc(3px * var(--ui-scale, 1)); }
+}
+@media (max-width: 850px) {
+  .reader-app { --nav-width: 0px; }
+  .reader-app .toc.polished-toc, .reader-app.toc-temporary .toc.polished-toc { width: min(calc(280px * var(--ui-scale, 1)), calc(100vw - 44px)); box-shadow: 8px 0 24px #24282d0a; }
+  .reader-app .topbar.reader-topbar { gap: calc(10px * var(--ui-scale, 1)); }
+  .reader-mode-option { --reader-mode-padding: calc(11px * var(--ui-scale, 1)); }
+}
+@media (max-width: 760px) {
+  .reader-app .topbar.reader-topbar { grid-template-columns: minmax(0, 1fr) auto; gap: 0 10px; height: auto; padding: 0 12px; }
+  .reader-app .reader-topbar .topbar-left { grid-column: 1 / -1; height: calc(44px * var(--ui-scale, 1)); gap: calc(4px * var(--ui-scale, 1)); }
+  .reader-app .reader-topbar .document-name { flex: 1; }
+  .reader-app .reader-mode-switch { height: calc(40px * var(--ui-scale, 1)); gap: 0; }
+  .reader-mode-option { --reader-mode-padding: calc(10px * var(--ui-scale, 1)); }
+  .reader-mode-option input + span { font-size: calc(11px * var(--ui-scale, 1)); }
+  .reader-app .reader-topbar .reader-tools { gap: 1px; min-width: 0; }
+  .reader-app .reader-topbar .icon-button, .reader-app .reader-topbar .tool-button { width: calc(29px * var(--ui-scale, 1)); height: calc(32px * var(--ui-scale, 1)); padding: 0; }
+  .reader-app .reader-topbar .insight-tool small, .reader-app .reader-topbar .topbar-divider { display: none; }
+  .reader-app:not(.paper-reader) .reader-tools { grid-column: 1 / -1; min-height: calc(40px * var(--ui-scale, 1)); }
+}
+@media (max-width: 640px) {
+  .reader-app .reader-topbar .reader-tools .source-tool, .reader-app .reader-topbar .reader-tools .glossary-trigger { display: none; }
+  .reader-navigation-menu .reader-menu-secondary { display: flex; }
+}
+@media (max-width: 420px) {
+  .reader-app .topbar.reader-topbar { gap: 0 4px; padding-inline: 8px; }
+  .reader-app .reader-mode-option { --reader-mode-padding: 8px; }
+  .reader-app .reader-mode-option input + span { font-size: calc(11px * min(var(--ui-scale, 1), 1.25)); }
+  .reader-app .reader-topbar .reader-tools .icon-button, .reader-app .reader-topbar .reader-tools .tool-button { width: calc(28px * min(var(--ui-scale, 1), 1.25)); }
+}
+@media (prefers-reduced-motion: reduce) { .reader-navigation-menu, .reader-navigation-menu[data-state="closed"] { animation: none; } .reader-mode-option input + span { transition: none; } }
+
+.reader-mode-switch[data-motion-control] .reader-mode-option span::after { display: none; }
+/* The animated underline is a separate span, outside the label's flex flow. */
+.reader-mode-option > .reader-mode-indicator { position: absolute; display: block; inset: auto var(--reader-mode-padding) 0; height: 2px; padding: 0; margin: 0; border-radius: 2px 2px 0 0; background: #292b2c; pointer-events: none; }

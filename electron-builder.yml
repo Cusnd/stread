@@ -1,0 +1,59 @@
+appId: com.continuousreader.desktop
+productName: Continuous Reader
+electronLanguages: [en-US, zh-CN, zh-TW]
+afterPack: electron/verify-package.cjs
+directories:
+  output: release/${version}
+files:
+  - electron/bootstrap.cjs
+  - electron/update-core.cjs
+  - electron/update-config.cjs
+  - electron/update-public-key.pem
+  - electron/main.cjs
+  - electron/preload.cjs
+  - electron/backend.cjs
+  - electron/mcp.cjs
+  - electron/workspace-migration.cjs
+  - electron/development.cjs
+  - package.json
+extraResources:
+  - from: .desktop/update-base.json
+    to: update-base.json
+  - from: electron/assets
+    to: assets
+    filter:
+      - continuous-reader.ico
+      - continuous-reader.png
+  - from: .desktop/runtime/node_modules
+    to: runtime/node_modules
+    filter:
+      - '**/*'
+      - '!.bin/**'
+  - from: .desktop/runtime
+    to: runtime
+    filter:
+      - '**/*'
+      - '!node_modules/**'
+      - '!**/__pycache__/**'
+      - '!**/*.pyc'
+asar: true
+win:
+  icon: electron/assets/continuous-reader.ico
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  signExecutable: false
+nsis:
+  # Daily updates use signed application payloads. This installer is only the
+  # first installation or a changed Electron/Python/dependency foundation.
+  differentialPackage: false
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  deleteAppDataOnUninstall: false
+  artifactName: Continuous-Reader-${version}-Setup-${arch}.${ext}
+portable:
+  artifactName: Continuous-Reader-${version}-Portable-${arch}.${ext}

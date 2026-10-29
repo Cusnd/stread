@@ -1,0 +1,35 @@
+{
+  "format": "reader-authoring-1",
+  "key": "layout-example-image-text",
+  "meta": {
+    "title": "Layout example: a figure and its explanation",
+    "language": "en",
+    "translations": { "zh-CN": { "title": "布局示例：图与解释" } }
+  },
+  "blocks": [
+    {
+      "key": "context",
+      "type": "para",
+      "text": "These invented diagrams show a grouping process. The figure and its explanation form one reading object.",
+      "translations": { "zh-CN": { "text": "这些自制示意图展示分组过程。图与解释共同构成一个阅读对象。" } }
+    },
+    {
+      "key": "observation",
+      "type": "html",
+      "role": "figure",
+      "html": "<div class=\"layout-pair\"><figure><img src=\"images/paired.png\" alt=\"A A · B B · C C\"><figcaption data-key=\"caption\">Pairs retain the original six items.</figcaption></figure><div class=\"layout-stack\"><p data-key=\"explanation\"><strong>Read the relationship.</strong> Each outline joins two items with the same label. The labels identify categories; the positions only make the pairs easy to compare.</p><p data-key=\"boundary\" class=\"note\">A pair means shared membership. It does not imply that the items are equal in value.</p></div></div>",
+      "translations": {
+        "zh-CN": {
+          "alignment": "same-structure",
+          "html": "<div class=\"layout-pair\"><figure><img src=\"images/paired.png\" alt=\"A A · B B · C C\"><figcaption data-key=\"caption\">分组后仍保留原来的六个项目。</figcaption></figure><div class=\"layout-stack\"><p data-key=\"explanation\"><strong>关注关系。</strong>每个轮廓把标签相同的两个项目连接起来。标签表示类别；位置只是为了便于比较各组。</p><p data-key=\"boundary\" class=\"note\">同组表示归属相同，不表示项目的数值相等。</p></div></div>"
+        }
+      }
+    },
+    {
+      "key": "continuation",
+      "type": "para",
+      "text": "The [paired object](#observation) can also be stacked when its text needs the full reading width.",
+      "translations": { "zh-CN": { "text": "当解释需要完整阅读宽度时，[这一组合](#observation)也可以上下排列。" } }
+    }
+  ]
+}

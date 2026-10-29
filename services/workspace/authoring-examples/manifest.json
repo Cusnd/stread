@@ -1,0 +1,98 @@
+{
+  "format": "reader-authoring-examples-1",
+  "entry": "index.md",
+  "bundle": "layout-examples.zip",
+  "scope": "Self-contained illustrative documents, original local diagrams and invented measurements. No uploaded source, PDF mappings or factual-conversion claim.",
+  "examples": [
+    {
+      "id": "image-text",
+      "title": "图与解释",
+      "input": "image-text.json",
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "useWhen": "图与短解释需要共同阅读，题注本身不足以承载解释。",
+      "canVary": "可改为上下排列、改变解释数量，或拆回独立普通块。",
+      "check": "图片、题注及解释不分离；变窄时保持阅读顺序；双语引用能返回同一对象。",
+      "resources": [
+        {
+          "path": "images/paired.png",
+          "mediaType": "image/png",
+          "size": 8794,
+          "sha256": "a00a83fe5974920ccc42c5d855c037a9baeaf2aa59b3dcd7507b985dc3e3cf04"
+        }
+      ]
+    },
+    {
+      "id": "multi-figure",
+      "title": "相关多图与共同题注",
+      "input": "multi-figure.json",
+      "languages": [
+        "en"
+      ],
+      "useWhen": "多幅子图共同呈现一个过程或比较，并确有共享题注。",
+      "canVary": "子图数量、阅读顺序和上下/网格布局都按内容选择；独立图应拆分。",
+      "check": "所有图片加载；每幅子图和共同题注完整；回退后子图标签与顺序保留。",
+      "resources": [
+        {
+          "path": "images/scattered.png",
+          "mediaType": "image/png",
+          "size": 10271,
+          "sha256": "cfbff7398b384f8c986c73073746b2c8af5ef833feea3ecc7a87444d0abeb482"
+        },
+        {
+          "path": "images/paired.png",
+          "mediaType": "image/png",
+          "size": 8794,
+          "sha256": "a00a83fe5974920ccc42c5d855c037a9baeaf2aa59b3dcd7507b985dc3e3cf04"
+        },
+        {
+          "path": "images/grouped.png",
+          "mediaType": "image/png",
+          "size": 12767,
+          "sha256": "483fe2985281561991510d8e917bd0e178c6289c52a3d2cee53fae7bb2eec93a"
+        }
+      ]
+    },
+    {
+      "id": "steps-notes",
+      "title": "步骤、伪代码与成立条件",
+      "input": "steps-notes.json",
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "useWhen": "有序步骤需要同时参照代码或边界条件。",
+      "canVary": "可删去代码、调整说明位置或改用单列；保持步骤的逻辑先后。",
+      "check": "有序编号和代码换行保留；条件不丢失；较大字号下内容可读。",
+      "resources": []
+    },
+    {
+      "id": "definition-explanation",
+      "title": "定义、条件与解释",
+      "input": "definition-explanation.json",
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "useWhen": "一个定义与条件、解释构成紧密的理解单元。",
+      "canVary": "上下或并排均可，按需要增减解释；独立公式继续使用 math 块。",
+      "check": "行内数学与标准显示公式均正常；定义与条件关系明确；双语对应一致。",
+      "resources": []
+    },
+    {
+      "id": "grouped-table",
+      "title": "分组表格与共用说明",
+      "input": "grouped-table.json",
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "useWhen": "原文具有多层表头、跨行分组或适用于整表的注释。",
+      "canVary": "跨度、分组及说明位置随真实内容改变；简单矩阵使用普通 table。",
+      "check": "表头覆盖完整；分组跨度正确；空白保持空白；中英表格共享结构。",
+      "resources": []
+    }
+  ]
+}

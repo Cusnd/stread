@@ -1,0 +1,164 @@
+name: Desktop release
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'app: incremental update; full: new Electron/Python foundation'
+        required: true
+        default: app
+        type: choice
+        options: [app, full]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            electron/runtime-package-lock.json
+            prototypes/insight-composer/package-lock.json
+            services/workspace/package-lock.json
+            services/glossary/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install build dependencies
+        run: |
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run setup
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate version and previous public release
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          if ($package.version -notmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$') { throw 'A stable x.y.z package version is required.' }
+          $lock = Get-Content package-lock.json -Raw | ConvertFrom-Json -AsHashtable
+          if ($lock.version -ne $package.version -or $lock.packages[''].version -ne $package.version) { throw 'Root package.json and package-lock.json versions must match.' }
+          $tag = 'v' + $package.version
+          "RELEASE_TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "RELEASE_VERSION=$($package.version)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $tagRefs = @(git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}")
+          if ($LASTEXITCODE -ne 0) { throw 'Could not verify the existing version tag.' }
+          if ($tagRefs.Count -gt 0) {
+            $resolvedTag = $tagRefs | Where-Object { $_.EndsWith('^{}') } | Select-Object -First 1
+            if (-not $resolvedTag) { $resolvedTag = $tagRefs[0] }
+            if (($resolvedTag -split '\s+')[0] -ne $env:GITHUB_SHA) { throw 'The version tag points to another commit. Use a new version; do not move a release tag.' }
+          }
+          $existingJson = gh release view $tag --repo $env:GITHUB_REPOSITORY --json isDraft,targetCommitish 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            $existing = $existingJson | ConvertFrom-Json
+            if (-not $existing.isDraft) { throw 'This version is already published. Increment package.json and package-lock.json before releasing.' }
+            if ($existing.targetCommitish -ne $env:GITHUB_SHA) { throw 'The existing draft belongs to another commit. Use a new version or resolve that draft explicitly.' }
+          }
+          $latestJson = gh api "repos/$env:GITHUB_REPOSITORY/releases/latest" 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            $latest = $latestJson | ConvertFrom-Json
+            if ($latest.tag_name -match '^v([0-9]+\.[0-9]+\.[0-9]+)$' -and [version]$package.version -le [version]$Matches[1]) { throw 'The package version must be greater than the latest published version.' }
+            if ($latest.assets.name -contains 'reader-update-win32-x64.json') {
+              New-Item -ItemType Directory -Force .desktop/previous | Out-Null
+              gh release download $latest.tag_name --repo $env:GITHUB_REPOSITORY --pattern reader-update-win32-x64.json --dir .desktop/previous
+              if ($LASTEXITCODE -ne 0) { throw 'Could not fetch the previous signed update manifest.' }
+            }
+          }
+          if ($env:RELEASE_MODE -eq 'app' -and -not (Test-Path .desktop/previous/reader-update-win32-x64.json)) { throw 'The first updater release must use full mode.' }
+          exit 0
+      - name: Prepare application runtime
+        run: |
+          $env:CONTINUOUS_READER_BUILD_PYTHON = (Get-Command python).Source
+          npm run desktop:prepare
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test desktop, Reader and workspace
+        run: |
+          $env:CONTINUOUS_READER_PYTHON = (Resolve-Path .desktop/runtime/python/python.exe).Path
+          npm run test:desktop
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build signed app update
+        env:
+          READER_UPDATE_PRIVATE_KEY_PEM: ${{ secrets.READER_UPDATE_PRIVATE_KEY_PEM }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:READER_UPDATE_PRIVATE_KEY_PEM)) { throw 'Set the READER_UPDATE_PRIVATE_KEY_PEM repository Actions secret first.' }
+          $buildArguments = @('electron/build-update.mjs')
+          if ($env:RELEASE_MODE -eq 'app' -and (Test-Path .desktop/previous/reader-update-win32-x64.json)) { $buildArguments += @('--base', '.desktop/previous/reader-update-win32-x64.json') }
+          if ($env:RELEASE_MODE -eq 'app') { $buildArguments += '--require-compatible-base' }
+          if ($env:RELEASE_MODE -eq 'full') { $buildArguments += '--full-foundation' }
+          node @buildArguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build full installer and portable foundation
+        if: inputs.mode == 'full'
+        run: |
+          npx --no-install electron-builder --win --x64 --publish never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Generate download checksums
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $releaseRoot = Join-Path 'release' $env:RELEASE_VERSION
+          $updateRoot = Join-Path $releaseRoot 'updates'
+          $checksumFiles = @(Get-Item -LiteralPath (Join-Path $updateRoot 'reader-update-win32-x64.json'))
+          $checksumFiles += @(Get-ChildItem -LiteralPath $updateRoot -Filter '*.crupdate' -File)
+          if ($env:RELEASE_MODE -eq 'full') { $checksumFiles += @(Get-ChildItem -LiteralPath $releaseRoot -Filter '*.exe' -File) }
+          $filesByName = @{}
+          foreach ($file in $checksumFiles) {
+            if ($filesByName.ContainsKey($file.Name)) { throw "Duplicate release attachment name: $($file.Name)" }
+            $filesByName[$file.Name] = $file.FullName
+          }
+          [string[]]$names = @($filesByName.Keys)
+          [Array]::Sort($names, [StringComparer]::Ordinal)
+          $lines = foreach ($name in $names) {
+            $hash = (Get-FileHash -LiteralPath $filesByName[$name] -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $name"
+          }
+          [IO.File]::WriteAllText((Join-Path $updateRoot 'SHA256SUMS.txt'), ($lines -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: continuous-reader-${{ env.RELEASE_VERSION }}-${{ inputs.mode }}
+          path: |
+            release/${{ env.RELEASE_VERSION }}/updates/*
+            release/${{ env.RELEASE_VERSION }}/*.exe
+          if-no-files-found: error
+      - name: Create or refresh draft release
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $existingJson = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,targetCommitish 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            $existing = $existingJson | ConvertFrom-Json
+            if (-not $existing.isDraft) { throw 'Published releases are immutable. Choose a new version.' }
+            if ($existing.targetCommitish -ne $env:GITHUB_SHA) { throw 'The existing draft belongs to another commit.' }
+          } else {
+            $manifest = (Get-Content "release/$env:RELEASE_VERSION/updates/reader-update-win32-x64.json" -Raw | ConvertFrom-Json).manifest
+            $installerTag = 'v' + $manifest.installerVersion
+            $releaseNotes = "Windows x64 installer / Portable: [$installerTag](https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$installerTag).`n`nExisting compatible installations can use the in-app incremental update. New installations should install the linked full version first, then check for updates.`n"
+            $releaseNotes | Set-Content -LiteralPath .desktop/release-notes.md -Encoding utf8
+            gh release create $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Continuous Reader $env:RELEASE_VERSION" --draft --generate-notes --notes-file .desktop/release-notes.md
+            if ($LASTEXITCODE -ne 0) { throw 'Could not create the draft release.' }
+          }
+          $assets = @(Get-ChildItem -LiteralPath "release/$env:RELEASE_VERSION/updates" -File | ForEach-Object FullName)
+          if ($env:RELEASE_MODE -eq 'full') { $assets += @(Get-ChildItem -LiteralPath "release/$env:RELEASE_VERSION" -Filter '*.exe' -File | ForEach-Object FullName) }
+          gh release upload $env:RELEASE_TAG @assets --repo $env:GITHUB_REPOSITORY --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Could not upload draft release assets.' }

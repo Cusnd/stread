@@ -1,0 +1,30 @@
+{
+  "result": "PASS",
+  "authoring_key": "mapreduce",
+  "document_id": "doc-4eafbc5f396942028e9597d77b4510b8",
+  "revision": 8,
+  "block_count": 182,
+  "types": {
+    "heading": 45,
+    "para": 125,
+    "html": 5,
+    "figure": 3,
+    "list": 3,
+    "table": 1
+  },
+  "html_nodes": 9,
+  "translated_blocks": 3,
+  "custom_css_blocks": 0,
+  "internal_links": 41,
+  "assets": [
+    "source.pdf",
+    "assets/figure-1.png",
+    "assets/figure-2.png",
+    "assets/figure-4.png",
+    "assets/figure-3-1.png",
+    "assets/figure-3-2.png",
+    "assets/figure-3-3.png"
+  ],
+  "warnings": [],
+  "scope": "Compiler structure, identity, translation provenance and math checks. Content fidelity and UI are verified separately."
+}

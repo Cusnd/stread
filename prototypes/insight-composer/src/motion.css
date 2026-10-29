@@ -1,0 +1,57 @@
+:root {
+  --motion-control: 120ms;
+  --motion-feedback: 160ms;
+  --motion-content: 200ms;
+  --motion-surface: 300ms;
+  --motion-layout: 360ms;
+  --motion-ease: cubic-bezier(.2, .8, .2, 1);
+  --motion-out: cubic-bezier(.3, 0, .6, 1);
+}
+
+/* Colour and focus feedback can run on CSS. Never transition `all`: caret,
+   drag position, scroll offsets and source geometry must remain immediate. */
+:is(.workspace-ui, .reader-app, .settings, .workspace-service-dialog, .question-dialog)
+  :is(button, a, input, textarea, select, summary):not([data-motion-item]) {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--motion-control);
+  transition-timing-function: var(--motion-ease);
+}
+
+:where(.workspace-ui, .reader-app, .settings, .workspace-service-dialog)
+  :where(input, textarea, select):focus {
+  transition-duration: 100ms;
+}
+
+[data-motion-item], [data-motion-notice] { transition-property: color, background-color, border-color, box-shadow; }
+[data-motion-present="false"] { pointer-events: none; }
+.motion-selection { position: absolute; inset: 0; border-radius: inherit; background: var(--selected-surface); pointer-events: none; }
+
+/* Route changes use inert browser snapshots, with one live page underneath.
+   Reader routes capture the viewport, including its fixed chrome. Capturing
+   the tall .reader-app element would lose fixed chrome at restored scroll
+   positions. Language changes animate the live article instead. */
+:root { view-transition-name: none; }
+.workspace-collection, .flow-page, .workspace-page-placeholder { view-transition-name: workspace-content; }
+.reader-main { view-transition-name: reader-content; }
+:root[data-page-motion-scope="reader-page"] { view-transition-name: reader-page; }
+:root[data-page-motion-scope="reader-page"] :is(.workspace-collection, .flow-page, .workspace-page-placeholder, .reader-main) { view-transition-name: none; }
+::view-transition { pointer-events: none; }
+::view-transition-group(*) { animation-duration: 200ms; animation-timing-function: var(--motion-ease); }
+::view-transition-old(workspace-content), ::view-transition-old(reader-page), ::view-transition-old(reader-content) {
+  animation: motion-page-depart 120ms linear both;
+  mix-blend-mode: normal;
+}
+::view-transition-new(workspace-content), ::view-transition-new(reader-page), ::view-transition-new(reader-content) {
+  animation: motion-page-arrive 220ms var(--motion-ease) both;
+  mix-blend-mode: normal;
+}
+@keyframes motion-page-depart { to { opacity: 0; } }
+@keyframes motion-page-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Native selection, keyboard focus, pointer resize and scrolling stay direct.
+   A reduced-motion user gets the same complete states with no travel. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-control: 0ms; --motion-feedback: 0ms; --motion-content: 0ms; --motion-surface: 0ms; --motion-layout: 0ms; }
+  [data-motion-item], [data-motion-notice] { transition: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

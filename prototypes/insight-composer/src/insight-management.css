@@ -1,0 +1,49 @@
+.insight-actions { position: relative; flex: none; margin-left: auto; }
+.insight-actions > .insight-more { display: flex; align-items: center; justify-content: center; width: calc(28px * var(--ui-scale, 1)); height: calc(28px * var(--ui-scale, 1)); min-height: 0; padding: 0; border-radius: 5px; color: var(--text-secondary); background: transparent; transition: color 120ms ease, background 120ms ease; }
+.insight-more:hover, .insight-more[aria-expanded="true"] { color: var(--text-primary); background: var(--hover-surface); }
+.insight-action-menu { position: fixed; inset: auto; box-sizing: border-box; width: calc(168px * var(--ui-scale, 1)); max-width: calc(100vw - 20px); max-height: calc(100dvh - 20px); overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: calc(5px * var(--ui-scale, 1)); border: 1px solid var(--border-floating); border-radius: calc(8px * var(--ui-scale, 1)); background: var(--surface-floating); color: var(--text-primary); box-shadow: 0 8px 24px #22262b14, 0 2px 6px #22262b0a; font: calc(12px * var(--ui-scale, 1))/1.4 "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; opacity: 0; transition: opacity 140ms ease, display 140ms allow-discrete, overlay 140ms allow-discrete; }
+.insight-action-menu:popover-open { opacity: 1; }
+@starting-style { .insight-action-menu:popover-open { opacity: 0; } }
+.insight-action-menu > button { display: flex; align-items: center; justify-content: flex-start; gap: calc(8px * var(--ui-scale, 1)); width: 100%; min-height: calc(32px * var(--ui-scale, 1)); margin: 0; padding: calc(6px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1)); border: 0; border-radius: calc(4px * var(--ui-scale, 1)); background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+.insight-action-menu > button > svg { flex: none; width: calc(15px * var(--ui-scale, 1)); height: calc(15px * var(--ui-scale, 1)); }
+.insight-action-menu > button:not(:disabled):hover, .insight-action-menu > button:focus-visible { background: var(--hover-surface); }
+.insight-action-menu > button:focus-visible { outline: 1px solid var(--text-secondary); outline-offset: -1px; }
+.insight-action-menu > button:disabled { opacity: .45; cursor: default; }
+.insight-action-menu > .insight-delete { color: #a3473d; }
+.insight-action-divider { height: 1px; margin: calc(4px * var(--ui-scale, 1)) calc(5px * var(--ui-scale, 1)); background: var(--line); }
+.insight-entry-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; }
+.insight-entry-header > .entry-type { min-width: 0; flex: 1; margin-bottom: 0; min-height: 28px; flex-wrap: wrap; }
+.insight-entry-header .entry-color { margin-left: auto; }
+.insight-entry .question-entry-body { display: block; }
+.insight-entry .question-entry { padding: 0; }
+.question-margin > .insight-actions { position: absolute; top: 2px; right: 0; }
+.question-dialog-tools { display: flex; align-items: center; gap: 5px; }
+.question-dialog-error { margin: 0 24px 12px; color: #a3473d; font-size: 12px; }
+.insight-edit-context { position: absolute; inset: 0 0 auto; height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; }
+.insight-edit-context .reference-number { font-size: 11px; }
+.insight-edit-context small { margin-left: auto; font: inherit; }
+.composer[data-context="true"]:not([data-intent="change-request"]) .composer-type, .composer[data-context="true"]:not([data-intent="change-request"]) .composer-actions { top: 39px; }
+.composer:not([data-intent="change-request"]) .composer-actions { left: calc(100% - 159px); }
+.composer:not([data-intent="change-request"])[data-layout="expanded"] .composer-actions { left: 50px; }
+.composer-title-trigger { flex: none; width: 56px; height: 28px; padding: 0 4px; background: transparent; color: var(--text-secondary); font: inherit; font-size: 12px; border-radius: 4px; white-space: nowrap; }
+.composer-title-trigger:hover, .composer-title-trigger[aria-expanded="true"] { color: var(--text-primary); background: var(--hover-surface); }
+.composer .composer-title-input { position: absolute; left: 12px; top: var(--title-top); width: calc(100% - 24px); height: 24px; padding: 0; border: 0; outline: 0; border-radius: 0; margin: 0; background: transparent; color: var(--text-primary); font-family: inherit; font-size: 15px; font-weight: 600; line-height: 24px; }
+.composer-title-input::placeholder { color: var(--text-secondary); font-weight: 400; }
+.insight-entry-title, .insight-title-button { display: block; width: 100%; margin: 0 0 7px; padding: 0; background: transparent; color: var(--text-primary); font: inherit; font-size: 14px; font-weight: 600; line-height: 1.65; text-align: left; overflow-wrap: anywhere; }
+.insight-title-button:hover { color: var(--accent-hover); }
+.insight-entry-title + .question-entry-body { margin-top: 0; }
+.insight-detail .insight-detail-title { margin: 0 0 16px; font-size: 18px; font-weight: 600; line-height: 1.65; overflow-wrap: anywhere; }
+.margin-note-title { display: block; margin-bottom: 5px; font-weight: 600; line-height: 1.65; }
+.margin-note-title:last-child { margin-bottom: 0; }
+.question-dialog .question-body { margin: -7px 0 22px; font-size: 16px; font-weight: 400; line-height: 1.85; white-space: pre-wrap; overflow-wrap: anywhere; }
+.insight-undo-inline { display: flex; align-items: center; gap: 10px; margin: -2px 0 15px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 5px; font-size: 11px; color: var(--text-secondary); background: var(--surface-reading); }
+.insight-undo-inline span { min-width: 0; overflow-wrap: anywhere; }
+.insight-undo-inline button { padding: 3px; background: transparent; color: var(--accent); font: inherit; white-space: nowrap; }
+.insight-undo-inline button:first-of-type { margin-left: auto; }
+.reader-undo span { overflow-wrap: anywhere; }
+.reader-undo { z-index: 81; }
+.reader-save-error { z-index: 82; }
+.reader-undo ~ .toast.visible { bottom: 88px; }
+.article [data-insight-id]:not(.draft-highlight) { cursor: pointer; }
+@media (pointer: coarse) { .insight-actions > .insight-more { width: calc(32px * var(--ui-scale, 1)); height: calc(32px * var(--ui-scale, 1)); } .insight-action-menu > button { min-height: calc(40px * var(--ui-scale, 1)); } }
+@media (prefers-reduced-motion: reduce) { .insight-action-menu, .insight-action-menu:popover-open { transition: none; } }

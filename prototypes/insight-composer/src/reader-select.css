@@ -1,0 +1,117 @@
+/* Native selection, form values, labels, typeahead and focus remain browser
+   owned. Older browser engines retain their functional native picker. */
+.reader-select:not([multiple]) {
+  --select-inline-padding: calc(10px * var(--ui-scale, 1));
+  --select-picker-padding: calc(4px * var(--ui-scale, 1));
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--surface-floating);
+  border: 1px solid var(--line);
+  border-radius: calc(4px * var(--ui-scale, 1));
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+.reader-select:not([multiple]):disabled { color: var(--text-disabled, #929292); cursor: default; opacity: .6; }
+/* Keyboard focus uses the existing single border, without a second outer box.
+   Opening or hovering with a pointer keeps the same quiet control edge. */
+.reader-select:not([multiple]):focus-visible { outline: none; border-color: var(--text-secondary); box-shadow: none; }
+
+@supports (appearance: base-select) {
+  .reader-select:not([multiple]), .reader-select::picker(select) { appearance: base-select; }
+  .reader-select:not([multiple]) {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(12px * var(--ui-scale, 1));
+    min-width: 0;
+    padding-inline: var(--select-inline-padding);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .reader-select > .reader-select-button {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
+    text-align: start;
+    box-shadow: none;
+    outline: none;
+  }
+  .reader-select-button > selectedcontent {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .reader-select::picker-icon {
+    content: "";
+    flex: none;
+    width: calc(6px * var(--ui-scale, 1));
+    height: calc(6px * var(--ui-scale, 1));
+    margin: 0 calc(2px * var(--ui-scale, 1)) calc(3px * var(--ui-scale, 1)) auto;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    color: var(--text-secondary);
+    transform: rotate(45deg);
+  }
+  .reader-select::picker(select) {
+    box-sizing: border-box;
+    width: anchor-size(width);
+    min-width: 0;
+    max-width: calc(100vw - 16px);
+    max-height: min(calc(320px * var(--ui-scale, 1)), calc(100dvh - 24px));
+    margin-block: calc(4px * var(--ui-scale, 1));
+    padding-block: var(--select-picker-padding);
+    padding-inline: 0;
+    border: 1px solid var(--border-floating, #dedede);
+    border-radius: calc(6px * var(--ui-scale, 1));
+    background: var(--surface-floating, #fff);
+    color: var(--text-primary, #242424);
+    box-shadow: 0 4px 16px #24242414;
+    outline: none;
+    font: inherit;
+    line-height: 1.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    transition: opacity 140ms linear, display 140ms allow-discrete, overlay 140ms allow-discrete;
+  }
+  .reader-select::picker(select):popover-open { opacity: 1; }
+  @starting-style { .reader-select::picker(select):popover-open { opacity: 0; } }
+  .reader-select option {
+    display: flex;
+    align-items: center;
+    gap: calc(12px * var(--ui-scale, 1));
+    min-height: calc(30px * var(--ui-scale, 1));
+    /* Keep the trigger's text inset while the highlight reaches the scroll edge. */
+    padding: calc(6px * var(--ui-scale, 1)) var(--select-inline-padding);
+    border: 0;
+    border-radius: 0;
+    background: var(--surface-floating, #fff);
+    color: var(--text-primary, #242424);
+    font: inherit;
+    line-height: 1.5;
+    text-align: start;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    outline: none;
+    cursor: pointer;
+  }
+  .reader-select option:checked { background: var(--selected-surface, #f0f0f0); font-weight: 500; }
+  .reader-select option:not(:disabled):is(:hover, :focus-visible) { background: var(--hover-surface, #e9e9e9); }
+  .reader-select option:not(:disabled):focus-visible { background: color-mix(in srgb, var(--text-primary) 10%, var(--surface-floating)); box-shadow: none; }
+  .reader-select option:disabled { color: var(--text-disabled, #929292); cursor: default; }
+  .reader-select option::checkmark { order: 1; flex: none; margin-inline-start: auto; color: currentColor; }
+  @media (prefers-reduced-motion: reduce) { .reader-select::picker(select) { transition: none; } }
+}

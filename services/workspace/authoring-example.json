@@ -1,0 +1,56 @@
+{
+  "format": "reader-authoring-1",
+  "key": "example-paper",
+  "meta": {
+    "title": "An example paper",
+    "language": "en",
+    "translations": { "zh-CN": { "title": "示例论文" } }
+  },
+  "source": {
+    "path": "source.pdf",
+    "media_type": "application/pdf",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "blocks": [
+    {
+      "key": "introduction", "type": "heading", "level": 1, "num": "1", "text": "Introduction",
+      "source": [{ "page": 1 }], "translations": { "zh-CN": { "text": "引言" } }
+    },
+    {
+      "key": "introduction-p1", "type": "para", "text": "A paragraph with **emphasis**, an inline formula $x^2$ and a [reference](#references).",
+      "source": [{ "page": 1, "box": [0.1, 0.2, 0.9, 0.3] }],
+      "translations": { "zh-CN": { "text": "段落包含**强调**、行内公式 $x^2$ 和[参考文献](#references)。" } }
+    },
+    {
+      "key": "observations", "type": "list", "ordered": false,
+      "items": [{ "key": "observation-one", "text": "First observation", "translations": { "zh-CN": { "text": "第一项观察" } } }],
+      "source": [{ "page": 1 }]
+    },
+    {
+      "key": "equation", "type": "math", "tex": "\\frac{1}{2}x^2", "tag": "1", "source": [{ "page": 1 }]
+    },
+    {
+      "key": "figure-one", "type": "figure", "num": "1", "src": "figures/example.png", "alt": "Diagram", "caption": "Example figure.",
+      "source": [{ "page": 1 }], "translations": { "zh-CN": { "alt": "示意图", "caption": "示例图片。" } }
+    },
+    {
+      "key": "simple-table", "type": "table", "num": "1", "caption": "Simple values", "caption_pos": "above",
+      "head": [["Method", "Score"]], "rows": [["Alpha", "0.82"], ["Beta", "0.91"]], "source": [{ "page": 1 }],
+      "translations": { "zh-CN": { "caption": "简单数值", "head": [["方法", "分数"]], "rows": [["Alpha", "0.82"], ["Beta", "0.91"]] } }
+    },
+    {
+      "key": "merged-table", "type": "html", "role": "table", "num": "2", "source": [{ "page": 1 }],
+      "html": "<table class=\"ruled\"><caption data-key=\"caption\">Grouped measurements</caption><thead><tr><th scope=\"col\" data-key=\"group\">Group</th><th scope=\"col\" data-key=\"value\">Value</th></tr></thead><tbody><tr><th scope=\"rowgroup\" rowspan=\"2\" data-key=\"group-a\">A</th><td data-key=\"first-value\">1</td></tr><tr><td data-key=\"second-value\">2</td></tr><tr><td colspan=\"2\" data-key=\"note\">Shared note: <span data-tex=\"x^2\"></span></td></tr></tbody></table>",
+      "translations": { "zh-CN": {
+        "alignment": "same-structure",
+        "html": "<table class=\"ruled\"><caption data-key=\"caption\">分组测量</caption><thead><tr><th scope=\"col\" data-key=\"group\">分组</th><th scope=\"col\" data-key=\"value\">数值</th></tr></thead><tbody><tr><th scope=\"rowgroup\" rowspan=\"2\" data-key=\"group-a\">A</th><td data-key=\"first-value\">1</td></tr><tr><td data-key=\"second-value\">2</td></tr><tr><td colspan=\"2\" data-key=\"note\">共用说明：<span data-tex=\"x^2\"></span></td></tr></tbody></table>"
+      } }
+    },
+    {
+      "key": "references", "type": "heading", "level": 1, "text": "References", "source": [{ "page": 1 }]
+    },
+    {
+      "key": "reference-one", "type": "para", "role": "reference", "text": "[1] An example citation.", "source": [{ "page": 1 }]
+    }
+  ]
+}
