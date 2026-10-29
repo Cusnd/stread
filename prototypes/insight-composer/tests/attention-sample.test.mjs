@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { inflateRawSync } from "node:zlib";
 import katex from "katex";
 import { inlineTokens, safeLink, sourceText, sameSource, normalizeMathSource } from "../src/document-content.js";
 import { attentionNotes } from "../src/attention-example.js";
@@ -12,6 +13,29 @@ const block = (id) => paper.blocks.find((item) => item.id === id);
 const objects = [{ ...paper.meta, id: "meta", type: "meta" }, ...paper.blocks, ...paper.blocks.flatMap((b) => (b.items || []).map((i) => ({ ...i, type: "list_item" })))];
 const fields = { meta: ["title"], heading: ["text"], para: ["text"], list_item: ["text"], figure: ["src", "alt", "caption", "image_text"], table: ["head", "rows", "caption"], math: ["tex"] };
 const sha256 = (data) => createHash("sha256").update(data).digest("hex");
+
+test("offline Attention bundle retains the exact checked-in text, source and figure bytes", () => {
+  const archive = readFileSync(new URL("article-package.zip", root)), entries = new Map();
+  let offset = 0;
+  while (archive.readUInt32LE(offset) === 0x04034b50) {
+    const flags = archive.readUInt16LE(offset + 6), method = archive.readUInt16LE(offset + 8);
+    const compressed = archive.readUInt32LE(offset + 18), length = archive.readUInt16LE(offset + 26), extra = archive.readUInt16LE(offset + 28);
+    assert.equal(flags & 8, 0);
+    assert.equal(method, 8);
+    const name = archive.subarray(offset + 30, offset + 30 + length).toString("utf8");
+    const start = offset + 30 + length + extra;
+    assert.equal(entries.has(name), false, `duplicate bundle entry: ${name}`);
+    entries.set(name, inflateRawSync(archive.subarray(start, start + compressed)));
+    offset = start + compressed;
+  }
+  const expected = ["README.md", "document.json", "article.bilingual.md", "source.pdf",
+    ...readdirSync(new URL("figures/", root)).filter((name) => name.endsWith(".png")).map((name) => "figures/" + name)];
+  assert.deepEqual([...entries.keys()].sort(), expected.map((name) => "attention-is-all-you-need/" + name).sort());
+  for (const name of expected) {
+    assert.deepEqual(entries.get("attention-is-all-you-need/" + name), readFileSync(new URL(name, root)),
+      `stale bundle entry: ${name}; run prepare-attention-sample.py --package-only`);
+  }
+});
 
 test("complete v7 package has stable identities, sections, references and source PDF", () => {
   assert.equal(paper.format, "continous-reader");

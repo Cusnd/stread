@@ -1,6 +1,7 @@
 """Build the checked-in reading sample from the supplied v7 PDF and matching arXiv HTML.
 
-Run with codex-tools Python (PyMuPDF + BeautifulSoup). No translation service is used.
+Run with Python (PyMuPDF + BeautifulSoup). No translation service is used.
+Use --package-only to rebuild the offline ZIP from existing files without extraction.
 The HTML is an extraction aid; the user's PDF remains the canonical source.
 """
 from pathlib import Path
@@ -11,11 +12,35 @@ import json
 import re
 import sys
 import zipfile
-import fitz
-from bs4 import BeautifulSoup, NavigableString
 
 ROOT = Path(__file__).resolve().parents[3]
 PACKAGE = ROOT / "prototypes/insight-composer/public/articles/attention-is-all-you-need"
+
+def package_existing_sample():
+    paths = [PACKAGE / name for name in ["README.md", "document.json", "article.bilingual.md", "source.pdf"]]
+    paths += list((PACKAGE / "figures").glob("*.png"))
+    payloads = []
+    for path in sorted(paths):
+        data = path.read_bytes()
+        if path.suffix in {".json", ".md"} and b"\r\n" in data:
+            raise SystemExit(f"Expected LF line endings in {path.name}; normalize the source before packaging.")
+        name = "attention-is-all-you-need/" + path.relative_to(PACKAGE).as_posix()
+        payloads.append((name, data))
+    with zipfile.ZipFile(PACKAGE / "article-package.zip", "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, data in payloads:
+            info = zipfile.ZipInfo(name, date_time=(2026, 10, 22, 0, 0, 0))
+            info.create_system = 3
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, data, compresslevel=9)
+
+if sys.argv[1:] == ["--package-only"]:
+    package_existing_sample()
+    raise SystemExit(0)
+
+import fitz
+from bs4 import BeautifulSoup, NavigableString
+
 WORK = ROOT / "tmp/attention"
 WORK.mkdir(parents=True, exist_ok=True)
 PDF = fitz.open(PACKAGE / "source.pdf")
@@ -280,8 +305,8 @@ if translation_path.exists():
             payload["source_hash"] = fingerprint(kind, obj)
             obj["translations"] = {"zh-CN": payload}
 
-(PACKAGE / "document.json").write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-(WORK / "english-blocks.txt").write_text("\n\n".join(f"{b['id']} [{b['type']}] {b.get('num','')}\n" + (b.get("text") or b.get("tex") or b.get("caption") or json.dumps(b.get("items"),ensure_ascii=False)) for b in BLOCKS), encoding="utf-8")
+(PACKAGE / "document.json").write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+(WORK / "english-blocks.txt").write_text("\n\n".join(f"{b['id']} [{b['type']}] {b.get('num','')}\n" + (b.get("text") or b.get("tex") or b.get("caption") or json.dumps(b.get("items"),ensure_ascii=False)) for b in BLOCKS), encoding="utf-8", newline="\n")
 print(json.dumps({"blocks": len(BLOCKS), "types": dict(Counter(b["type"] for b in BLOCKS)), "footnotes": [x["id"] for x in front + FOOTNOTES]}, ensure_ascii=False))
 
 if translation_path.exists():
@@ -313,7 +338,5 @@ if translation_path.exists():
                 markdown.append("")
             markdown += [f'[核对表 {block["num"]} 的原始版式](figures/table-{block["num"]}.png)', ""]
     markdown += ["---", "", "转换说明：原稿摘要与表 2 的英法 BLEU 为 41.8，而第 6.1 节为 41.0，均按原处保留。第 5.4 节写作三种正则化，但只有两个明确命名的小节，亦保留原文。表格合并表头展平，跨行标签重复显示；表 2 的跨列训练代价单独置于“原表共用值”列。参考文献仅翻译题名，作者与出版信息沿用原始著录。", ""]
-    (PACKAGE / "article.bilingual.md").write_text("\n".join(markdown), encoding="utf-8")
-    with zipfile.ZipFile(PACKAGE / "article-package.zip", "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for path in [PACKAGE / "README.md", PACKAGE / "document.json", PACKAGE / "article.bilingual.md", PACKAGE / "source.pdf", *sorted(figures.glob("*.png"))]:
-            archive.write(path, "attention-is-all-you-need/" + path.relative_to(PACKAGE).as_posix())
+    (PACKAGE / "article.bilingual.md").write_text("\n".join(markdown), encoding="utf-8", newline="\n")
+    package_existing_sample()
