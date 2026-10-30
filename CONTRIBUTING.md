@@ -12,8 +12,8 @@
 
 1. Fork 仓库，从最新 `main` 创建主题分支。
 2. 按开发指南安装依赖，用最小的相关修改解决问题。
-3. 运行相关测试；提交前完成 `npm run build`、`npm test` 和 `npm run test:desktop`。PDF 测试需配置有效的 Python/PyMuPDF 环境。
-4. UI 修改附上使用合成资料的截图或录屏，说明桌面尺寸及键盘操作。测试通过不代表已经完成真实桌面验证。
+3. 运行相关测试；提交前完成 `npm run build`、`npm test` 和 `npm run test:desktop`。PDF 测试需配置有效的 Python/PyMuPDF 环境。纯文档修改只需核对来源、链接和 diff，不要求重跑应用全套测试。
+4. UI 修改先查[前端设计系统](spec/design-system/README.md)，在同一改动中更新对应主题和[设计变更记录](spec/design-system/changelog.md)；已知差异同步登记或关闭。附上使用合成资料的截图或录屏，说明桌面尺寸、键盘操作及关联页面检查。按[维护与验证](spec/design-system/maintenance.md)核对展开、失败、退出和动画中间状态；测试通过不代表已经完成真实桌面验证。
 5. PR 描述问题、修改后的行为、验证结果和未验证的部分。关联相关 Issue。
 
 ## 必须保持的约定

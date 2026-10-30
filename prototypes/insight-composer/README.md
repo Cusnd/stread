@@ -1,6 +1,8 @@
 # Reader frontend
 
-This React/Vite package contains the production Collection, Flow and Reader interface used by the local browser server and Electron desktop app. The directory name is retained from the original prototype.
+This React/Vite package contains the production Collection, Flow, Queue and Reader interface used by the local browser server and Electron desktop app. The directory name is retained from the original prototype.
+
+The [frontend design system](../../spec/design-system/README.md) documents shared styles, components and interaction rules. Update the relevant topic and design changelog with every frontend appearance or interaction change; see its [maintenance workflow](../../spec/design-system/maintenance.md).
 
 ## Run locally
 

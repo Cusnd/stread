@@ -18,6 +18,8 @@ Inspect the current files and Git diff before editing. Keep changes scoped and d
 
 Use the existing shared business commands and UI components. Keep the interface compact and content-first; avoid redundant labels, descriptions and decorative controls. Preserve keyboard access, native text selection, focus, reduced motion and independent scrolling.
 
+The [frontend design system](spec/design-system/README.md) is the cross-page UI reference. Every change affecting frontend appearance or interaction must update the relevant topic and its [design changelog](spec/design-system/changelog.md) in the same change. Record remaining inconsistencies explicitly; do not present a local variant as an established global rule. Follow the [maintenance and verification workflow](spec/design-system/maintenance.md), including related surfaces and dynamic states.
+
 Run checks appropriate to the change. The root [README](README.md) documents setup and tests; [desktop documentation](electron/README.md) covers native builds. Report unit, browser, real-provider, packaged-runtime and installed-profile evidence separately. A passing build is not an installation or content-fidelity acceptance result.
 
 Do not publish a release, change external resources or migrate a real profile without the task's authorization. Ordinary local edits and focused verification are expected within the requested scope.
@@ -25,6 +27,7 @@ Do not publish a release, change external resources or migrate a real profile wi
 ## Repository guidance
 
 - [Frontend instructions](prototypes/insight-composer/AGENTS.md)
+- [Frontend design system](spec/design-system/README.md)
 - [Workspace service](services/workspace/README.md)
 - [Authoring guide](services/workspace/authoring-guide.md)
 - [Desktop updates](electron/UPDATES.md)

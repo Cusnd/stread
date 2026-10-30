@@ -4,6 +4,8 @@ This directory contains the production React interface for Stread. Its historica
 
 Keep Collection, Flow, Queue and Reader visually consistent: compact neutral surfaces, content-driven rows and restrained topbar controls. Reuse shared settings, navigation, context menus and motion primitives. Do not add secondary labels when alignment and grouping explain the relationship.
 
+Before a UI change, read the relevant topic in the [design system](../../spec/design-system/README.md) and check its [known inconsistencies](../../spec/design-system/inconsistencies.md). Every frontend appearance or interaction update must also update its topic and the [design changelog](../../spec/design-system/changelog.md) in the same change. An implementation-only fix should update the topic's implementation or verification note rather than inventing a new rule. New variants need a documented role and reason; inspect equivalent controls across affected pages, including transitional states. Use the [maintenance checklist](../../spec/design-system/maintenance.md) as the completion condition.
+
 Preserve stable document/block/insight identities, exact source variants and offsets, drafts, native selection, keyboard focus, scroll positions and the Reader's opening workspace. Reading completion changes only through the existing explicit reading actions. Language switches display stored variants and must not synthesize translations or change reference identities.
 
 Paragraph margin previews may group presentation, but each insight keeps its own identity, color, source order, version and operations. Different list items and authored HTML paragraphs stay distinct. Preserve exact cell/node references when presenting whole-object navigation.

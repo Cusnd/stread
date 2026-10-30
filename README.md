@@ -146,7 +146,7 @@ npm run desktop:dev -- "--reader-user-data=$devProfile"
 
 | 使用 Stread | 开发与维护 |
 | :--- | :--- |
-| [使用指南](docs/GETTING_STARTED.md) | [开发指南](docs/DEVELOPMENT.md) |
+| [使用指南](docs/GETTING_STARTED.md) | [开发指南](docs/DEVELOPMENT.md) · [前端设计系统](spec/design-system/README.md) |
 | [MCP 接入](docs/MCP.md) | [架构说明](docs/ARCHITECTURE.md) |
 | [故障排查](docs/TROUBLESHOOTING.md) | [发布指南](docs/RELEASING.md) |
 | [更新记录](CHANGELOG.md) | [贡献指南](CONTRIBUTING.md) |
