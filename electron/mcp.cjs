@@ -8,13 +8,13 @@ const { Console } = require('node:console');
 const { Writable } = require('node:stream');
 
 const MESSAGES = {
-  CONNECTION_UNAVAILABLE: 'Open Continuous Reader before starting its MCP connection.',
-  CONNECTION_INVALID: 'Continuous Reader connection information is invalid. Reopen the desktop app.',
-  APP_NOT_RUNNING: 'Continuous Reader is not running. Open the desktop app and reconnect.',
-  SERVICE_UNAVAILABLE: 'The running Continuous Reader workspace is unavailable. Reopen the app and reconnect.',
-  AUTHENTICATION_FAILED: 'The Continuous Reader connection has expired. Reconnect to the running desktop app.',
-  RUNTIME_UNAVAILABLE: 'The bundled Continuous Reader MCP runtime is unavailable. Repair the desktop installation.',
-  START_FAILED: 'Continuous Reader MCP could not start. Reopen the desktop app and reconnect.',
+  CONNECTION_UNAVAILABLE: 'Open Stread before starting its MCP connection.',
+  CONNECTION_INVALID: 'Stread connection information is invalid. Reopen the desktop app.',
+  APP_NOT_RUNNING: 'Stread is not running. Open the desktop app and reconnect.',
+  SERVICE_UNAVAILABLE: 'The running Stread workspace is unavailable. Reopen the app and reconnect.',
+  AUTHENTICATION_FAILED: 'The Stread connection has expired. Reconnect to the running desktop app.',
+  RUNTIME_UNAVAILABLE: 'The bundled Stread MCP runtime is unavailable. Repair the desktop installation.',
+  START_FAILED: 'Stread MCP could not start. Reopen the desktop app and reconnect.',
 };
 
 function failure(code) {
@@ -60,7 +60,7 @@ async function verifyService(connection) {
     const health = await fetch(connection.url + '/health', { redirect: 'error', signal: AbortSignal.timeout(5000) });
     if (!health.ok) throw failure('SERVICE_UNAVAILABLE');
     const status = await health.json();
-    if (status?.ok !== true || status.service !== 'continuous-reader-workspace' || status.authentication !== true) throw failure('SERVICE_UNAVAILABLE');
+    if (status?.ok !== true || !['stread-workspace', 'continuous-reader-workspace'].includes(status.service) || status.authentication !== true) throw failure('SERVICE_UNAVAILABLE');
     // Verify the token against a read-only endpoint before importing a long-lived
     // transport. The file must refer to this authenticated workspace instance.
     const access = await fetch(connection.url + '/api/workspace', {
@@ -148,7 +148,7 @@ async function startMcp({ runtime, userData, app }) {
         const current = await readConnection(userData);
         if (current.pid !== connection.pid || current.url !== connection.url || current.token !== connection.token) throw failure('APP_NOT_RUNNING');
       } catch {
-        diagnostic('Continuous Reader closed or restarted. Reconnect after opening the desktop app.');
+        diagnostic('Stread closed or restarted. Reconnect after opening the desktop app.');
         stop(1);
       }
     }, 2000);

@@ -16,7 +16,10 @@ const statisticsGroup = object({ date: z.string().optional(), documentId: id.opt
 const statisticsBase = { timezone: z.string(), range: object({ startDate: z.string(), endDate: z.string() }), page };
 const candidates = {
   read_context: object({ documentId: id, revision }),
-  resolve_reference: object({ documentId: id, part: z.enum(["title", "body", "quote", "answer"]), content: excerpt }),
+  resolve_reference: z.union([
+    object({ documentId: id, part: z.enum(["title", "body", "quote", "answer"]), content: excerpt }),
+    object({ task: object({ id, reference: z.string().regex(/^#T[0-9]{5,}$/), version: revision }), documentId: id.optional(), part: z.enum(["title", "body", "quote", "answer"]), content: excerpt }),
+  ]),
   query_documents: z.union([paged("documents"), paged("matches", object({ documentId: id, revision })), object({ document: row, part: z.string() })]),
   get_reading_plan: object({ documents: z.array(row), page, planVersion: integer }),
   query_insights: object({ insights: z.array(row), page, activityRevision: integer }),

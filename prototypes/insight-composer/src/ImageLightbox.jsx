@@ -35,14 +35,14 @@ export function ImageLightbox({ image, onClose, shortcuts }) {
 
   useLayoutEffect(() => { current.current = { onClose, shortcuts, reduced }; });
   useLayoutEffect(() => {
+    const desktop = window.continuousReaderDesktop;
+    desktop?.setTitlebarDark?.(true);
+    return () => desktop?.setTitlebarDark?.(false);
+  }, []);
+  useLayoutEffect(() => {
     let disposed = false, closing = false, resizeFrame = 0, cancelImageError = () => {};
     const release = acquirePageScrollLock();
-    const root = document.documentElement, body = document.body;
-    const gutter = root.style.scrollbarGutter, padding = body.style.paddingRight;
-    const reserved = Math.max(0, window.innerWidth - root.getBoundingClientRect().width);
-    const bodyPadding = getComputedStyle(body).paddingRight;
-    root.style.scrollbarGutter = "auto";
-    body.style.paddingRight = `calc(${bodyPadding} + ${reserved}px)`;
+    const body = document.body;
 
     // A detached gallery preserves the exact source URLs without touching the
     // Reader's live images, source identities, selection or document revision.
@@ -158,7 +158,7 @@ export function ImageLightbox({ image, onClose, shortcuts }) {
       viewer.destroy();
       viewerRef.current = null;
       background.forEach(([element, inert]) => { element.inert = inert; });
-      root.style.scrollbarGutter = gutter; body.style.paddingRight = padding; release();
+      release();
       if (image.trigger?.isConnected) image.trigger.focus({ preventScroll: true });
     };
   }, [image]);

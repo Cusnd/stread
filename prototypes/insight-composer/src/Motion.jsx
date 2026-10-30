@@ -37,6 +37,23 @@ export function MotionSelection({ layoutId, className = "motion-selection", styl
     style={{ ...style, pointerEvents: "none" }} />;
 }
 
+/** Keep each panel mounted so switching only changes its visibility and position. */
+export const MotionPanelPage = forwardRef(function MotionPanelPage({ as = "div", active, offset, reduced, children, style, ...props }, ref) {
+  const motionRef = useImmediateReducedMotion(reduced, ref);
+  const Element = motion[as];
+  return <Element {...props} ref={motionRef} aria-hidden={!active || undefined} inert={!active} data-active={active}
+    initial={false} animate={{ opacity: active ? 1 : 0, x: active || reduced ? 0 : offset }} transition={motionTransition("content", reduced)} style={{ ...style, zIndex: active ? 1 : 0 }}>
+    {children}
+  </Element>;
+});
+
+/** One persistent indicator moves between the panel's selected controls. */
+export const MotionPanelIndicator = forwardRef(function MotionPanelIndicator({ reduced, animate, style, ...props }, ref) {
+  const motionRef = useImmediateReducedMotion(reduced, ref);
+  return <motion.span {...props} ref={motionRef} aria-hidden="true" initial={false} animate={animate}
+    transition={motionTransition("control", reduced)} style={{ ...style, pointerEvents: "none" }} />;
+});
+
 // A fixed toast keeps its CSS centring transform. Animate the individual
 // translate property rather than overwriting translateX(-50%).
 export function MotionNotice({ children, className, ...props }) {
@@ -55,10 +72,10 @@ const feedbackOpen = Object.freeze({ height: "auto", opacity: 1, y: 0 });
 const feedbackClosed = Object.freeze({ height: 0, opacity: 0, y: -3 });
 
 /** Local success/error/empty-state messages occupy and release their own space. */
-export function MotionFeedback({ show, children, className = "", ...props }) {
+export function MotionFeedback({ show, children, className = "", kind = "content", ...props }) {
   const lastContent = useRef(children);
   if (show) lastContent.current = children;
-  const { present, motionProps } = useMotionPresence(show, { kind: "content", openState: feedbackOpen, closedState: feedbackClosed });
+  const { present, motionProps } = useMotionPresence(show, { kind, openState: feedbackOpen, closedState: feedbackClosed });
   return present ? <motion.div {...props} {...motionProps} className={"motion-feedback " + className}
     inert={!show || undefined} aria-hidden={!show || undefined} style={{ overflow: "hidden" }}>{lastContent.current}</motion.div> : null;
 }

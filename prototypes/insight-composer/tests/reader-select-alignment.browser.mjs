@@ -26,9 +26,26 @@ async function measure(select) {
 }
 try {
   await mkdir(output, { recursive: true });
-  for (const scale of [80, 100, 120]) for (const [context, count] of Object.entries({ details: 1, edit: 2, category: 1, flow: 2, settings: 3, import: 1, revision: 1, reference: 1 })) {
+  for (const scale of [80, 100, 120]) for (const [context, count] of Object.entries({ details: 0, edit: 2, category: 1, flow: 2, settings: 3, import: 1, revision: 1, reference: 1 })) {
     await page.goto(`${origin}/tests/fixtures/reader-select-contexts.html?context=${context}&scale=${scale}`);
     const selects = page.getByRole("combobox");
+    if (context === "details") {
+      // MaterialDetails intentionally presents all three statuses as a radio
+      // group. Native picker geometry remains covered by the other contexts.
+      const group = page.getByRole("radiogroup", { name: /的阅读状态$/ });
+      await group.waitFor(); await page.waitForTimeout(420);
+      assert.equal(await selects.count(), 0, "details must not retain a reading-status dropdown");
+      const radios = group.getByRole("radio");
+      assert.equal(await radios.count(), 3, "details reading-state coverage");
+      assert.deepEqual(await radios.allTextContents(), ["未读", "在读", "已读"]);
+      assert.equal(await group.getByRole("radio", { checked: true }).count(), 1, "details has exactly one checked state");
+      const states = await radios.evaluateAll(elements => elements.map(element => ({ label: element.textContent, checked: element.getAttribute("aria-checked"), tabIndex: element.tabIndex, box: element.getBoundingClientRect().toJSON() })));
+      assert.equal(states.filter(state => state.tabIndex === 0).length, 1, "details has one Tab entry point");
+      const name = `details/radiogroup/${scale}`;
+      results.push({ name, comboboxCount: 0, states });
+      console.log(`PASS ${name}: no dropdown, three radio states and one Tab entry point`);
+      continue;
+    }
     await selects.first().waitFor(); await page.waitForTimeout(420);
     assert.equal(await selects.count(), count, `${context} control coverage`);
     for (let index = 0; index < count; index++) {

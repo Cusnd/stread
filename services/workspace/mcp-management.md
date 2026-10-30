@@ -6,6 +6,32 @@ Tools use the same workspace service, objects and database as the desktop applic
 
 As of 2026-10-25, execution and storage are fully local. This changes no tool names, input schemas, output schemas or business capabilities. Local HTTP and stdio share SQLite, files, scoped resource links and the same reviewed immutable preview/publication workflow. Cloud delivery is retired; external Agents connect through a client able to access this computer.
 
+## Queue resources and task identities
+
+Queue adds MCP resources, not public tools or tool input fields. Desktop stdio and loopback HTTP expose the same resource reads and the same 32 tools. Task content remains user data; a saved task is not blanket authorization for an external Agent to act.
+
+- Read `stread://queue` for the first page of pending tasks. Each summary has its immutable UUID, stable `#T00024` reference, version, type, related objects, and a task resource URI. Read the full task before acting on a clipped summary.
+- Read filtered lists at `stread://queue/list?type=all&status=pending&limit=10`. The advertised template `stread://queue/list?{+filters}` accepts `type`, `status`, `query`, `offset`, `limit`, and `revision` query parameters. Types are `all`, `conversion`, `correction`, `translation`, `question`, `instruction`; statuses are `all`, `pending`, `processing`, `needs_attention`, `completed`, `cancelled`. The default is pending tasks of all types. `limit` is 1–20. Follow the returned `next` URI exactly; a changed queue revision requires starting again.
+- Read `stread://queue/tasks/{taskId}` using its UUID, `T00024`, or URL-encoded `%23T00024`. The template also accepts `part`, `offset`, `expected_version`, `max_chars`, and `source_index`. Text is bounded to 100–6000 characters per request, and continuations retain the task version.
+- Existing `resolve_reference` accepts `#T00024` with its unchanged input schema and returns the same bounded text structure plus `task` and `workflow`. A task before publication has no `documentId`. Linked `#R`, `#Q`, and `#N` identities retain their existing meaning. A task's `answer` text is read through its linked Q reference rather than duplicated under T.
+
+The returned `workflow.reads` gives exact next reads using existing tools. For conversion, get the retained uploaded source and authoring contract, then keep the returned binding in the authoring source:
+
+```json
+{
+  "extensions": {
+    "stread.queue": {
+      "taskId": "the-task-uuid",
+      "taskVersion": 1
+    }
+  }
+}
+```
+
+Use the exact task version and source. Editing or withdrawing the task invalidates stale work; re-read and reassess the request, rather than changing a binding to bypass a guard. The regular source-first independent reviewer, live Reader inspection, latest frozen hash and reviewed publication requirements all apply. Successful publication completes the linked conversion task; creating a candidate does not. For article changes, preserve the linked R request ID and version in the existing revision or relation operation. For questions, save the answer to the same Q object through `answer_question`. Queue completion follows these saved results, with no generic mark-complete shortcut.
+
+Resource reads require the same workspace read authorization as tools. They do not grant write access, claim tasks, run Agents, or expose file bytes. Download originals and inspect candidates through existing authorized file/preview descriptors. A copied or read task remains pending until real work changes its state.
+
 ## Catalog and read branches
 
 Read discriminators are top-level parameters. Each branch accepts only its documented fields. Continue with returned `nextTool` and `next` arguments; continuations include the discriminator required by the public tool.
@@ -15,7 +41,7 @@ Read discriminators are top-level parameters. Each branch accepts only its docum
 | `query_documents` | `action: list/search/metadata`. List unifies `document_id`, `collection_id`, `status`, `tag`, `include_archived`. Search adds `query` and optional `variant`, returning bounded hits with exact addresses. Metadata reads one progressive field using `document_id`, `part`, `offset`, `limit`, `max_chars`, `expected_version`; nonzero offsets require the version. Text parts are `title/kind/summary`; list parts are `tags/collections`. |
 | `list_collections` | IDs, labels, parent IDs and versions. Omitted `parent_id` lists all; `null` selects roots; an ID selects direct children. |
 | `read_context` | `view: exact/outline/content`; omitted view means `exact`. Exact uses a document/block or Q/N/R source address with optional list/table/HTML coordinates. Outline discovers real sections; content reads continuously across blocks. See the reading rules below. |
-| `resolve_reference` | Bounded Q/N/R title, body, quote or answer content, stable identity and source address. Surrounding document text is read separately. |
+| `resolve_reference` | Bounded T task or Q/N/R title, body, quote or answer content, stable identity and source address. A source-conversion T task may have no document yet; its result contains `task` rather than `insight` or `changeRequest`. Surrounding document text and a task's linked Q answer are read separately. |
 | `read_resources` | `kind: asset/pdf_pages/authoring_artifacts`. Asset takes `document_id`, `path`, optional `revision`; PDF pages take `document_id`, optional `offset`, `limit`, `revision`; artifacts take `document_id`, optional `revision`, and `mode: stored/editing` (default `stored`). Stored artifacts retain historical authoring; editing exports the selected revision's verified complete editing package. Descriptors and short-lived URLs only. |
 | `query_insights` | Optional `query` defaults to empty; `state: active/archived/all`, optional `document_id`, `type`, `question`, `review`. Bounded previews, references, versions, archive state and independent review membership. |
 | `get_reading_plan` | Persisted order, absolute `planIndex`, saved positions and `planVersion`. Archived members remain visible until removed. |

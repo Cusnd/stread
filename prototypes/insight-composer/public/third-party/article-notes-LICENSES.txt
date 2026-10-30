@@ -1,9 +1,9 @@
-Continuous Reader — Article Notes editor third-party notices
+Stread — Article Notes editor third-party notices
 
 This file contains the unmodified license and copyright notices distributed
 with the installed CodeMirror 6 / markdown-it runtime dependency tree.
 It covers the article-notes editor dependencies only, not all dependencies
-of Continuous Reader. Package versions below identify this snapshot.
+of Stread. Package versions below identify this snapshot.
 
 Some transitive packages may be removed by tree shaking from a particular
 build; their notices are retained here to cover the complete installed tree.

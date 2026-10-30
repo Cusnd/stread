@@ -1,12 +1,16 @@
 # Desktop application
 
-The Windows x64 desktop app packages Electron, the local workspace service, the Reader frontend, authoring tools and an isolated Python/PyMuPDF runtime. Installed builds do not require a separate Node.js or Python installation. Reader storage and execution remain local. External Agents connect through MCP; the desktop does not launch or coordinate Agent processes.
+The Stread Windows x64 desktop app packages Electron, the local workspace service, the Reader frontend, authoring tools and an isolated Python/PyMuPDF runtime. Installed builds do not require a separate Node.js or Python installation. Reader storage and execution remain local. External Agents connect through MCP; the desktop does not launch or coordinate Agent processes.
 
 ## Install and run
 
 Use a Setup or Portable artifact from a published release. The NSIS installer provides normal installation and shortcuts. Portable is a single-file launcher; it still stores persistent data in the user's profile rather than next to the executable.
 
 The default profile is `%USERPROFILE%\.continuous-reader`. Setup and Portable use that same profile and its single-instance protection. An explicit `--reader-user-data=<absolute-directory>` selects a separate profile, including its own workspace. Profiles do not exchange data automatically.
+
+Stread retains the `com.continuousreader.desktop` application identity, existing profile location, environment variables, CLI arguments and persisted state keys from Continuous Reader. The product rename does not copy or reset an existing profile.
+
+Packaged Windows builds offer **设置 → 界面 → 开机自启**. The switch reads the current Windows login item, including whether it was disabled in Windows Startup Apps, and changes it only when clicked. Enabling it opens the app when the current Windows user signs in; disabling it removes the app's login item. Browser and development sessions do not show the switch. Portable registers its original launcher, so keep that executable in its chosen location. An explicit profile selection is retained, but import, MCP and other one-time launch arguments are not. This is one startup entry per Windows user, not a separate preference in each reading profile.
 
 | Profile path | Contents |
 | --- | --- |
@@ -35,7 +39,7 @@ Historical synchronization receipts, outbox entries, tombstones and conflicts re
 First import is explicit and only targets a profile without a workspace database. From the repository root after producing an unpacked build:
 
 ```powershell
-& '.\release\0.1.3\win-unpacked\Continuous Reader.exe' '--reader-user-data=D:\ReaderProfiles\ImportCheck' '--import-workspace=D:\ReaderBackups\workspace'
+& '.\release\0.1.3\win-unpacked\Stread.exe' '--reader-user-data=D:\ReaderProfiles\ImportCheck' '--import-workspace=D:\ReaderBackups\workspace'
 ```
 
 Replace the source and target paths with the intended directories. The importer reads the source through SQLite's online-backup API, includes committed WAL contents, verifies required resource hashes and sizes, then publishes the candidate into the new profile. It does not merge into or overwrite an existing target database. A nonempty target without a database is also rejected.
@@ -87,12 +91,12 @@ npm run desktop:pack
 
 `--reuse` may reuse matching dependency and Python payloads while rebuilding application source. Validation precedes replacement of `.desktop/runtime`; ordinary preparation errors preserve the old runtime. A forced termination between directory renames is not an atomic power-loss transaction.
 
-`desktop:unpacked` produces `release/<version>/win-unpacked/Continuous Reader.exe`. `desktop:pack` produces Setup and Portable artifacts according to [electron-builder.yml](../electron-builder.yml). Version 0.1.3 uses:
+`desktop:unpacked` produces `release/<version>/win-unpacked/Stread.exe`. `desktop:pack` produces Setup and Portable artifacts according to [electron-builder.yml](../electron-builder.yml):
 
-- `Continuous-Reader-0.1.3-Setup-x64.exe`
-- `Continuous-Reader-0.1.3-Portable-x64.exe`
+- `Stread-<version>-Setup-x64.exe`
+- `Stread-<version>-Portable-x64.exe`
 
-These are output names, not a claim that a local build has been installed or accepted. The package verifier checks the actual runtime contents, required licenses, PDF assets and foundation metadata. Personal workspaces and local verification evidence are excluded from release payloads.
+These are current source-build output names. The previously published 0.1.3 assets retain their `Continuous-Reader-` filenames. A local build does not establish installation or acceptance. The package verifier checks the actual runtime contents, required licenses, PDF assets and foundation metadata. Personal workspaces and local verification evidence are excluded from release payloads.
 
 ## Signed incremental updates
 
@@ -102,20 +106,20 @@ The update signature authenticates the application's update manifest and payload
 
 ## MCP connection
 
-Open the desktop application first, then configure an MCP client to run the installed executable with `--mcp`. For an installation at `C:\Apps\Continuous Reader`:
+Open the desktop application first, then configure an MCP client to run the installed executable with `--mcp`. For an installation at `C:\Apps\Stread`:
 
 ```json
 {
   "mcpServers": {
-    "continuous-reader": {
-      "command": "C:\\Apps\\Continuous Reader\\Continuous Reader.exe",
+    "stread": {
+      "command": "C:\\Apps\\Stread\\Stread.exe",
       "args": ["--mcp"]
     }
   }
 }
 ```
 
-Use the actual installed path. For a separate profile, append the same `--reader-user-data=<absolute-directory>` argument to the MCP client command. No fixed port or manually copied token is required.
+Use the actual installed path; an older installation may still use `Continuous Reader.exe`. For a separate profile, append the same `--reader-user-data=<absolute-directory>` argument to the MCP client command. No fixed port or manually copied token is required.
 
 The stdio process validates the running desktop's connection information and forwards to its local workspace. It does not open a second window or backend. Closing or restarting the main application ends the connection; reopen it and reconnect the client. Diagnostics use stderr and stdout is reserved for MCP. The current [32-tool contract](../services/workspace/mcp-management.md) is shared with the local HTTP service.
 

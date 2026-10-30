@@ -21,6 +21,6 @@ for rotation in [0, 90, 180, 270]:
         page.insert_text((x, y), value, fontsize=10)
     page.set_cropbox(fitz.Rect(45, 55, 395, 485))
     page.set_rotation(rotation)
-document.set_metadata({"title": "Crop and rotation validation", "author": "Continuous Reader acceptance fixture"})
+document.set_metadata({"title": "Crop and rotation validation", "author": "Stread acceptance fixture"})
 document.save(destination)
 print(destination)

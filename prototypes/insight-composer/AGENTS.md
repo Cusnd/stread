@@ -1,8 +1,8 @@
 # Frontend contributor instructions
 
-This directory contains the production React interface for Continuous Reader. Its historical directory name does not imply a separate product or storage service. Follow the repository [instructions](../../AGENTS.md).
+This directory contains the production React interface for Stread. Its historical directory name does not imply a separate product or storage service. Follow the repository [instructions](../../AGENTS.md).
 
-Keep Collection, Flow and Reader visually consistent: compact neutral surfaces, content-driven rows and restrained topbar controls. Reuse shared settings, navigation, context menus and motion primitives. Do not add secondary labels when alignment and grouping explain the relationship.
+Keep Collection, Flow, Queue and Reader visually consistent: compact neutral surfaces, content-driven rows and restrained topbar controls. Reuse shared settings, navigation, context menus and motion primitives. Do not add secondary labels when alignment and grouping explain the relationship.
 
 Preserve stable document/block/insight identities, exact source variants and offsets, drafts, native selection, keyboard focus, scroll positions and the Reader's opening workspace. Reading completion changes only through the existing explicit reading actions. Language switches display stored variants and must not synthesize translations or change reference identities.
 

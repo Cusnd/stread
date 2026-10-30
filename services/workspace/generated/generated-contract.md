@@ -1,7 +1,7 @@
 # Generated current MCP contract
 
-Server: continuous-reader-workspace 0.6.0
-Registry SHA-256: `e70efc5c56bfc3c4878f566d97df4ad1d9beb13af4021d2cc0f7c133675b881a`
+Server: stread-workspace 0.6.0
+Registry SHA-256: `028435362e432bc61150dd8249ca2c7a777f0a75dad62f8844ae4910c2639548`
 
 Generated from the public registry. Examples use illustrative placeholders and never grant authorization or execute business operations.
 

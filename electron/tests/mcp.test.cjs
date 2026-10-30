@@ -116,7 +116,7 @@ test('missing, malformed and oversized connection files produce safe errors', as
 test('the stdio bridge initializes, lists tools and calls the real isolated workspace without protocol pollution', async (t) => {
   const h = await setup(t), mcp = bridge(t, h.userData);
   const initialization = await mcp.initialize();
-  assert.equal(initialization.result.serverInfo.name, 'continuous-reader-workspace');
+  assert.equal(initialization.result.serverInfo.name, 'stread-workspace');
   const list = await mcp.request('tools/list');
   assert.ok(list.result.tools.some((tool) => tool.name === 'query_documents'));
   assert.ok(list.result.tools.some((tool) => tool.name === 'read_context'));
@@ -158,7 +158,7 @@ test('a missing desktop profile exits without stdout, stack traces or a backend'
   const root = await directory(t), mcp = bridge(t, root);
   assert.equal((await mcp.closed).code, 1);
   assert.equal(mcp.output().stdout, '');
-  assert.match(mcp.output().stderr, /Open Continuous Reader/);
+  assert.match(mcp.output().stderr, /Open Stread/);
   assert.ok(!mcp.output().stderr.includes(root));
   assert.deepEqual(await fs.readdir(root), []);
 });

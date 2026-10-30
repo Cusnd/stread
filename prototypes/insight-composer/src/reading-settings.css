@@ -38,6 +38,11 @@
 .settings-switch > span { display: block; width: calc(15px * var(--ui-scale, 1)); height: calc(15px * var(--ui-scale, 1)); border-radius: 50%; background: white; box-shadow: 0 1px 2px #24282d1c; transition: transform 200ms var(--settings-ease); }
 .settings-switch[aria-checked="true"] { background: var(--accent); }
 .settings-switch[aria-checked="true"] > span { transform: translateX(calc(13px * var(--ui-scale, 1))); }
+.desktop-auto-start .reading-control-row { border-top: 1px solid var(--line); border-bottom: 0; }
+.desktop-auto-start .settings-switch:disabled { opacity: .5; cursor: default; }
+.desktop-auto-start-feedback { display: flex; align-items: baseline; gap: calc(12px * var(--ui-scale, 1)); margin: 0; font-size: calc(11px * var(--ui-scale, 1)); line-height: 1.6; color: var(--text-secondary); }
+.desktop-auto-start-feedback.is-error { color: #9e493d; }
+.desktop-auto-start-feedback button { flex: none; padding: 0; background: transparent; color: var(--accent); font: inherit; }
 .settings-choice-group { display: flex; flex: none; padding: calc(3px * var(--ui-scale, 1)); border: 1px solid var(--line); border-radius: calc(6px * var(--ui-scale, 1)); background: var(--selected-surface); }
 .settings-choice-group label { position: relative; cursor: pointer; }
 .settings-choice-group input, .palette-preset input, .palette-color input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }

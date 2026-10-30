@@ -7,12 +7,14 @@ import { InterfaceModeControl } from "./InterfaceMode.jsx";
 import { ShortcutSettings } from "./ShortcutSettings";
 import { LocalHistoryConflicts } from "./SyncSettings.jsx";
 import { DesktopUpdates, desktopUpdatesAvailable } from "./DesktopUpdates.jsx";
+import { DesktopAutoStart } from "./DesktopAutoStart.jsx";
 import { requestJson } from "./workspace-api.js";
 import { matchesShortcut } from "./reading-shortcuts";
 import { HighlightPaletteSettings } from "./HighlightPaletteSettings";
 import { useMotionPresence } from "./useMotionPresence.js";
 import { useImmediateReducedMotion } from "./useImmediateReducedMotion.js";
-import { motionTransition } from "./motion-system.js";
+import { MOTION_FADE } from "./motion-system.js";
+import { MotionPanelIndicator, MotionPanelPage } from "./Motion.jsx";
 import { InterfaceScaleControl } from "./InterfaceScale";
 import { UI_SCALE_BASE } from "./ui-scale";
 import { useReaderRuntime } from "./ReaderRuntime";
@@ -26,11 +28,9 @@ const HISTORY_TAB = { id: "history-conflicts", label: "历史冲突", Icon: Cloc
 const UPDATES_TAB = { id: "updates", label: "更新", Icon: ArrowClockwise };
 
 function SettingsPage({ id, active, offset, reduced, children }) {
-  const motionRef = useImmediateReducedMotion(reduced);
-  return <motion.div ref={motionRef} className="settings-page" id={"reading-settings-panel-" + id} role="tabpanel" aria-labelledby={"reading-settings-tab-" + id} aria-hidden={!active || undefined} inert={!active} data-active={active} tabIndex={active ? 0 : -1}
-    initial={false} animate={{ opacity: active ? 1 : 0, x: active || reduced ? 0 : offset }} transition={motionTransition("content", reduced)} style={{ zIndex: active ? 1 : 0 }}>
+  return <MotionPanelPage active={active} offset={offset} reduced={reduced} className="settings-page" id={"reading-settings-panel-" + id} role="tabpanel" aria-labelledby={"reading-settings-tab-" + id} tabIndex={active ? 0 : -1}>
     {children}
-  </motion.div>;
+  </MotionPanelPage>;
 }
 
 export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置", fontSize, onFontSizeChange, readingWidthPercent, onReadingWidthChange, showMargins, onMarginsChange, openMode, onOpenModeChange,
@@ -52,7 +52,6 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
   };
   const { present, entered, reduced, motionProps } = useMotionPresence(open, { onExit: restore });
   const backdropRef = useImmediateReducedMotion(reduced);
-  const indicatorRef = useImmediateReducedMotion(reduced);
   const tabIndex = tabs.findIndex((item) => item.id === tab);
   const pageMotion = (id) => ({ active: tab === id, reduced, offset: tabs.findIndex((item) => item.id === id) < tabIndex ? -8 : 8 });
 
@@ -108,11 +107,11 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
 
   if (!present) return null;
   return <motion.div ref={backdropRef} className="settings-overlay" data-state={open && entered ? "open" : "closed"} inert={!open} aria-hidden={!open || undefined} onClick={(event) => { if (open && event.target === event.currentTarget) onClose(); }}
-    initial={{ backgroundColor: "#24282d00" }} animate={{ backgroundColor: open ? "#24282d38" : "#24282d00" }} transition={{ duration: reduced ? 0 : 0.14, ease: "linear" }}>
+    initial={{ backgroundColor: "#24282d00", backdropFilter: "blur(0px)" }} animate={{ backgroundColor: open ? "#24282d38" : "#24282d00", backdropFilter: open ? "blur(2px)" : "blur(0px)" }} transition={{ ...MOTION_FADE, duration: reduced ? 0 : MOTION_FADE.duration }}>
     <motion.section {...motionProps} ref={rootRef} className="settings" role="dialog" aria-modal="true" aria-label={title} onKeyDown={onKeys}>
       <header className="settings-heading"><h2>{title}</h2><button className="icon-button" data-settings-close aria-label={"关闭" + title} onClick={onClose}><X size={20} /></button></header>
       <div className="settings-tabs" role="tablist" aria-label="设置分类" onKeyDown={onTabKeys} style={{ "--settings-tab-count": tabs.length }}>
-        <motion.span ref={indicatorRef} className="settings-tab-indicator" aria-hidden="true" initial={false} animate={{ x: `${tabIndex * 100}%` }} transition={motionTransition("control", reduced)} />
+        <MotionPanelIndicator reduced={reduced} className="settings-tab-indicator" animate={{ x: `${tabIndex * 100}%` }} />
         {tabs.map(({ id, label, Icon }) => <button key={id} id={"reading-settings-tab-" + id} role="tab" aria-selected={tab === id} aria-controls={"reading-settings-panel-" + id} tabIndex={tab === id ? 0 : -1} onClick={() => setTab(id)}><Icon size={17} /><span>{label}</span></button>)}
       </div>
       <div className="settings-pages">
@@ -140,7 +139,7 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
               {onTargetLanguageChange && <label className="reading-control-row"><span>译文语言</span><ReaderSelect aria-label="译文语言" value={targetLanguage} disabled={!languages.length} onChange={(event) => onTargetLanguageChange(event.target.value)}>{!languages.includes(targetLanguage) && <option value={targetLanguage}>{languageLabel(targetLanguage)}（未提供）</option>}{languages.map((language) => <option key={language} value={language}>{languageLabel(language)}</option>)}</ReaderSelect></label>}
               {pdfAvailable && onPdfFollowChange && <div className="reading-control-row"><div><span>正文与原页联动</span><small>关闭后仍可明确定位</small></div><button className="settings-switch" role="switch" aria-label="正文与原页联动" aria-checked={pdfFollow} onClick={() => onPdfFollowChange(!pdfFollow)}><span /></button></div>}
           </SettingsPage>
-          <SettingsPage id="interface" {...pageMotion("interface")}><InterfaceScaleControl /><InterfaceModeControl /><IconStyleControl /></SettingsPage>
+          <SettingsPage id="interface" {...pageMotion("interface")}><InterfaceScaleControl /><InterfaceModeControl /><IconStyleControl /><DesktopAutoStart active={open && tab === "interface"} /></SettingsPage>
           <SettingsPage id="highlight" {...pageMotion("highlight")}><HighlightPaletteSettings /></SettingsPage>
           <SettingsPage id="shortcuts" {...pageMotion("shortcuts")}><ShortcutSettings active={open && tab === "shortcuts"} /></SettingsPage>
           {history.available && <SettingsPage id={HISTORY_TAB.id} {...pageMotion(HISTORY_TAB.id)}><LocalHistoryConflicts active={open && tab === HISTORY_TAB.id} conflicts={history.conflicts} initialError={history.error} onChange={(conflicts) => setHistory({ available: true, conflicts, error: "" })} /></SettingsPage>}

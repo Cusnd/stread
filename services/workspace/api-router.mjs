@@ -31,6 +31,22 @@ export async function handleWorkspaceApi(request, { workspace, actor, fileRespon
   const jsonBody = readJson;
   if (pathname === "/api/sources" && request.method === "POST") check(Number(request.headers.get("content-length")) <= maximumUploadBytes, "UPLOAD_TOO_LARGE", "请改用分块上传。", 413);
       if (pathname === "/api/workspace" && request.method === "GET") return sendJson(response, 200, await workspace.query(actor, { kind: "workspace", includeArchived: url.searchParams.get("includeArchived") === "1" }));
+      if (pathname === "/api/queue" && request.method === "GET") {
+        const query = { kind: "queue" };
+        for (const key of ["type", "status", "query"]) if (url.searchParams.has(key)) query[key] = url.searchParams.get(key);
+        for (const key of ["offset", "limit"]) if (url.searchParams.has(key)) {
+          const value = url.searchParams.get(key);
+          check(/^[0-9]+$/.test(value) && Number.isSafeInteger(Number(value)), "VALIDATION_FAILED", `${key} 必须为整数。`);
+          query[key] = Number(value);
+        }
+        return sendJson(response, 200, await workspace.query(actor, query));
+      }
+      const queueTask = pathname.match(/^\/api\/queue\/([^/]+)$/);
+      if (queueTask && request.method === "GET") {
+        const result = await workspace.query(actor, { kind: "queue", taskId: decode(queueTask[1]) });
+        check(result.tasks[0], "NOT_FOUND", "没有找到这项任务。", 404);
+        return sendJson(response, 200, { task: result.tasks[0], revision: result.revision });
+      }
       const flowInsight = pathname.match(/^\/api\/flow\/insights\/([^/]+)$/);
       if (flowInsight && request.method === "GET") return sendJson(response, 200, await workspace.query(actor, { kind: "flow.insight", insightId: decode(flowInsight[1]) }));
       const flowQuery = pathname.match(/^\/api\/flow\/(summary|insights|history)$/);
@@ -61,6 +77,9 @@ export async function handleWorkspaceApi(request, { workspace, actor, fileRespon
         if (uploadedSource[2]) return await sendFile(request, response, await workspace.uploadedSourceResource(actor, sourceId), { original: true });
         return sendJson(response, 200, await workspace.uploadedSource(actor, sourceId));
       }
+      const uploadedSourcePage = pathname.match(/^\/api\/sources\/([^/]+)\/pages\/([0-9]+)\.png$/);
+      if (uploadedSourcePage && ["GET", "HEAD"].includes(request.method)) return await sendFile(request, response,
+        await workspace.uploadedSourcePage(actor, decode(uploadedSourcePage[1]), Number(uploadedSourcePage[2]), integerParameter(url, "width") ?? 600));
       if (pathname === "/api/authoring/contract" && request.method === "GET") return sendJson(response, 200, await workspace.getAuthoringContract(actor, url.searchParams.get("sourceId") ?? undefined));
       const authoringDoc = pathname.match(/^\/api\/authoring\/docs\/(.+)$/);
       if (authoringDoc && ["GET", "HEAD"].includes(request.method)) {

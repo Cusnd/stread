@@ -1,4 +1,4 @@
-stread / Continuous Reader — JavaScript dependency notices
+Stread — JavaScript dependency notices
 
 Generated from installed locked dependencies, including build tools and packages that may be removed by tree shaking. Third-party notices remain under their respective licenses.
 

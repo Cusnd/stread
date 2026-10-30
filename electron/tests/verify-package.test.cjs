@@ -22,7 +22,7 @@ async function fixture(t) {
   });
   const stagedRuntime = path.join(root, 'stage/runtime'), runtime = path.join(root, 'package/runtime');
   for (const file of requiredFiles) await put(stagedRuntime, file);
-  await put(stagedRuntime, 'package.json', JSON.stringify({ name: 'continuous-reader-runtime', dependencies: Object.fromEntries(Object.keys(directDependencies).map((name) => [name, '1.0.0'])) }));
+  await put(stagedRuntime, 'package.json', JSON.stringify({ name: 'stread-runtime', dependencies: Object.fromEntries(Object.keys(directDependencies).map((name) => [name, '1.0.0'])) }));
   for (const [name, specifier] of Object.entries(directDependencies)) {
     const main = 'index.js';
     await put(stagedRuntime, 'node_modules/' + name + '/package.json', JSON.stringify({ name, version: '1.0.0', main }));
@@ -151,7 +151,7 @@ test('afterPack refuses an application archive without the desktop MCP entry', a
 
 async function packagedFixture(t) {
   const h = await fixture(t), appSource = path.join(h.root, 'app-source'), resources = path.dirname(h.runtime);
-  for (const file of ['assets/continuous-reader.ico', 'assets/continuous-reader.png']) await put(resources, file);
+  for (const file of ['assets/stread.ico', 'assets/stread.png']) await put(resources, file);
   for (const file of afterPack.requiredAppFiles) await put(appSource, file);
   await require('@electron/asar').createPackage(appSource, path.join(resources, 'app.asar'));
   await fs.mkdir(path.join(h.root, '.desktop'), { recursive: true });
@@ -179,5 +179,5 @@ test('package root aliases preserve containment while resource junctions cannot 
   assert.ok(assets.startsWith(h.root + path.sep) && external.startsWith(h.root + path.sep));
   await fs.rename(assets, external);
   await fs.symlink(external, assets, linkType);
-  await assert.rejects(h.verifyPackage(alias), /required file resolves outside the package: assets\/continuous-reader\.ico/);
+  await assert.rejects(h.verifyPackage(alias), /required file resolves outside the package: assets\/stread\.ico/);
 });

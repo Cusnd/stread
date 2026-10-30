@@ -11,7 +11,7 @@ import { localWorkspaceUrl } from "./local-endpoint.mjs";
 export async function startStdio({ stdin = process.stdin, stdout = process.stdout } = {}) {
   const baseUrl = localWorkspaceUrl(process.env.WORKSPACE_URL);
   const token = process.env.CONTINUOUS_READER_AUTH_TOKEN;
-  const client = new Client({ name: "continuous-reader-stdio-forwarder", version: "0.2.0" }, { versionNegotiation: { mode: "auto" } });
+  const client = new Client({ name: "stread-stdio-forwarder", version: "0.2.0" }, { versionNegotiation: { mode: "auto" } });
   const transport = new StreamableHTTPClientTransport(new URL("/mcp", baseUrl), { requestInit: { redirect: "error", ...(token ? { headers: { Authorization: "Bearer " + token } } : {}) } });
   let server, closing;
   const onClose = () => { void close(); };
@@ -46,11 +46,17 @@ export async function startStdio({ stdin = process.stdin, stdout = process.stdou
     if (closing) { await closing; return { close }; }
     const stdio = new StdioServerTransport(stdin, stdout);
     server = serveStdio(() => {
-      const downstream = new Server(client.getServerVersion() || { name: "continuous-reader-workspace", version: "0.6.0" }, { capabilities: { tools: { listChanged: false } }, instructions: client.getInstructions() });
+      const resources = client.getServerCapabilities()?.resources;
+      const downstream = new Server(client.getServerVersion() || { name: "stread-workspace", version: "0.6.0" }, { capabilities: { tools: { listChanged: false }, ...(resources ? { resources: { listChanged: false, subscribe: false } } : {}) }, instructions: client.getInstructions() });
       downstream.setRequestHandler("tools/list", (request, ctx) => client.listTools(request.params, { signal: ctx.mcpReq.signal }));
       downstream.setRequestHandler("tools/call", async (request, ctx) => downstream.projectCallToolResult(
         await client.callTool(request.params, { signal: ctx.mcpReq.signal }), undefined,
       ));
+      if (resources) {
+        downstream.setRequestHandler("resources/list", (request, ctx) => client.listResources(request.params, { signal: ctx.mcpReq.signal }));
+        downstream.setRequestHandler("resources/templates/list", (request, ctx) => client.listResourceTemplates(request.params, { signal: ctx.mcpReq.signal }));
+        downstream.setRequestHandler("resources/read", (request, ctx) => client.readResource(request.params, { signal: ctx.mcpReq.signal }));
+      }
       return downstream;
     }, { transport: stdio });
     // A closed transport (including an oversized frame or broken output pipe)

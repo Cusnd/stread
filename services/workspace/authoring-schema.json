@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Continuous Reader authoring input",
+  "title": "Stread authoring input",
   "description": "Author-facing input only. Runtime IDs, revisions, text offsets and translation fingerprints are generated. Paragraph/heading/list text, table cells and captions render inline TeX in $...$ in each language; bare x_i or F^n stays literal. Display math uses tex without $$; HTML math uses an empty span with data-tex. Escape TeX backslashes in JSON. Semantic, resource, source-geometry and rendering checks supplement this schema.",
   "type": "object",
   "properties": {

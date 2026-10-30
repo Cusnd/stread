@@ -1,15 +1,16 @@
 # Contributor instructions
 
-Continuous Reader is a local desktop reading workspace. This repository is the public source snapshot for the application; private development history and personal profiles are not included.
+Stread is a local desktop reading workspace, formerly Continuous Reader. This repository is the public source snapshot for the application; private development history and personal profiles are not included.
 
 ## Active scope
 
-- Keep Collection as the default workspace, Flow as a peer workspace, and Reader as the document view. Preserve the opening workspace, list state, reading position, selection and drafts when returning from Reader.
+- Keep Collection as the default workspace, Flow and Queue as peer workspaces, and Reader as the document view. Preserve the opening workspace, list state, reading position, selection and drafts when returning from Reader.
 - Desktop, loopback HTTP and stdio share the same local SQLite database and filesystem objects. Do not reintroduce cloud storage, automatic synchronization or remote execution from historical design notes.
 - Reader does not launch or coordinate Agent processes. External Agents use the existing MCP interface and copied conversion requests.
 - Preserve the exact 32 public MCP tools and input schemas, authorization checks, stable identities, version guards, immutable previews, publication hashes and idempotent receipts. See [the MCP contract](services/workspace/mcp-management.md).
 - A default non-Chinese conversion delivers the complete source plus Simplified Chinese. Publication requires an actually independent source-first reviewer, inspection in the real Reader, and review of the latest frozen hash. Structural validation alone is not content acceptance. See [the conversion workflow](services/workspace/conversion-workflow.md).
 - Preserve original files, revisions, insights, saved requests, reading activity and historical conflict evidence. A saved position is not proof that an article was completed.
+- Product branding is Stread. Retain the existing `com.continuousreader.desktop` app identity, `.continuous-reader` profile, persisted keys, environment variables, CLI arguments and `continous-reader` document format/extension identifiers for compatibility.
 
 ## Changes and verification
 

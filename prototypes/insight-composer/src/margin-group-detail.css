@@ -12,8 +12,9 @@
   box-shadow: 0 18px 70px #24282d20;
 }
 .margin-group-dialog[open] { display: flex; flex-direction: column; }
-.margin-group-dialog::backdrop { background: #24282d00; transition: background-color 160ms ease; }
+.margin-group-dialog::backdrop { background: #24282d00; transition: background-color 140ms linear; }
 .margin-group-dialog[data-state="open"]::backdrop { background: #24282d38; }
+@starting-style { .margin-group-dialog[data-state="open"]::backdrop { background: #24282d00; } }
 .margin-group-dialog-header {
   display: flex;
   align-items: center;

@@ -1,7 +1,8 @@
 // Browser-history entries own reading journeys. They survive a refresh without
 // sharing another tab's temporary navigation or changing document content.
 export function readerReturnRoute(entry, origin) {
-  const route = origin?.page === "flow" || origin?.page === "collection" ? origin : entry?.readerReturn;
+  const route = ["flow", "collection", "queue"].includes(origin?.page) ? origin : entry?.readerReturn;
+  if (route?.page === "queue") return { page: "queue", ...(typeof route.taskId === "string" && route.taskId.length <= 160 ? { taskId: route.taskId } : {}) };
   if (route?.page === "flow") return {
     page: "flow",
     section: ["overview", "insights", "plan", "history"].includes(route.section) ? route.section : "overview",

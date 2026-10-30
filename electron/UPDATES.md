@@ -35,7 +35,7 @@ npm run desktop:update:build -- --base C:\Releases\reader-update-win32-x64.json 
 输出位于 `release/<版本>/updates/`，包含：
 
 - `reader-update-win32-x64.json`：版本、对应完整安装器版本 `installerVersion`、兼容指纹、文件哈希、下载包哈希与 Ed25519 签名。
-- `Continuous-Reader-<版本>-win32-x64-<内容ID>.crupdate`：完整应用层包，供首次增量更新、跨版本升级或差分基线不匹配时使用。
+- `Stread-<版本>-win32-x64-<内容ID>.crupdate`：完整应用层包，供首次增量更新、跨版本升级或差分基线不匹配时使用。
 - `...-from-<旧内容ID>.crupdate`：上一版本到当前版本的差分包，提供 `--base` 且底层环境一致时生成。
 
 将同一构建的清单及所有 `.crupdate` 文件一起上传到 `v<版本>` 正式 Release。仅上传差分包会使跨版本用户无法升级。完整安装器不需要随每次应用更新重新生成；草稿说明会链接清单指定的完整基础版本，新用户安装后可以下载最新应用层包。旧基础版本的客户端也会被引导到这个带有安装器的 Release，而不是只有应用增量文件的最新 Release。

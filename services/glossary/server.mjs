@@ -25,7 +25,7 @@ export function createHttpServer(store = new GlossaryStore()) {
       res.setHeader("Access-Control-Allow-Headers", "Content-Type, MCP-Protocol-Version, Mcp-Session-Id");
       if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
       const url = new URL(req.url, "http://127.0.0.1");
-      if (url.pathname === "/health") return json(res, 200, { ok: true, service: "continuous-reader-glossary" });
+      if (url.pathname === "/health") return json(res, 200, { ok: true, service: "stread-glossary" });
       if (url.pathname === "/mcp") {
         if (req.method !== "POST") return json(res, 405, { error: "This stateless MCP endpoint accepts POST." });
         const payload = await body(req);

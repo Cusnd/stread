@@ -1,5 +1,5 @@
 import { ReaderSelect } from "./ReaderSelect.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { WorkspaceDialog } from "./WorkspaceDialog.jsx";
 import { InlineContent } from "./InlineContent.jsx";
 import { MotionFeedback } from "./Motion.jsx";
@@ -27,10 +27,11 @@ function changeValue(proposal, operation, side, index) {
   return Number.isInteger(operation.row) ? value?.[operation.row]?.[operation.column] : value;
 }
 
-export function RevisionReview({ open, onClose, proposals, workspace, command, refresh }) {
+export function RevisionReview({ open, onClose, proposals, workspace, command, refresh, initialProposalId = null }) {
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  useEffect(() => { if (open) { setSelected(initialProposalId); setError(""); } }, [open, initialProposalId]);
   const pending = proposals.filter((item) => item.status === "pending" || item.status === "proposed");
   const proposal = pending.find((item) => item.id === selected) || pending[0];
   async function decide(kind) {

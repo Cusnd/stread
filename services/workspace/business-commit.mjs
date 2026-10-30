@@ -1,10 +1,12 @@
 import { canonical, check, clone, hash, json, object, text } from './errors.mjs';
 import { createReadSet, replicationChanges, rowStatement } from './sql-commit.mjs';
 import { cloudSyncSchema } from './sync-table-definitions.mjs';
+import { augmentQueueCommit } from './queue-data.mjs';
 
 const localKeys = {
   counters: ['series'], sync_reference_ranges: ['series'], migrations: ['key'],
   preview_metadata: ['preview_id'], relation_match_state: ['key'], flow_metadata: ['key'],
+  queue_tasks: ['id'], queue_task_previews: ['preview_id'],
 };
 
 export function commandDigest(command) {
@@ -52,7 +54,9 @@ export async function commitBusiness(workspace, actor, input, prepare) {
       if (command.expectedActivityRevision !== undefined) check(command.expectedActivityRevision === activityRevision,
         'REVISION_CONFLICT', '阅读活动已改变，请重新读取。', 409, { currentRevision: activityRevision });
     }
-    const prepared = await prepare(reads), result = prepared.result;
+    const prepared = await prepare(reads);
+    await augmentQueueCommit(workspace, reads, prepared);
+    const result = prepared.result;
     const workspaceChange = prepared.workspaceChange !== false, revision = baseRevision + (workspaceChange ? 1 : 0);
     if (Object.hasOwn(result, 'activityRevision')) result.activityRevision = activityRevision + (prepared.touchActivity ? 1 : 0);
     const receipt = { requestId: command.requestId, revision, ...result }, timestamp = new Date().toISOString();

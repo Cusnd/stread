@@ -4,7 +4,7 @@
 
 ## 运行边界
 
-stread 的桌面发行程序由 Electron、React Reader 和一个本机工作台服务组成。工作台负责数据与业务规则；外部 Agent 通过 MCP 使用同一套规则。资料库和执行过程以本机为边界，程序更新单独从 GitHub 下载。
+Stread 的桌面发行程序由 Electron、React Reader 和一个本机工作台服务组成。工作台负责数据与业务规则；外部 Agent 通过 MCP 使用同一套规则。资料库和执行过程以本机为边界，程序更新单独从 GitHub 下载。
 
 ```mermaid
 flowchart LR
@@ -49,7 +49,7 @@ SQLite 保存资料元数据、阅读状态、洞见、计划、术语、索引�
 
 对象先成功写入，再提交数据库引用。写操作保留稳定身份、版本检查和准确的请求回执。响应丢失后重试同一命令时，应复用原 request ID 和原参数；内容发生变化则是新的命令。
 
-桌面默认 profile 为 `%USERPROFILE%\.continuous-reader`，实际资料在其 `workspace` 子目录。项目更名为 stread 不改变既有应用标识和存储位置。独立 profile 与安装目录分离；增量程序文件保存在 profile 的 `updates`，不会代替业务资料。
+桌面默认 profile 为 `%USERPROFILE%\.continuous-reader`，实际资料在其 `workspace` 子目录。产品更名为 Stread 后，应用标识 `com.continuousreader.desktop` 和存储位置继续沿用；环境变量、CLI 参数、IPC/浏览器存储键及 `continous-reader` 文档格式和扩展标识也保持兼容。独立 profile 与安装目录分离；增量程序文件保存在 profile 的 `updates`，不会代替业务资料。
 
 历史同步身份、冲突和回执可以继续作为本地证据保存；它们不会启动云同步。备份单位是完整 profile，不能只取一个 SQLite 文件。
 

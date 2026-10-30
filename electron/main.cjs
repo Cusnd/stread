@@ -5,8 +5,9 @@ const { randomBytes, randomUUID } = require('node:crypto');
 const { migrateWorkspace } = require('./workspace-migration.cjs');
 const { developmentOptions, isBackendRequest, developmentContentPolicy } = require('./development.cjs');
 
-app.setName('Continuous Reader');
-app.setAppUserModelId('com.continuousreader.desktop');
+app.setName('Stread');
+const appUserModelId = 'com.continuousreader.desktop';
+app.setAppUserModelId(appUserModelId);
 const option = (name) => process.argv.find((arg) => arg.startsWith(name + '='))?.slice(name.length + 1);
 let development, startupError;
 try {
@@ -34,14 +35,16 @@ const ownsInstance = !mcpMode && (app.readerOwnsInstance ?? app.requestSingleIns
 const updater = app.isPackaged && !development ? app.readerUpdater : undefined;
 const updateRepository = updater?.status().repository;
 const nativeTitleBarOverlay = process.platform === 'win32';
+const autoStartAvailable = app.isPackaged && !development && process.platform === 'win32';
 const initialTitlebarHeight = 56;
 let titlebarHeight = initialTitlebarHeight;
+let titlebarDark = false;
 let mainWindow, backend, baseUrl, closing = false, stopped = false, ready = false, requestedDevAction;
 let rendererReady;
 const pendingClose = new Map();
 const userData = app.getPath('userData');
 const runtime = app.readerRuntime || (app.isPackaged ? path.join(process.resourcesPath, 'runtime') : path.resolve(__dirname, '../.desktop/runtime'));
-const windowIcon = path.join(app.isPackaged ? process.resourcesPath : __dirname, 'assets', process.platform === 'win32' ? 'continuous-reader.ico' : 'continuous-reader.png');
+const windowIcon = path.join(app.isPackaged ? process.resourcesPath : __dirname, 'assets', process.platform === 'win32' ? 'stread.ico' : 'stread.png');
 const dataDir = path.join(userData, 'workspace');
 const stateFile = path.join(userData, 'desktop-state.json');
 const sessionFile = path.join(userData, 'reader-session.json');
@@ -58,8 +61,37 @@ function sessionValue(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input) || JSON.stringify(input).length > 12 * 1024 * 1024) throw new Error('Invalid session');
   return Object.fromEntries(Object.entries(input).filter(([key, value]) => /^(reader-|continuous-reader|collection-|flow-)/.test(key) && typeof value === 'string'));
 }
+function autoStartOptions() {
+  const executable = process.env.PORTABLE_EXECUTABLE_FILE || process.execPath;
+  if (!path.isAbsolute(executable)) throw new Error('无法确定程序的启动位置。');
+  // Only retain the profile selection, never one-shot import, MCP or debug flags.
+  return { path: executable, args: option('--reader-user-data') ? ['--reader-user-data=' + profileDir] : [] };
+}
+function setTitlebarDark(value) {
+  if (!nativeTitleBarOverlay || !mainWindow || mainWindow.isDestroyed() || typeof value !== 'boolean' || value === titlebarDark) return;
+  try { mainWindow.setTitleBarOverlay({ symbolColor: value ? '#ededef' : '#292b2c' }); titlebarDark = value; }
+  catch (error) { log('Titlebar contrast: ' + error.message); }
+}
 function installIpc() {
   ipcMain.on('reader:ready', (event) => { if (trusted(event) && !closing) rendererReady?.(); });
+  ipcMain.handle('reader:auto-start', (event, action, enabled) => {
+    if (!trusted(event) || !autoStartAvailable) throw new Error('开机自启设置不可用。');
+    if (closing) throw new Error('程序正在退出，请稍后重试。');
+    if (!['get', 'set'].includes(action) || (action === 'set' && typeof enabled !== 'boolean')) throw new Error('无效的开机自启设置。');
+    try {
+      const options = autoStartOptions();
+      if (action === 'set') app.setLoginItemSettings({ ...options, name: appUserModelId, openAtLogin: enabled, enabled });
+      const settings = app.getLoginItemSettings(options);
+      const item = settings.launchItems.find((entry) => entry.name === appUserModelId && entry.scope === 'user');
+      // One entry belongs to the Windows user even if another reading profile enabled it.
+      const state = { enabled: item?.enabled === true };
+      if (action === 'set' && (state.enabled !== enabled || (enabled ? !settings.openAtLogin : Boolean(item)))) throw new Error('Windows did not apply the requested login item state');
+      return state;
+    } catch (error) {
+      log('Auto-start settings: ' + error.message);
+      throw new Error(action === 'get' ? '无法读取开机自启状态，请重试。' : '未能更改开机自启，请检查 Windows 启动应用设置后重试。');
+    }
+  });
   ipcMain.handle('reader:update', async (event, action) => {
     if (!trusted(event) || !updater) throw new Error('更新操作不可用。');
     if (!['status', 'check', 'download', 'restart', 'open-release'].includes(action)) throw new Error('未知的更新操作。');
@@ -86,6 +118,9 @@ function installIpc() {
     try { mainWindow.setTitleBarOverlay({ height }); titlebarHeight = height; }
     catch (error) { log('Titlebar geometry: ' + error.message); }
   });
+  ipcMain.on('reader:titlebar-dark', (event, value) => {
+    if (trusted(event)) setTitlebarDark(value);
+  });
   ipcMain.on('reader:session-read', (event) => { event.returnValue = trusted(event) ? readJson(sessionFile) : {}; });
   ipcMain.on('reader:session-write', (event, value) => { if (trusted(event)) try { writeJson(sessionFile, sessionValue(value)); } catch (error) { log('Session persistence: ' + error.message); } });
   ipcMain.on('reader:session-write-sync', (event, value) => {
@@ -98,12 +133,12 @@ function installIpc() {
 }
 async function startBackend() {
   const token = randomBytes(32).toString('base64url');
-  backend = utilityProcess.fork(path.join(__dirname, 'backend.cjs'), [], { cwd: runtime, stdio: 'pipe', serviceName: 'Continuous Reader Workspace' });
+  backend = utilityProcess.fork(path.join(__dirname, 'backend.cjs'), [], { cwd: runtime, stdio: 'pipe', serviceName: 'Stread Workspace' });
   backend.stdout.on('data', (chunk) => log(chunk.toString().trim()));
   backend.stderr.on('data', (chunk) => log(chunk.toString().trim()));
   backend.on('exit', (code) => {
     log('Backend exit ' + code); stopped = true;
-    if (ready && !closing) dialog.showMessageBox(mainWindow, { type: 'error', title: 'Continuous Reader', message: '本地资料服务已停止。', detail: '草稿会保留在本机。请关闭程序后重新打开。', buttons: ['知道了'] });
+    if (ready && !closing) dialog.showMessageBox(mainWindow, { type: 'error', title: 'Stread', message: '本地资料服务已停止。', detail: '草稿会保留在本机。请关闭程序后重新打开。', buttons: ['知道了'] });
   });
   const info = await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('本地资料服务启动超时。')), 60000);
@@ -172,7 +207,7 @@ async function closeWindow(devAction) {
       app.relaunch({ args: process.argv.slice(1), ...(portable && path.isAbsolute(portable) ? { execPath: portable } : {}) });
     } catch (error) {
       log('Update restart failed: ' + error.message);
-      dialog.showErrorBox('更新未能重启', error.message + '\n\n请重新打开 Continuous Reader。');
+      dialog.showErrorBox('更新未能重启', error.message + '\n\n请重新打开 Stread。');
     }
     app.quit();
   } else if (development && devAction === 'restart') app.exit(75);
@@ -190,10 +225,10 @@ async function createWindow() {
   const bounds = saved.bounds && screen.getAllDisplays().some((display) => {
     const a = display.workArea, b = saved.bounds; return b.x + 100 < a.x + a.width && b.y + 100 < a.y + a.height && b.x + b.width > a.x + 100 && b.y + b.height > a.y + 100;
   }) ? saved.bounds : { width: Math.min(1440, area.width), height: Math.min(960, area.height) };
-  mainWindow = new BrowserWindow({ ...bounds, minWidth: 900, minHeight: 600, show: false, backgroundColor: '#ffffff', title: 'Continuous Reader', icon: windowIcon, autoHideMenuBar: true,
-    ...(nativeTitleBarOverlay ? { titleBarStyle: 'hidden', titleBarOverlay: { color: '#ffffff', symbolColor: '#292b2c', height: initialTitlebarHeight } } : {}),
+  mainWindow = new BrowserWindow({ ...bounds, minWidth: 900, minHeight: 600, show: false, backgroundColor: '#ffffff', title: 'Stread', icon: windowIcon, autoHideMenuBar: true,
+    ...(nativeTitleBarOverlay ? { titleBarStyle: 'hidden', titleBarOverlay: { color: '#00000000', symbolColor: '#292b2c', height: initialTitlebarHeight } } : {}),
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, sandbox: true, nodeIntegration: false, webSecurity: true, spellcheck: false,
-      ...(development || updater ? { additionalArguments: [...(development ? ['--reader-development'] : []), ...(updater ? ['--reader-updates'] : [])] } : {}) } });
+      ...(development || updater || autoStartAvailable ? { additionalArguments: [...(development ? ['--reader-development'] : []), ...(updater ? ['--reader-updates'] : []), ...(autoStartAvailable ? ['--reader-auto-start'] : [])] } : {}) } });
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (internal(url)) {
       const child = new BrowserWindow({ width: 1100, height: 800, icon: windowIcon, autoHideMenuBar: true, webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false } });
@@ -204,6 +239,8 @@ async function createWindow() {
     return { action: 'deny' };
   });
   mainWindow.webContents.on('will-navigate', (event, url) => { if (!internal(url)) { event.preventDefault(); external(url); } });
+  // A replaced document cannot run the previous image preview's cleanup.
+  mainWindow.webContents.on('did-navigate', () => setTitlebarDark(false));
   mainWindow.webContents.on('will-attach-webview', (event) => event.preventDefault());
   mainWindow.webContents.on('render-process-gone', (_event, detail) => { log('Renderer exit ' + detail.reason); });
   mainWindow.webContents.on('did-fail-load', (_event, code, message) => log('Page load failed ' + code + ': ' + message));
@@ -226,11 +263,11 @@ async function createWindow() {
   }
 }
 if (mcpMode) app.whenReady().then(() => require('./mcp.cjs').startMcp({ runtime, userData, app })).catch(() => {
-  process.stderr.write('Continuous Reader MCP could not start. Reopen the desktop app and reconnect.\n');
+  process.stderr.write('Stread MCP could not start. Reopen the desktop app and reconnect.\n');
   app.exit(1);
 });
 else if (!ownsInstance) {
-  if (development) process.stderr.write('Continuous Reader 已在运行。请先正常关闭当前窗口，再执行 npm run desktop:dev。\n');
+  if (development) process.stderr.write('Stread 已在运行。请先正常关闭当前窗口，再执行 npm run desktop:dev。\n');
   app.quit();
 }
 else {
@@ -257,6 +294,6 @@ else {
     await startBackend(); await createWindow(); await updater?.markHealthy();
   }).catch(async (error) => {
     try { await updater?.markFailed(); } catch (failure) { log('Update recovery: ' + failure.message); }
-    log(error.stack || String(error)); dialog.showErrorBox('Continuous Reader 无法启动', error.message + '\n\n日志：' + path.join(userData, 'desktop.log')); closing = true; mainWindow?.destroy(); mainWindow = null; await stopBackend(); app.quit();
+    log(error.stack || String(error)); dialog.showErrorBox('Stread 无法启动', error.message + '\n\n日志：' + path.join(userData, 'desktop.log')); closing = true; mainWindow?.destroy(); mainWindow = null; await stopBackend(); app.quit();
   });
 }

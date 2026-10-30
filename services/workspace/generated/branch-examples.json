@@ -1,6 +1,6 @@
 {
   "format": "mcp-branch-examples-1",
-  "registryHash": "e70efc5c56bfc3c4878f566d97df4ad1d9beb13af4021d2cc0f7c133675b881a",
+  "registryHash": "028435362e432bc61150dd8249ca2c7a777f0a75dad62f8844ae4910c2639548",
   "notice": "Illustrative schema-valid placeholders; not business-valid calls, authorization or reusable request IDs. Generated without executing tools.",
   "examples": [
     {

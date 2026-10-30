@@ -39,7 +39,7 @@ export async function generateThirdPartyNotices() {
   for (const directory of ['node_modules', 'prototypes/insight-composer/node_modules', 'services/workspace/node_modules', 'services/glossary/node_modules']) await visitModules(join(root, directory));
   await mkdir(publicNotices, { recursive: true });
   const sorted = [...packages].sort(([a], [b]) => a.localeCompare(b));
-  const header = 'stread / Continuous Reader — JavaScript dependency notices\n\nGenerated from installed locked dependencies, including build tools and packages that may be removed by tree shaking. Third-party notices remain under their respective licenses.\n\n';
+  const header = 'Stread — JavaScript dependency notices\n\nGenerated from installed locked dependencies, including build tools and packages that may be removed by tree shaking. Third-party notices remain under their respective licenses.\n\n';
   const body = sorted.map(([id, item]) => `${'='.repeat(78)}\n${id} (${item.license})\n${'='.repeat(78)}\n\n${item.licenses.length ? item.licenses.join('\n\n') : 'No root-level license file was supplied by this installed package; consult its package metadata and upstream source.'}\n`).join('\n');
   await writeFile(join(publicNotices, 'dependencies-LICENSES.txt'), header + body, 'utf8');
   await copyFile(join(root, 'LICENSE'), join(publicNotices, 'stread-LICENSE.txt'));

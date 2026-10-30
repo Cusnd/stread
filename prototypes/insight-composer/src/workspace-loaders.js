@@ -7,6 +7,7 @@ function once(load) {
 
 export const loadCollection = once(() => import("./workspace/CollectionPage.jsx"));
 export const loadFlow = once(() => import("./workspace/FlowPage.jsx"));
+export const loadQueue = once(() => import("./workspace/QueuePage.jsx"));
 export const loadReader = once(() => import("./App.jsx"));
 export const loadArticleNotes = once(() => import("./notes/ArticleNotesPage.jsx"));
 export const loadDocumentPreparation = once(() => import("./html-content.js"));
@@ -22,6 +23,6 @@ export async function loadWithNavigation(load) {
 
 // Intent preloads are silent; a visible navigation owns its own loading token.
 export function preloadWorkspacePage(page) {
-  const load = page === "flow" ? loadFlow : page === "collection" ? loadCollection : loadReader;
+  const load = page === "queue" ? loadQueue : page === "flow" ? loadFlow : page === "collection" ? loadCollection : loadReader;
   return load().catch(() => {});
 }

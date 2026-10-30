@@ -4,6 +4,7 @@
 export const MOTION_SPRINGS = Object.freeze({
   control: Object.freeze({ stiffness: 600, damping: 45, mass: 0.7 }),
   content: Object.freeze({ stiffness: 500, damping: 45, mass: 0.8 }),
+  disclosure: Object.freeze({ stiffness: 180, damping: 28, mass: 1 }),
   surface: Object.freeze({ stiffness: 420, damping: 42, mass: 1 }),
   panel: Object.freeze({ stiffness: 360, damping: 38, mass: 1 }),
   layout: Object.freeze({ stiffness: 300, damping: 35, mass: 1 }),
@@ -19,7 +20,7 @@ export function motionTransition(kind = "surface", reduced = false) {
     // input lock for a long, already invisible spring tail.
     restDelta: 0.25, restSpeed: 4,
     reduceMotion: false,
-    opacity: MOTION_FADE,
+    opacity: kind === "disclosure" ? { ...MOTION_FADE, duration: 0.2 } : MOTION_FADE,
   };
 }
 

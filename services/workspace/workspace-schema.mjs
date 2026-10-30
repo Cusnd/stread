@@ -38,4 +38,13 @@ export const workspaceSchemaMigrations = [{ version: 1, name: "Adopt existing wo
       CREATE INDEX IF NOT EXISTS glossary_deleted_order ON glossary((deleted_at IS NULL));
       CREATE INDEX IF NOT EXISTS glossary_document_order ON glossary(CASE WHEN json_valid(payload) THEN json_extract(payload,'$.documentId') ELSE NULL END);
       CREATE INDEX IF NOT EXISTS glossary_deleted_document_order ON glossary((deleted_at IS NULL),CASE WHEN json_valid(payload) THEN json_extract(payload,'$.documentId') ELSE NULL END);
+    ` }, { version: 4, name: "Persist local AI queue identities and exact conversion bindings", sql: `
+      CREATE TABLE IF NOT EXISTS queue_tasks (id TEXT PRIMARY KEY, reference TEXT NOT NULL UNIQUE, version INTEGER NOT NULL, type TEXT NOT NULL, document_id TEXT, source_id TEXT, insight_id TEXT, change_request_id TEXT UNIQUE, payload TEXT NOT NULL);
+      CREATE INDEX IF NOT EXISTS queue_tasks_type ON queue_tasks(type);
+      CREATE INDEX IF NOT EXISTS queue_tasks_document ON queue_tasks(document_id);
+      CREATE INDEX IF NOT EXISTS queue_tasks_source ON queue_tasks(source_id);
+      CREATE INDEX IF NOT EXISTS queue_tasks_insight ON queue_tasks(insight_id);
+      CREATE TABLE IF NOT EXISTS queue_task_previews (preview_id TEXT PRIMARY KEY, task_id TEXT NOT NULL REFERENCES queue_tasks(id), task_version INTEGER NOT NULL, source_id TEXT NOT NULL, draft_id TEXT NOT NULL, payload TEXT NOT NULL);
+      CREATE INDEX IF NOT EXISTS queue_task_previews_task ON queue_task_previews(task_id,task_version);
+      INSERT OR IGNORE INTO counters(series,value) VALUES('T',0);
     ` }];

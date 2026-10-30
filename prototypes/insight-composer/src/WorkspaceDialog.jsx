@@ -22,11 +22,11 @@ export function WorkspaceDialog({ open, onClose, title, children, wide = false, 
   useLayoutEffect(() => {
     const dialog = ref.current;
     if (open) {
-      if (!dialog.open) {
+      if (!releaseScroll.current) {
         previousFocus.current = document.activeElement;
         releaseScroll.current = acquirePageScrollLock();
-        dialog.showModal();
       }
+      if (!dialog.open) dialog.showModal();
     }
   }, [open]);
   useEffect(() => {

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { MaterialDetails } from "../../src/workspace/MaterialDetails.jsx";
 import { DocumentForm } from "../../src/workspace/CollectionForms.jsx";
 import { WorkspaceDialog } from "../../src/workspace/shared.jsx";
+import { statusNames } from "../../src/workspace/model.js";
 import { ReaderSelect } from "../../src/ReaderSelect.jsx";
 import { ContinuousMotion } from "../../src/Motion.jsx";
 import "../../src/styles.css";
@@ -21,9 +21,12 @@ function Fixture() {
   const [optionCount, setOptionCount] = useState(40);
   const [showFilter, setShowFilter] = useState(true);
   const workspace = { documents: [material], collections: [], planIds: [] };
+  const setStatus = (item, status) => { window.selectFixture.writes.push({ id: item.id, version: item.version, status }); setMaterial({ ...item, status }); };
   return <ContinuousMotion><main className="workspace-ui" style={{ padding: 32, display: "flex", gap: 64, alignItems: "flex-start" }}>
     <section style={{ width: 306 }}>
-      <MaterialDetails material={material} workspace={workspace} pending={pending} onRead={() => {}} onPlan={() => {}} onStatus={(item, status) => { window.selectFixture.writes.push({ id: item.id, version: item.version, status }); setMaterial({ ...item, status }); }} />
+      {/* Standalone ReaderSelect coverage: MaterialDetails now uses a radio group,
+          while this fixture keeps the native picker contract independently exercised. */}
+      <div className="workspace-field"><span>阅读状态</span><ReaderSelect aria-label={material.title + "的阅读状态"} value={material.status} disabled={pending} onChange={event => setStatus(material, event.target.value)}>{Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</ReaderSelect></div>
       <button type="button" onClick={() => setPending(!pending)}>切换禁用</button>
       <button type="button" onClick={() => setOpen(true)}>编辑资料</button>
     </section>

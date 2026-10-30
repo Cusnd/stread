@@ -47,7 +47,7 @@ node electron/prepare-python.mjs
 ## MCP 提示先打开 Reader，或连接失效
 
 1. 先打开桌面主程序并等到资料库显示完成。
-2. MCP 配置的 `command` 使用实际 `Continuous Reader.exe`，参数包含 `--mcp`。
+2. MCP 配置的 `command` 使用实际安装的 `Stread.exe`，参数包含 `--mcp`；尚未升级的旧安装仍使用其 `Continuous Reader.exe` 路径。
 3. 如果主程序使用 `--reader-user-data`，MCP 必须传入完全相同的目录。
 4. 主程序重启后，让客户端断开并重连，以读取新的临时连接信息。
 

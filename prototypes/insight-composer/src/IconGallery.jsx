@@ -25,10 +25,10 @@ function ToolbarSample() {
 export function IconGallery() {
   const { style, setStyle, sessionOnly } = useIconStyle();
   const [size, setSize] = useState("actual");
-  useEffect(() => { document.title = "图标方案 · 连续阅读"; }, []);
+  useEffect(() => { document.title = "图标方案 · Stread"; }, []);
   return <main className="icon-gallery" data-size={size}>
     <header className="icon-gallery-heading">
-      <div><a className="icon-gallery-back" href="?view=collection"><ArrowLeft size={16} />连续阅读</a><h1>图标方案</h1></div>
+      <div><a className="icon-gallery-back" href="?view=collection"><ArrowLeft size={16} />Stread</a><h1>图标方案</h1></div>
       <div className="icon-gallery-actions"><fieldset className="icon-gallery-size"><legend className="sr-only">图标样本大小</legend>
         {[['actual', '实际尺寸'], ['detail', '放大细节']].map(([value, label]) => <label key={value}><input type="radio" name="icon-gallery-size" value={value} checked={size === value} onChange={() => setSize(value)} /><span>{label}</span></label>)}
       </fieldset><a className="icon-gallery-enter" href="?view=collection">进入资料库<ArrowUpRight size={16} /></a></div>

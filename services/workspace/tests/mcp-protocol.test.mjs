@@ -44,7 +44,7 @@ test("HTTP and desktop stdio serve the same 32 tools to modern and legacy protoc
   for (const viaStdio of [false, true]) for (const era of ["legacy", "modern"]) {
     const client = await h.connect(era, viaStdio);
     assert.equal(client.getProtocolEra(), era);
-    assert.equal(client.getServerVersion().name, "continuous-reader-workspace");
+    assert.equal(client.getServerVersion().name, "stread-workspace");
     assert.equal(client.getServerVersion().version, "0.6.0");
     assert.match(client.getServerVersion().description, /bounded source-linked reading/);
     assert.equal(client.getServerCapabilities().tools.listChanged, false);
@@ -72,7 +72,7 @@ test("discovery is authenticated, legacy remains JSON, and malformed modern clai
   assert.equal(response.status, 200);
   const discovered = (await response.json()).result;
   assert.deepEqual(discovered.supportedVersions, [revision]);
-  assert.deepEqual(discovered.capabilities, { tools: { listChanged: false } });
+  assert.deepEqual(discovered.capabilities, { tools: { listChanged: false }, resources: { listChanged: false, subscribe: false } });
   assert.equal(discovered._meta["io.modelcontextprotocol/serverInfo"].version, "0.6.0");
   const mismatched = await h.rpc(body, { ...headers, "Mcp-Method": "tools/list" });
   assert.equal(mismatched.status, 400);

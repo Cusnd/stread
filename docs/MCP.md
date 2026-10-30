@@ -2,26 +2,28 @@
 
 [返回 README](../README.md) · [使用指南](GETTING_STARTED.md) · [完整工具合同](../services/workspace/mcp-management.md)
 
-stread 通过 MCP 向外部 Agent 提供本机资料与 authoring 能力。当前服务版本为 **0.6.0**，公开 **32 个工具**；桌面 stdio 和本机 HTTP 使用同一份工具目录和同一个工作台业务层。
+Stread 通过 MCP 向外部 Agent 提供本机资料与 authoring 能力。当前服务版本为 **0.6.0**，公开 **32 个工具**；桌面 stdio 和本机 HTTP 使用同一份工具目录和同一个工作台业务层。
 
 Reader 不内置模型，也不会管理 Agent 会话。选择能够连接本机 MCP、访问返回的本机资源地址，并能实际启动独立审阅者的客户端。
 
+当前源码还通过 MCP resources 暴露 Queue：读取 `stread://queue` 获取待处理任务，通过 `resolve_reference({"reference":"#T00001"})` 读取具体任务及后续操作指引。任务列表也包含详情资源和 Queue 页面链接。HTTP 与 stdio 均支持这些读取入口，公开的 32 个工具及其输入 schema 保持不变。转换候选必须保留返回的任务 UUID、任务版本和原文件绑定；任务要求改变后重新读取并生成候选。分页参数与版本守卫见[Queue MCP 合同](../services/workspace/mcp-management.md#queue-resources-and-task-identities)。
+
 ## 推荐：连接已打开的桌面程序
 
-先正常打开 Continuous Reader，等待资料库就绪。随后在客户端中配置 stdio server，例如：
+先正常打开 Stread，等待资料库就绪。随后在客户端中配置 stdio server，例如：
 
 ```json
 {
   "mcpServers": {
     "stread": {
-      "command": "C:\\Apps\\Continuous Reader\\Continuous Reader.exe",
+      "command": "C:\\Apps\\Stread\\Stread.exe",
       "args": ["--mcp"]
     }
   }
 }
 ```
 
-`command` 必须替换为本机真实安装路径。`stread` 只是此客户端配置里的显示名称，不会改变程序的数据身份。
+`command` 必须替换为本机真实安装路径；尚未升级的旧安装仍使用其 `Continuous Reader.exe` 路径。`stread` 只是此客户端配置里的显示名称，不会改变程序的数据身份。新版本的 MCP 服务显示名称为 `stread-workspace`；工具名称和输入合同保持不变。
 
 主程序使用独立 profile 时，加入同一个绝对目录：
 
@@ -29,7 +31,7 @@ Reader 不内置模型，也不会管理 Agent 会话。选择能够连接本机
 {
   "mcpServers": {
     "stread": {
-      "command": "C:\\Apps\\Continuous Reader\\Continuous Reader.exe",
+      "command": "C:\\Apps\\Stread\\Stread.exe",
       "args": ["--mcp", "--reader-user-data=C:\\ReaderProfiles\\Work"]
     }
   }

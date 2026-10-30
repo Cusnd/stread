@@ -9,7 +9,7 @@ import { ArrowClockwise, BookOpen, MagnifyingGlass } from "./icons";
 import { WorkspaceHeader } from "./workspace/WorkspaceHeader.jsx";
 import { ArticleNotesHeader } from "./notes/ArticleNotesHeader.jsx";
 import { WorkspaceLoadingShell, WorkspacePageBoundary, WorkspacePagePlaceholder } from "./WorkspaceLoading.jsx";
-import { loadCollection, loadFlow, loadReader, loadArticleNotes, loadDocumentPreparation, loadImportDialog, loadRevisionReview, loadWorkspaceSettings, loadWithNavigation, preloadWorkspacePage } from "./workspace-loaders.js";
+import { loadCollection, loadFlow, loadQueue, loadReader, loadArticleNotes, loadDocumentPreparation, loadImportDialog, loadRevisionReview, loadWorkspaceSettings, loadWithNavigation, preloadWorkspacePage } from "./workspace-loaders.js";
 import { beginNavigationLoading } from "./navigation-loading.js";
 import { createReadingActivityTracker } from "./reading-activity.js";
 import { createVisiblePoller } from "./visible-poller.js";
@@ -28,12 +28,14 @@ import "./workspace-shell.css";
 
 const CollectionPage = lazy(() => loadWithNavigation(loadCollection).then((module) => ({ default: module.CollectionPage })));
 const FlowPage = lazy(() => loadWithNavigation(loadFlow).then((module) => ({ default: module.FlowPage })));
+const QueuePage = lazy(() => loadWithNavigation(loadQueue).then((module) => ({ default: module.QueuePage })));
 const LegacyApp = lazy(() => loadWithNavigation(loadReader).then((module) => ({ default: module.App })));
 const ImportDialog = lazy(() => loadWithNavigation(loadImportDialog).then((module) => ({ default: module.ImportDialog })));
 const RevisionReview = lazy(() => loadWithNavigation(loadRevisionReview).then((module) => ({ default: module.RevisionReview })));
 const WorkspaceSettings = lazy(() => loadWithNavigation(loadWorkspaceSettings).then((module) => ({ default: module.WorkspaceSettings })));
 const preloadArticleNotes = () => { void loadArticleNotes().catch(() => {}); };
 const isDocumentPage = (page) => page === "reader" || page === "notes";
+const isWorkspacePage = (page) => ["collection", "flow", "queue"].includes(page);
 
 function DeferredDialog({ component: Dialog, open, ...props }) {
   const [opened, setOpened] = useState(open);
@@ -51,16 +53,22 @@ function ReferenceDialog({ open, onClose, onNavigate, workspace }) {
   async function resolve(event) {
     event.preventDefault();
     const destination = referenceDestination(value);
-    if (!destination) { setError("请输入问题、笔记编号，或阅读器中的引用链接。"); return; }
+    if (!destination) { setError("请输入任务、问题、笔记或请求编号，或阅读器中的引用链接。"); return; }
     setBusy(true); setError("");
     try {
+      if (destination.taskId || destination.reference?.startsWith("#T")) {
+        const { task } = await requestJson("/api/queue/" + encodeURIComponent(destination.taskId || destination.reference));
+        onNavigate({ page: "queue", taskId: task.id }, "", { revealTask: true });
+        onClose();
+        return;
+      }
       const result = destination.reference ? await requestJson("/api/references/" + encodeURIComponent(destination.reference) + (documentId ? "?documentId=" + encodeURIComponent(documentId) : "")) : destination;
       onNavigate({ page: "reader", documentId: result.documentId, insightId: result.insight?.id || result.insightId || null, ...(destination.revision ? { revision: destination.revision } : {}) }, result.changeRequest?.source?.blockId ? "#" + encodeURIComponent(result.changeRequest.source.blockId) : destination.hash);
       onClose();
     } catch (failure) { setError(failure.message); setAmbiguousDocuments(failure.details?.documentIds || []); }
     finally { setBusy(false); }
   }
-  return <WorkspaceDialog open={open} onClose={onClose} title="打开引用" busy={busy}><form onSubmit={resolve} className="workspace-form"><label>引用编号或链接<input autoFocus value={value} onChange={(event) => { setValue(event.target.value); setAmbiguousDocuments([]); setDocumentId(""); }} placeholder="#Q00001、#N00001、#R00001 或文章链接" /></label>{ambiguousDocuments.length > 0 && <label>旧编号所属文章<ReaderSelect value={documentId} onChange={(event) => setDocumentId(event.target.value)}><option value="">选择文章</option>{ambiguousDocuments.map((id) => <option key={id} value={id}>{workspace.documents.find((item) => item.id === id)?.title || id}</option>)}</ReaderSelect></label>}<MotionFeedback show={Boolean(error)} role="alert"><p className="workspace-service-error">{error}</p></MotionFeedback><footer><button type="button" onClick={onClose}>取消</button><button className="workspace-primary" disabled={busy || !value.trim() || (ambiguousDocuments.length > 0 && !documentId)}><MagnifyingGlass size={15} />打开引用</button></footer></form></WorkspaceDialog>;
+  return <WorkspaceDialog open={open} onClose={onClose} title="打开引用" busy={busy}><form onSubmit={resolve} className="workspace-form"><label>引用编号或链接<input autoFocus value={value} onChange={(event) => { setValue(event.target.value); setAmbiguousDocuments([]); setDocumentId(""); }} placeholder="#T00001、#Q00001、#N00001、#R00001 或文章链接" /></label>{ambiguousDocuments.length > 0 && <label>旧编号所属文章<ReaderSelect value={documentId} onChange={(event) => setDocumentId(event.target.value)}><option value="">选择文章</option>{ambiguousDocuments.map((id) => <option key={id} value={id}>{workspace.documents.find((item) => item.id === id)?.title || id}</option>)}</ReaderSelect></label>}<MotionFeedback show={Boolean(error)} role="alert"><p className="workspace-service-error">{error}</p></MotionFeedback><footer><button type="button" onClick={onClose}>取消</button><button className="workspace-primary" disabled={busy || !value.trim() || (ambiguousDocuments.length > 0 && !documentId)}><MagnifyingGlass size={15} />打开引用</button></footer></form></WorkspaceDialog>;
 }
 
 function ServiceGate({ error, retry }) {
@@ -73,7 +81,7 @@ function ServiceGate({ error, retry }) {
     catch (next) { setFailure(next.message); }
     finally { setBusy(false); }
   }
-  return <main className="workspace-gate"><BookOpen size={27} /><h1>连续阅读</h1>{error?.status === 401 ? <form className="workspace-form" onSubmit={login}><p>输入工作台访问令牌以继续。</p><label>访问令牌<input type="password" value={token} onChange={(event) => setToken(event.target.value)} autoComplete="current-password" /></label><MotionFeedback show={Boolean(failure)} role="alert"><p className="workspace-service-error">{failure}</p></MotionFeedback><button className="workspace-primary" disabled={busy || !token}>进入工作台</button></form> : <><p role={error ? "alert" : "status"}>{error ? "暂时无法连接工作台。" : "正在打开工作台…"}</p>{error && <><p className="workspace-muted">{error.message}</p><button onClick={retry}><ArrowClockwise size={15} />重新连接</button></>}</>}</main>;
+  return <main className="workspace-gate"><BookOpen size={27} /><h1>Stread</h1>{error?.status === 401 ? <form className="workspace-form" onSubmit={login}><p>输入工作台访问令牌以继续。</p><label>访问令牌<input type="password" value={token} onChange={(event) => setToken(event.target.value)} autoComplete="current-password" /></label><MotionFeedback show={Boolean(failure)} role="alert"><p className="workspace-service-error">{failure}</p></MotionFeedback><button className="workspace-primary" disabled={busy || !token}>进入工作台</button></form> : <><p role={error ? "alert" : "status"}>{error ? "暂时无法连接工作台。" : "正在打开工作台…"}</p>{error && <><p className="workspace-muted">{error.message}</p><button onClick={retry}><ArrowClockwise size={15} />重新连接</button></>}</>}</main>;
 }
 
 function activeFocusKey() { return document.activeElement?.closest("[data-focus-key]")?.dataset.focusKey || null; }
@@ -96,6 +104,8 @@ export function WorkspaceApp() {
   const [proposals, setProposals] = useState([]);
   const [views, setViews] = useState(() => readViewState(sessionStorage, route.page));
   const [overlay, setOverlay] = useState(null);
+  const [importDraft, setImportDraft] = useState(null);
+  const [reviewSelection, setReviewSelection] = useState(null);
   const settingsTrigger = useRef(null);
   const [startupError, setStartupError] = useState(null);
   const [documentError, setDocumentError] = useState(null);
@@ -135,10 +145,10 @@ export function WorkspaceApp() {
       if (!event.detail?.development) return;
       const page = routeRef.current.page;
       const next = { ...viewsRef.current, navigationExpanded: getWorkspaceNavigationSnapshot().navigationExpanded };
-      if (page === "collection" || page === "flow") next[page] = {
+      if (isWorkspacePage(page)) next[page] = {
         ...next[page], scrollY: window.scrollY, focusKey: activeFocusKey() || next[page]?.focusKey,
       };
-      if (!writeViewState(sessionStorage, next)) event.detail.errors.push(new Error("开发刷新前的 Collection／Flow 视图未写入本地存储。"));
+      if (!writeViewState(sessionStorage, next)) event.detail.errors.push(new Error("开发刷新前的工作区视图未写入本地存储。"));
     };
     window.addEventListener("continuous-reader:flush", snapshot);
     return () => window.removeEventListener("continuous-reader:flush", snapshot);
@@ -158,7 +168,7 @@ export function WorkspaceApp() {
   }, [navigationExpanded]);
 
   useEffect(() => {
-    if (!["collection", "flow", "notes"].includes(route.page)) return;
+    if (!["collection", "flow", "queue", "notes"].includes(route.page)) return;
     const onKey = (event) => {
       if (!canHandleWorkspaceSettings(event, overlay)) return;
       if (!matchesShortcut(event, "settings")) return;
@@ -385,7 +395,7 @@ export function WorkspaceApp() {
 
   const rememberPage = useCallback(() => {
     const page = routeRef.current.page;
-    if (page === "collection" || page === "flow") updateView(page, { ...viewsRef.current[page], scrollY: window.scrollY, focusKey: activeFocusKey() || viewsRef.current[page]?.focusKey });
+    if (isWorkspacePage(page)) updateView(page, { ...viewsRef.current[page], scrollY: window.scrollY, focusKey: activeFocusKey() || viewsRef.current[page]?.focusKey });
   }, [updateView]);
 
   const navigate = useCallback((destination, hash = "", options = {}) => {
@@ -394,6 +404,7 @@ export function WorkspaceApp() {
     let next = typeof destination === "string" ? { page: destination } : destination;
     if (next.page === "flow" && !next.section) next = { ...next, section: viewsRef.current.flow.section || "overview" };
     rememberPage();
+    if (next.page === "queue" && next.taskId && options.revealTask) updateView("queue", { ...viewsRef.current.queue, selectedId: next.taskId, type: "all", status: "all", query: "", scrollTop: 0, draft: null, ...(options.clearQueueDraft ? { savedDraft: null } : {}) });
     window.dispatchEvent(new Event("continuous-reader:flush"));
     flushCheckpoint();
     activityTracker.current?.end("navigation");
@@ -412,12 +423,12 @@ export function WorkspaceApp() {
       if (isDocumentPage(next.page)) window.scrollTo({ top: 0, behavior: "instant" });
       setNavigationEntry(entry); setRoute(next); setOverlay(null);
     };
-    if (["collection", "flow"].includes(previousPage) && ["collection", "flow"].includes(next.page) && !visitedPages.current.has(next.page)) commitPageMotion(() => startTransition(commit), { enabled: false });
+    if (isWorkspacePage(previousPage) && isWorkspacePage(next.page) && !visitedPages.current.has(next.page)) commitPageMotion(() => startTransition(commit), { enabled: false });
     else commitPageMotion(() => flushSync(commit), { scope: isDocumentPage(previousPage) || isDocumentPage(next.page) ? "reader-page" : "page" });
-  }, [rememberPage, flushCheckpoint]);
+  }, [rememberPage, flushCheckpoint, updateView]);
 
   const readerReturn = readerReturnRoute(navigationEntry);
-  const readerBackLabel = readerReturn.page === "flow" ? "返回 Flow" : "返回资料库";
+  const readerBackLabel = readerReturn.page === "queue" ? "返回 Queue" : readerReturn.page === "flow" ? "返回 Flow" : "返回资料库";
   const returnFromReader = useCallback(() => navigate(readerReturnRoute(navigationEntryRef.current)), [navigate]);
 
   useEffect(() => {
@@ -436,7 +447,7 @@ export function WorkspaceApp() {
       entryHash.current = location.hash;
       const next = parseRoute(location.search); routeRef.current = next;
       const commit = () => { setNavigationEntry(entry); setRoute(next); setOverlay(null); };
-      if (["collection", "flow"].includes(previousPage) && ["collection", "flow"].includes(next.page) && !visitedPages.current.has(next.page)) commitPageMotion(() => startTransition(commit), { enabled: false });
+      if (isWorkspacePage(previousPage) && isWorkspacePage(next.page) && !visitedPages.current.has(next.page)) commitPageMotion(() => startTransition(commit), { enabled: false });
       else commitPageMotion(() => flushSync(commit), { scope: isDocumentPage(previousPage) || isDocumentPage(next.page) ? "reader-page" : "page" });
     };
     window.addEventListener("popstate", pop);
@@ -444,11 +455,11 @@ export function WorkspaceApp() {
   }, [rememberPage, flushCheckpoint]);
 
   useLayoutEffect(() => {
-    if (!workspace || !["collection", "flow"].includes(route.page)) return;
-    document.title = (route.page === "flow" ? "Flow" : "Collection") + " · 连续阅读";
+    if (!workspace || !isWorkspacePage(route.page)) return;
+    document.title = ({ flow: "Flow", queue: "Queue", collection: "Collection" })[route.page] + " · Stread";
     const frame = requestAnimationFrame(() => {
-      if (document.querySelector(route.page === "flow" ? ".flow-page" : ".workspace-collection")) visitedPages.current.add(route.page);
-      const view = viewsRef.current[route.page];
+      if (document.querySelector(route.page === "queue" ? ".queue-page" : route.page === "flow" ? ".flow-page" : ".workspace-collection")) visitedPages.current.add(route.page);
+      const view = viewsRef.current[route.page] || {};
       window.scrollTo({ top: view.scrollY || 0, behavior: "instant" });
       if (view.focusKey) [...document.querySelectorAll("[data-focus-key]")].find((element) => element.dataset.focusKey === view.focusKey && element.getClientRects().length && !element.disabled && !element.closest("[inert]"))?.focus({ preventScroll: true });
     });
@@ -495,6 +506,30 @@ export function WorkspaceApp() {
   }, [updateView, navigate, route.page]);
 
   const editFlowInsight = useCallback((insight) => openDocument(insight.documentId, { insightId: insight.id, editInsightId: insight.id }), [openDocument]);
+
+  const setQueueView = useCallback((value) => {
+    updateView("queue", value);
+    if (routeRef.current.page !== "queue") return;
+    const taskId = value.selectedId || undefined;
+    if (routeRef.current.taskId === taskId) return;
+    const next = { page: "queue", ...(taskId ? { taskId } : {}) };
+    history.replaceState(history.state, "", routeUrl(next));
+    routeRef.current = next; setRoute(next);
+  }, [updateView]);
+
+  const openImport = useCallback((draft = null) => { setImportDraft(draft); setOverlay("import"); }, []);
+  const openQueueTaskDialog = useCallback(() => {
+    const current = viewsRef.current.queue || {};
+    setQueueView({ ...current, draft: current.savedDraft || { type: ["conversion", "correction", "translation", "question", "instruction"].includes(current.type) ? current.type : "conversion", body: "" } });
+  }, [setQueueView]);
+  const queuedImport = useCallback((task) => {
+    navigate({ page: "queue", taskId: task.id }, "", { revealTask: true, clearQueueDraft: Boolean(importDraft) });
+    setNotice(`${task.reference} 已加入队列`);
+  }, [navigate, importDraft]);
+  const reviewQueueTask = useCallback((task) => {
+    setReviewSelection(task?.proposal?.id || task?.proposalId || task?.result?.proposalId || null);
+    setOverlay("review");
+  }, []);
 
   const openArticleNotes = useCallback(async (readingState) => {
     const origin = { ...routeRef.current };
@@ -660,15 +695,15 @@ export function WorkspaceApp() {
       <WorkspaceHeader page="collection" onNavigate={navigate} onPreload={preloadWorkspacePage} />
       {documentError || prepared.error ? <main className="workspace-gate"><p role="alert">{documentError?.message || "当前阅读器无法呈现这份文档，原文件与已保存内容仍保留。"}</p><div className="workspace-actions">{documentError && <button onClick={() => hydrateDocument(route.documentId, { foreground: true })}>重新加载</button>}{prepared.error && <a href={"/api/documents/" + encodeURIComponent(route.documentId) + "/export"}>下载结构化文档</a>}<button onClick={returnFromReader}>{readerBackLabel}</button></div></main> : <WorkspacePagePlaceholder navigationExpanded={navigationExpanded} />}
     </div> : <div className="workspace-app" inert={overlay === "settings"}>
-      <WorkspaceHeader page={route.page} loading={!workspace} onNavigate={navigate} onPreload={preloadWorkspacePage} onImport={route.page === "collection" ? () => setOverlay("import") : undefined} onReference={() => setOverlay("reference")} onReview={() => setOverlay("review")} onSettings={(event) => { settingsTrigger.current = event.currentTarget; setOverlay("settings"); }} pendingCount={pendingCount} navigationExpanded={navigationExpanded} onToggleNavigation={() => updateWorkspaceNavigation(!getWorkspaceNavigationSnapshot().navigationExpanded)} />
+      <WorkspaceHeader page={route.page} loading={!workspace} onNavigate={navigate} onPreload={preloadWorkspacePage} onImport={route.page === "collection" ? () => openImport() : undefined} onAddTask={route.page === "queue" ? openQueueTaskDialog : undefined} onReference={() => setOverlay("reference")} onReview={() => reviewQueueTask(null)} onSettings={(event) => { settingsTrigger.current = event.currentTarget; setOverlay("settings"); }} pendingCount={pendingCount} navigationExpanded={navigationExpanded} onToggleNavigation={() => updateWorkspaceNavigation(!getWorkspaceNavigationSnapshot().navigationExpanded)} />
       {!workspace ? startupError ? <ServiceGate error={startupError} retry={() => setAttempt((value) => value + 1)} /> : <WorkspacePagePlaceholder page={route.page} navigationExpanded={navigationExpanded} /> : <WorkspacePageBoundary routeKey={route.page}><Suspense fallback={<WorkspacePagePlaceholder page={route.page} navigationExpanded={navigationExpanded} />}>
-        {route.page === "flow" ? <FlowPage workspace={workspace} command={command} openDocument={openDocument} onEditInsight={editFlowInsight} view={{ ...views.flow, navigationExpanded, section: route.section || views.flow.section || "overview" }} setView={setFlowView} busy={busyCount > 0} /> : <CollectionPage workspace={workspace} command={command} openDocument={openDocument} onImport={() => setOverlay("import")} view={{ ...views.collection, navigationExpanded }} setView={(value) => updateView("collection", value)} busy={busyCount > 0} />}
+        {route.page === "queue" ? <QueuePage workspace={workspace} command={command} openDocument={openDocument} view={{ ...views.queue, navigationExpanded, ...(route.taskId ? { selectedId: route.taskId } : {}) }} setView={setQueueView} busy={busyCount > 0} onImport={openImport} onReview={reviewQueueTask} /> : route.page === "flow" ? <FlowPage workspace={workspace} command={command} openDocument={openDocument} onEditInsight={editFlowInsight} view={{ ...views.flow, navigationExpanded, section: route.section || views.flow.section || "overview" }} setView={setFlowView} busy={busyCount > 0} /> : <CollectionPage workspace={workspace} command={command} openDocument={openDocument} onImport={() => openImport()} view={{ ...views.collection, navigationExpanded }} setView={(value) => updateView("collection", value)} busy={busyCount > 0} />}
       </Suspense></WorkspacePageBoundary>}
     </div>}
     <AnimatePresence initial={false}>{notice && <MotionNotice key="workspace-notice" className="workspace-toast" role="status"><span>{notice}</span><button onClick={() => setNotice("")}>关闭</button></MotionNotice>}</AnimatePresence>
-    <DeferredDialog component={ImportDialog} open={overlay === "import"} onClose={() => setOverlay(null)} />
+    <DeferredDialog component={ImportDialog} open={overlay === "import"} onClose={() => setOverlay(null)} command={command} onQueued={queuedImport} initialDraft={importDraft} />
     {route.page !== "reader" && <DeferredDialog component={WorkspaceSettings} open={overlay === "settings"} returnFocusRef={settingsTrigger} onClose={() => setOverlay(null)} />}
     {workspace && <ReferenceDialog open={overlay === "reference"} onClose={() => setOverlay(null)} onNavigate={navigate} workspace={workspace} />}
-    {workspace && <DeferredDialog component={RevisionReview} open={overlay === "review"} onClose={() => setOverlay(null)} proposals={proposals} workspace={workspace} command={command} refresh={refresh} />}
+    {workspace && <DeferredDialog component={RevisionReview} open={overlay === "review"} onClose={() => setOverlay(null)} proposals={proposals} workspace={workspace} command={command} refresh={refresh} initialProposalId={reviewSelection} />}
   </>;
 }

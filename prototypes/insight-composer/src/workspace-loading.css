@@ -13,3 +13,6 @@
 .workspace-page-placeholder.workspace-compact-details > :last-child { display: none; }
 .workspace-page-placeholder.workspace-compact-navigation, .workspace-page-placeholder.workspace-compact-navigation.is-navigation-collapsed { grid-template-columns: minmax(0, 1fr); }
 .workspace-page-placeholder.workspace-compact-navigation > aside { display: none; }
+.workspace-page-placeholder[data-page="queue"] { grid-template-columns: calc(184px * var(--ui-scale, 1)) minmax(0, 1fr); }
+.workspace-page-placeholder[data-page="queue"].is-navigation-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+.workspace-page-placeholder[data-page="queue"] > :last-child { display: none; }

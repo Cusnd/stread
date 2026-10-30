@@ -17,6 +17,8 @@ import { prepareRevisionConflict } from "./revision-conflicts.mjs";
 import { applySchemaMigrations } from "./schema-migrations.mjs";
 import { documentSourceRegions } from "./document-sources.mjs";
 import { createAuthoringEditPackage, editingPackageDescriptor } from "./authoring-edit-package.mjs";
+import { initializeQueue, queryQueue } from "./queue-data.mjs";
+import { prepareQueueCommand } from "./queue-commands.mjs";
 
 const now = () => new Date().toISOString();
 const parsed = (row) => row ? JSON.parse(row.payload) : undefined;
@@ -62,6 +64,7 @@ export class Workspace {
     for (const [key, value] of Object.entries({ revision: 0, plan: [], planVersion: 1, currentId: null, glossaryRevision: 0 })) this.db.prepare("INSERT OR IGNORE INTO metadata(key,value) VALUES(?,?)").run(key, json(value));
     for (const series of ["Q", "N", "R"]) this.db.prepare("INSERT OR IGNORE INTO counters(series,value) VALUES(?,0)").run(series);
     if (this.options.initializeData) await this.options.initializeData(this);
+    initializeQueue(this);
     if (this.options.refreshRelations !== false) await this.refreshRelations();
     // The conversions table is retained as history; retired extraction jobs never resume.
   }
@@ -202,6 +205,8 @@ export class Workspace {
   async query(actor, query) {
     if (query === undefined) { query = actor; actor = localActor; } this.authorize(actor);
     object(query, "查询");
+    if (query.kind === 'queue') return queryQueue(this, query);
+    if (query.kind === 'queue.task') return { task: (await queryQueue(this, { taskId: query.taskId })).tasks[0] };
     if (query.kind?.startsWith("flow.")) return this.flow.query(actor, query);
     if (query.kind === "workspace") return this.snapshot(query);
     if (query.kind === "collections") {
@@ -271,6 +276,7 @@ export class Workspace {
   }
   reference(value, documentId) {
     text(value, "引用编号", 64, true); const reference = value.startsWith("#") ? value : "#" + value;
+    if (/^#T[0-9]{5,}$/.test(reference)) return mapRead(queryQueue(this, { taskId: reference }), result => ({ task: result.tasks[0], ...(result.tasks[0].documentId ? { documentId: result.tasks[0].documentId } : {}) }));
     if (/^#R[0-9]{5,}$/.test(reference)) {
       return mapRead(this.sql.query("SELECT payload FROM change_requests WHERE reference=?", [reference]), rows => {
         const request = parsed(rows[0]);
@@ -321,7 +327,9 @@ export class Workspace {
     if (command === undefined) { command = actor; actor = localActor; }
     this.authorize(actor, 'write'); command = clone(object(command, '操作'));
     if (command.kind?.startsWith('reading.session.')) await this.flow.authorizeCommandAsync(actor, command);
-    return commitBusiness(this, actor, command, reads => prepareBusinessCommand(this, actor, command, reads));
+    return commitBusiness(this, actor, command, reads => command.kind?.startsWith('queue.')
+      ? prepareQueueCommand(this, actor, command, reads, prepareBusinessCommand)
+      : prepareBusinessCommand(this, actor, command, reads));
   }
   insightRow(id, documentId) { return mapRead(this.sql.query("SELECT * FROM insights WHERE id=? AND document_id=?", [identifier(id, "洞见 ID"), identifier(documentId)]), ([row]) => { check(row, "NOT_FOUND", "洞见不存在。", 404); return row; }); }
   proposal(id) { return mapRead(this.sql.query("SELECT payload FROM proposals WHERE id=?", [identifier(id)]), ([row]) => { check(row, "NOT_FOUND", "修订提案不存在。", 404); return parsed(row); }); }
@@ -497,6 +505,14 @@ export class Workspace {
     if (request === undefined) { request = actor; actor = localActor; } this.authorize(actor);
     const saved = await this.revision(request.documentId, request.revision);
     return this.resourceForSaved(saved, request, `/api/documents/${encodeURIComponent(saved.document.id)}`, `?revision=${saved.document.revision}`);
+  }
+  async uploadedSourcePage(actor, sourceId, page = 1, width = 600) {
+    this.authorize(actor);
+    check(Number.isInteger(page) && page >= 1 && Number.isInteger(width) && width >= 100 && width <= 2400, 'VALIDATION_FAILED', '原文件预览范围无效。');
+    const source = await this.file(sourceId);
+    check(source.mediaType === 'application/pdf' || source.filename.toLowerCase().endsWith('.pdf'), 'PDF_UNAVAILABLE', '这份资料没有 PDF 原文件。', 404);
+    const rendered = await this.resources.page(source, page, width);
+    return { ...(typeof rendered === 'string' ? { path: rendered } : rendered), mediaType: 'image/png', sha256: `${source.sha256}-${page}-${width}` };
   }
   async resourceForSaved(saved, request, base, query = "") {
     const document = saved.document;

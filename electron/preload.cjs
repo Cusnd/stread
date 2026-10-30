@@ -27,6 +27,10 @@ contextBridge.exposeInMainWorld('continuousReaderDesktop', {
   platform: process.platform,
   development: process.argv?.includes('--reader-development') === true,
   titleBarOverlay: process.platform === 'win32',
+  ...(process.platform === 'win32' && process.argv?.includes('--reader-auto-start') ? { autoStart: {
+    get: () => ipcRenderer.invoke('reader:auto-start', 'get'),
+    set: (enabled) => ipcRenderer.invoke('reader:auto-start', 'set', enabled),
+  } } : {}),
   ...(process.argv?.includes('--reader-updates') ? { ready: () => ipcRenderer.send('reader:ready'), updates: {
     status: () => ipcRenderer.invoke('reader:update', 'status'),
     check: () => ipcRenderer.invoke('reader:update', 'check'),
@@ -36,6 +40,9 @@ contextBridge.exposeInMainWorld('continuousReaderDesktop', {
   } } : {}),
   setTitlebarHeight(height) {
     if (process.platform === 'win32' && Number.isFinite(height)) ipcRenderer.send('reader:titlebar-height', height);
+  },
+  setTitlebarDark(dark) {
+    if (process.platform === 'win32' && typeof dark === 'boolean') ipcRenderer.send('reader:titlebar-dark', dark);
   },
   persistSession,
   persistSessionNow,

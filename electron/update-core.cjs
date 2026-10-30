@@ -240,7 +240,7 @@ function createUpdater({ app, profile, resourcesPath, appRoot, fetchImpl = globa
       for (let redirects = 0; redirects <= 5; redirects++) {
         const parsed = new URL(current);
         if (parsed.protocol !== 'https:' || !HOSTS.has(parsed.hostname) || parsed.username || parsed.password || parsed.port) fail('更新下载地址不受信任。');
-        const response = await fetchImpl(current, { redirect: 'manual', signal: controller.signal, headers: { Accept: parsed.hostname === 'api.github.com' ? 'application/vnd.github+json' : 'application/octet-stream', 'User-Agent': 'Continuous-Reader-Updater' } });
+        const response = await fetchImpl(current, { redirect: 'manual', signal: controller.signal, headers: { Accept: parsed.hostname === 'api.github.com' ? 'application/vnd.github+json' : 'application/octet-stream', 'User-Agent': 'Stread-Updater' } });
         if ([301, 302, 303, 307, 308].includes(response.status)) {
           const location = response.headers.get('location'); if (!location) fail('更新下载重定向无效。');
           await response.body?.cancel?.(); current = new URL(location, current).href; continue;

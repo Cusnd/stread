@@ -25,8 +25,8 @@ if (!app.isPackaged) {
       require(path.join(selected.appRoot, 'electron/main.cjs'));
     } catch (error) {
       try { app.readerUpdater?.markFailed(); } catch {}
-      if (mcp) process.stderr.write('Continuous Reader update startup failed. Reopen the desktop app.\n');
-      else dialog.showErrorBox('Continuous Reader 无法启动', '程序更新启动失败，请重新打开以恢复上一版本。\n\n' + error.message);
+      if (mcp) process.stderr.write('Stread update startup failed. Reopen the desktop app.\n');
+      else dialog.showErrorBox('Stread 无法启动', '程序更新启动失败，请重新打开以恢复上一版本。\n\n' + error.message);
       app.exit(1);
     }
   }

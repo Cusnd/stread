@@ -69,15 +69,15 @@ export function useMedia(query) {
   return matches;
 }
 
-export function WorkspaceDialog({ open, title, children, onClose, contentKey, initialFocusKey, returnFocusKey, className = "" }) {
+export function WorkspaceDialog({ open, title, headingContent, children, onClose, contentKey, initialFocusKey, returnFocusKey, className = "" }) {
   const titleId = useId();
   const ref = useRef(null);
   const restore = useRef(null);
   const latestReturnFocusKey = useRef(returnFocusKey);
   latestReturnFocusKey.current = returnFocusKey;
   const releaseScroll = useRef(null);
-  const content = useRef({ title, children, className });
-  if (open) content.current = { title, children, className };
+  const content = useRef({ title, headingContent, children, className });
+  if (open) content.current = { title, headingContent, children, className };
   const restoreFocus = () => {
     const saved = restore.current;
     releaseScroll.current?.(); releaseScroll.current = null;
@@ -106,8 +106,8 @@ export function WorkspaceDialog({ open, title, children, onClose, contentKey, in
     if (!open) return;
     const frame = requestAnimationFrame(() => {
       const dialog = ref.current;
-      const target = initialFocusKey && [...dialog.querySelectorAll("[data-focus-key]")].find((node) => node.dataset.focusKey === initialFocusKey && !node.disabled);
-      (target || dialog.querySelector("[data-dialog-initial]") || dialog.querySelector("button"))?.focus({ preventScroll: true });
+      const target = initialFocusKey && [...dialog.querySelectorAll("[data-focus-key]")].find((node) => node.dataset.focusKey === initialFocusKey && !node.matches(":disabled") && !node.closest("[inert]"));
+      (target || dialog.querySelector("[data-dialog-initial]") || dialog.querySelector("[data-dialog-close]"))?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
   }, [open, contentKey, initialFocusKey]);
@@ -115,15 +115,15 @@ export function WorkspaceDialog({ open, title, children, onClose, contentKey, in
   const trap = (event) => {
     if (phase === "closing") { event.preventDefault(); return; }
     if (event.key !== "Tab") return;
-    const controls = [...ref.current.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex="0"]')].filter((node) => node.getClientRects().length && !node.closest("[inert]"));
+    const controls = [...ref.current.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex="0"]')].filter((node) => node.getClientRects().length && !node.matches(":disabled, .reader-select-button") && !node.closest("[inert]"));
     if (!controls.length) { event.preventDefault(); return; }
     if (event.shiftKey && document.activeElement === controls[0]) { event.preventDefault(); controls.at(-1).focus(); }
     else if (!event.shiftKey && document.activeElement === controls.at(-1)) { event.preventDefault(); controls[0].focus(); }
   };
-  const shown = open ? { title, children, className } : content.current;
+  const shown = open ? { title, headingContent, children, className } : content.current;
   return <motion.dialog {...motionProps} ref={ref} className={"workspace-ui workspace-dialog " + shown.className} data-state={phase} inert={!open} aria-labelledby={titleId} onKeyDown={trap} onCancel={(event) => { event.preventDefault(); if (open) onClose(); }} onClick={(event) => {
     if (!open || event.target !== event.currentTarget) return;
     const rect = event.currentTarget.getBoundingClientRect();
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) onClose();
-  }}><header className="workspace-dialog-heading"><h2 id={titleId}>{shown.title}</h2><button className="workspace-icon-button" aria-label="关闭面板" type="button" onClick={onClose}><X size={18} /></button></header><div className="workspace-dialog-body">{shown.children}</div></motion.dialog>;
+  }}><header className="workspace-dialog-heading"><h2 id={titleId}>{shown.title}</h2>{shown.headingContent}<button className="workspace-icon-button" data-dialog-close aria-label="关闭面板" type="button" onClick={onClose}><X size={18} /></button></header><div className="workspace-dialog-body">{shown.children}</div></motion.dialog>;
 }

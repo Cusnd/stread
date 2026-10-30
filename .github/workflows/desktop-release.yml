@@ -137,7 +137,7 @@ jobs:
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: continuous-reader-${{ env.RELEASE_VERSION }}-${{ inputs.mode }}
+          name: stread-${{ env.RELEASE_VERSION }}-${{ inputs.mode }}
           path: |
             release/${{ env.RELEASE_VERSION }}/updates/*
             release/${{ env.RELEASE_VERSION }}/*.exe
@@ -155,7 +155,7 @@ jobs:
             $installerTag = 'v' + $manifest.installerVersion
             $releaseNotes = "Windows x64 installer / Portable: [$installerTag](https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$installerTag).`n`nExisting compatible installations can use the in-app incremental update. New installations should install the linked full version first, then check for updates.`n"
             $releaseNotes | Set-Content -LiteralPath .desktop/release-notes.md -Encoding utf8
-            gh release create $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Continuous Reader $env:RELEASE_VERSION" --draft --generate-notes --notes-file .desktop/release-notes.md
+            gh release create $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Stread $env:RELEASE_VERSION" --draft --generate-notes --notes-file .desktop/release-notes.md
             if ($LASTEXITCODE -ne 0) { throw 'Could not create the draft release.' }
           }
           $assets = @(Get-ChildItem -LiteralPath "release/$env:RELEASE_VERSION/updates" -File | ForEach-Object FullName)

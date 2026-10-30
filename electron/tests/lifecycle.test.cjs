@@ -32,7 +32,7 @@ async function eventually(check, description) {
   assert.ok(check(), description);
 }
 
-function mainFixture({ loadFailure, rendererReady = true, failWindowState = false, args = [], platform = 'win32', packaged = false, savedState, dialogResponse = 1, fetchResponse, env = {}, updater, readerRuntime, ownsInstance, relaunchFailure } = {}) {
+function mainFixture({ loadFailure, rendererReady = true, failWindowState = false, args = [], platform = 'win32', packaged = false, savedState, dialogResponse = 1, fetchResponse, env = {}, updater, readerRuntime, ownsInstance, relaunchFailure, loginSettings, loginFailure, ignoreLoginWrite = false } = {}) {
   const clock = timers(), app = new EventEmitter(), ipcMain = new EventEmitter();
   const ipcHandlers = new Map();
   ipcMain.handle = (channel, handler) => ipcHandlers.set(channel, handler);
@@ -40,12 +40,14 @@ function mainFixture({ loadFailure, rendererReady = true, failWindowState = fals
   const home = path.join(directory, 'mock-home');
   const override = args.find((arg) => arg.startsWith('--reader-user-data='))?.slice('--reader-user-data='.length);
   const userData = override ? path.resolve(override) : path.join(home, '.continuous-reader');
-  const paths = new Map([['home', home], ['userData', path.join(home, 'AppData', 'Roaming', 'Continuous Reader')]]);
+  const paths = new Map([['home', home], ['userData', path.join(home, 'AppData', 'Roaming', 'Stread')]]);
   const files = new Map(), windows = [], errors = [], quits = [], exits = [], log = [], messages = [], parentMessages = [], requests = [], relaunches = [], externalUrls = [];
+  const loginReads = [], loginWrites = [];
+  let currentLoginSettings = loginSettings || { openAtLogin: false, executableWillLaunchAtLogin: false, launchItems: [] };
   const protocolHandlers = new Map(), parentProcess = new EventEmitter();
   if (savedState) files.set(path.join(userData, 'desktop-state.json'), JSON.stringify(savedState));
   Object.assign(parentProcess, { argv: ['electron', '.', ...args], env, pid: 123, versions: { electron: 'test' }, platform,
-    resourcesPath: path.join(directory, 'packaged-resources'), send: (message) => parentMessages.push(plain(message)), stderr: { write() {} } });
+    resourcesPath: path.join(directory, 'packaged-resources'), execPath: path.join(directory, 'installed app', 'Stread.exe'), send: (message) => parentMessages.push(plain(message)), stderr: { write() {} } });
   let flushes = 0, singleLocks = 0;
   Object.assign(app, {
     isPackaged: packaged,
@@ -58,6 +60,13 @@ function mainFixture({ loadFailure, rendererReady = true, failWindowState = fals
     quit() { const attempt = event(); app.emit('before-quit', attempt); quits.push(attempt); },
     exit(code) { exits.push(code); },
     relaunch(options) { if (relaunchFailure) throw relaunchFailure; relaunches.push(plain(options)); },
+    getLoginItemSettings(options) { loginReads.push(plain(options)); if (loginFailure === 'get') throw new Error('Registry read failed'); return currentLoginSettings; },
+    setLoginItemSettings(options) {
+      loginWrites.push(plain(options));
+      if (loginFailure === 'set') throw new Error('Registry write failed');
+      if (!ignoreLoginWrite) currentLoginSettings = { openAtLogin: options.openAtLogin, executableWillLaunchAtLogin: options.enabled,
+        launchItems: options.openAtLogin ? [{ name: options.name, path: options.path, args: options.args, scope: 'user', enabled: options.enabled }] : [] };
+    },
   });
   const disk = {
     mkdirSync() {},
@@ -138,7 +147,7 @@ function mainFixture({ loadFailure, rendererReady = true, failWindowState = fals
   }, { filename: path.join(directory, 'main.cjs') });
   const prepared = () => windows[0]?.webContents.sent.filter((message) => message.channel === 'reader:prepare-close') || [];
   return {
-    app, windows, errors, quits, exits, log, messages, files, clock, prepared, home, userData, paths, ipcMain, ipcHandlers, parentProcess, parentMessages, protocolHandlers, requests, relaunches, externalUrls,
+    app, windows, errors, quits, exits, log, messages, files, clock, prepared, home, userData, paths, ipcMain, ipcHandlers, parentProcess, parentMessages, protocolHandlers, requests, relaunches, externalUrls, loginReads, loginWrites,
     get flushes() { return flushes; },
     get singleLocks() { return singleLocks; },
     async ready() { await eventually(() => windows[0]?.shown, 'main window should finish loading'); return windows[0]; },
@@ -237,7 +246,7 @@ function preloadFixture({ platform = 'win32', args = [] } = {}) {
 test('Windows integrates native caption controls and accepts bounded height changes only from its own trusted main frame', async () => {
   const fixture = mainFixture(), window = await fixture.ready(), contents = window.webContents;
   assert.equal(window.options.titleBarStyle, 'hidden');
-  assert.deepEqual(plain(window.options.titleBarOverlay), { color: '#ffffff', symbolColor: '#292b2c', height: 56 });
+  assert.deepEqual(plain(window.options.titleBarOverlay), { color: '#00000000', symbolColor: '#292b2c', height: 56 });
   assert.notEqual(window.options.frame, false, 'native controls and system window behavior remain enabled');
   const trusted = { sender: contents, senderFrame: contents.mainFrame };
   for (const value of [undefined, null, '72', NaN, Infinity, {}, { height: 72 }, [72]]) fixture.ipcMain.emit('reader:titlebar-height', trusted, value);
@@ -256,7 +265,49 @@ test('Windows integrates native caption controls and accepts bounded height chan
   assert.equal(window.overlayUpdates.length, 3);
 });
 
-test('the titlebar bridge exposes only height reporting and keeps other platforms on their existing window chrome', async () => {
+test('native caption symbols follow dark image previews only for trusted boolean updates', async () => {
+  const fixture = mainFixture(), window = await fixture.ready(), contents = window.webContents;
+  const trusted = { sender: contents, senderFrame: contents.mainFrame };
+  for (const value of [undefined, null, 'dark', 1, {}, [], false]) fixture.ipcMain.emit('reader:titlebar-dark', trusted, value);
+  fixture.ipcMain.emit('reader:titlebar-dark', { sender: new EventEmitter(), senderFrame: contents.mainFrame }, true);
+  fixture.ipcMain.emit('reader:titlebar-dark', { sender: contents, senderFrame: { url: 'reader://app/' } }, true);
+  const originalUrl = contents.mainFrame.url;
+  contents.mainFrame.url = 'https://example.com/';
+  fixture.ipcMain.emit('reader:titlebar-dark', trusted, true);
+  contents.mainFrame.url = originalUrl;
+  assert.deepEqual(window.overlayUpdates, []);
+  for (const value of [true, true, false, false]) fixture.ipcMain.emit('reader:titlebar-dark', trusted, value);
+  assert.deepEqual(window.overlayUpdates, [{ symbolColor: '#ededef' }, { symbolColor: '#292b2c' }]);
+  window.destroyed = true;
+  fixture.ipcMain.emit('reader:titlebar-dark', trusted, true);
+  assert.equal(window.overlayUpdates.length, 2);
+});
+
+test('a main document reload restores caption contrast without resetting height or reacting to in-page and subframe navigation', async () => {
+  const fixture = mainFixture(), window = await fixture.ready(), contents = window.webContents;
+  const trusted = { sender: contents, senderFrame: contents.mainFrame };
+  contents.emit('did-navigate', {}, contents.mainFrame.url);
+  assert.deepEqual(window.overlayUpdates, [], 'ordinary loading does not update the already-light controls');
+  fixture.ipcMain.emit('reader:titlebar-height', trusted, 72);
+  fixture.ipcMain.emit('reader:titlebar-dark', trusted, true);
+  const beforeNavigation = [{ height: 72 }, { symbolColor: '#ededef' }];
+  contents.emit('did-navigate-in-page', {}, contents.mainFrame.url + '#figure', true);
+  contents.emit('did-frame-navigate', {}, 'reader://app/frame', 200, 'OK', false, 1, 2);
+  contents.emit('did-start-navigation', { url: 'reader://app/next', isMainFrame: true, isSameDocument: false });
+  assert.deepEqual(window.overlayUpdates, beforeNavigation, 'uncommitted or non-document navigation preserves the current preview contrast');
+  contents.emit('did-navigate', {}, contents.mainFrame.url);
+  const restored = [...beforeNavigation, { symbolColor: '#292b2c' }];
+  assert.deepEqual(window.overlayUpdates, restored, 'reload resets only the native symbol color');
+  contents.emit('did-navigate', {}, contents.mainFrame.url);
+  fixture.ipcMain.emit('reader:titlebar-height', trusted, 72);
+  fixture.ipcMain.emit('reader:titlebar-dark', trusted, false);
+  assert.deepEqual(window.overlayUpdates, restored, 'repeat navigation and retained geometry do not trigger duplicate updates');
+  fixture.ipcMain.emit('reader:titlebar-dark', trusted, true);
+  contents.emit('did-navigate', {}, 'reader://app/?view=collection');
+  assert.deepEqual(window.overlayUpdates.slice(-2), [{ symbolColor: '#ededef' }, { symbolColor: '#292b2c' }]);
+});
+
+test('the titlebar bridge exposes bounded geometry and contrast reporting only on Windows', async () => {
   const preload = preloadFixture();
   assert.equal('agents' in preload.api, false);
   assert.equal(preload.ipcRenderer.listenerCount('reader:agent-event'), 0);
@@ -266,17 +317,122 @@ test('the titlebar bridge exposes only height reporting and keeps other platform
   assert.deepEqual(preload.sent, []);
   preload.api.setTitlebarHeight(67.2);
   assert.deepEqual(preload.sent, [{ channel: 'reader:titlebar-height', value: 67.2 }]);
+  for (const value of [undefined, null, 'dark', 1, {}]) preload.api.setTitlebarDark(value);
+  assert.equal(preload.sent.length, 1);
+  preload.api.setTitlebarDark(true);
+  preload.api.setTitlebarDark(false);
+  assert.deepEqual(preload.sent.slice(1), [{ channel: 'reader:titlebar-dark', value: true }, { channel: 'reader:titlebar-dark', value: false }]);
   for (const platform of ['darwin', 'linux']) {
     const otherPreload = preloadFixture({ platform });
     assert.equal(otherPreload.api.titleBarOverlay, false);
     otherPreload.api.setTitlebarHeight(72);
+    otherPreload.api.setTitlebarDark(true);
     assert.deepEqual(otherPreload.sent, []);
     const otherMain = mainFixture({ platform }), window = await otherMain.ready();
     assert.equal(window.options.titleBarOverlay, undefined);
     assert.equal(window.options.titleBarStyle, undefined);
     otherMain.ipcMain.emit('reader:titlebar-height', { sender: window.webContents, senderFrame: window.webContents.mainFrame }, 72);
+    otherMain.ipcMain.emit('reader:titlebar-dark', { sender: window.webContents, senderFrame: window.webContents.mainFrame }, true);
+    window.webContents.emit('did-navigate', {}, window.webContents.mainFrame.url);
     assert.deepEqual(window.overlayUpdates, []);
   }
+});
+
+test('packaged Windows auto-start reads system state and verifies enable/disable without writes on startup', async () => {
+  const fixture = mainFixture({ packaged: true }), window = await fixture.ready(), contents = window.webContents;
+  const trusted = { sender: contents, senderFrame: contents.mainFrame }, handle = fixture.ipcHandlers.get('reader:auto-start');
+  assert.deepEqual(fixture.loginWrites, []);
+  assert.deepEqual(fixture.loginReads, []);
+  assert.deepEqual(plain(handle(trusted, 'get')), { enabled: false });
+  assert.deepEqual(plain(handle(trusted, 'set', true)), { enabled: true });
+  assert.deepEqual(fixture.loginWrites[0], { path: fixture.parentProcess.execPath, args: [], name: 'com.continuousreader.desktop', openAtLogin: true, enabled: true });
+  assert.deepEqual(plain(handle(trusted, 'get')), { enabled: true });
+  assert.deepEqual(plain(handle(trusted, 'set', false)), { enabled: false });
+  assert.equal(fixture.loginWrites[1].openAtLogin, false);
+  assert.equal(fixture.loginWrites[1].enabled, false);
+  assert.ok(fixture.loginReads.every((options) => options.path === fixture.parentProcess.execPath && options.args.length === 0));
+});
+
+test('auto-start respects Windows-disabled entries and does not confuse another launch item with this app', async () => {
+  for (const launchItems of [
+    [{ name: 'com.continuousreader.desktop', scope: 'user', enabled: false }, { name: 'other-entry', scope: 'user', enabled: true }],
+    [{ name: 'com.continuousreader.desktop', scope: 'machine', enabled: true }],
+  ]) {
+    const fixture = mainFixture({ packaged: true, loginSettings: { openAtLogin: true, executableWillLaunchAtLogin: true, launchItems } });
+    const window = await fixture.ready(), contents = window.webContents, trusted = { sender: contents, senderFrame: contents.mainFrame };
+    assert.deepEqual(plain(fixture.ipcHandlers.get('reader:auto-start')(trusted, 'get')), { enabled: false });
+    assert.deepEqual(fixture.loginWrites, []);
+    assert.deepEqual(plain(fixture.ipcHandlers.get('reader:auto-start')(trusted, 'set', true)), { enabled: true });
+  }
+});
+
+test('Portable auto-start uses the persistent executable and only retains an explicit profile argument', async () => {
+  const executable = path.join(directory, 'portable folder', 'Stread.exe');
+  const profile = path.join(directory, '阅读 profile');
+  const fixture = mainFixture({ packaged: true, env: { PORTABLE_EXECUTABLE_FILE: executable },
+    args: ['--reader-user-data=' + profile, '--import-workspace=' + path.join(directory, 'old library'), '--remote-debugging-port=9222'] });
+  const window = await fixture.ready(), contents = window.webContents;
+  const trusted = { sender: contents, senderFrame: contents.mainFrame }, handle = fixture.ipcHandlers.get('reader:auto-start');
+  handle(trusted, 'set', true);
+  assert.deepEqual(fixture.loginWrites[0], { path: executable, args: ['--reader-user-data=' + profile], name: 'com.continuousreader.desktop', openAtLogin: true, enabled: true });
+  assert.deepEqual(fixture.loginReads[0], { path: executable, args: ['--reader-user-data=' + profile] });
+});
+
+test('another reading profile can see and disable the shared login item without inheriting its arguments', async () => {
+  const loginSettings = { openAtLogin: false, executableWillLaunchAtLogin: true,
+    launchItems: [{ name: 'com.continuousreader.desktop', scope: 'user', enabled: true, args: ['--reader-user-data=another-profile'] }] };
+  const fixture = mainFixture({ packaged: true, loginSettings }), window = await fixture.ready(), contents = window.webContents;
+  const trusted = { sender: contents, senderFrame: contents.mainFrame }, handle = fixture.ipcHandlers.get('reader:auto-start');
+  assert.deepEqual(plain(handle(trusted, 'get')), { enabled: true });
+  assert.deepEqual(plain(handle(trusted, 'set', false)), { enabled: false });
+  assert.deepEqual(fixture.loginWrites[0].args, []);
+});
+
+test('auto-start rejects untrusted callers, invalid values and writes while closing', async () => {
+  const fixture = mainFixture({ packaged: true }), window = await fixture.ready(), contents = window.webContents;
+  const trusted = { sender: contents, senderFrame: contents.mainFrame }, handle = fixture.ipcHandlers.get('reader:auto-start');
+  for (const sender of [{}, { sender: new EventEmitter(), senderFrame: contents.mainFrame }, { sender: contents, senderFrame: { url: 'reader://app/' } }]) {
+    assert.throws(() => handle(sender, 'set', true), /不可用/);
+  }
+  contents.mainFrame.url = 'https://example.com';
+  assert.throws(() => handle(trusted, 'set', true), /不可用/);
+  contents.mainFrame.url = 'reader://app/';
+  for (const value of [undefined, null, 1, 'true', {}, { enabled: true }]) assert.throws(() => handle(trusted, 'set', value), /无效/);
+  assert.throws(() => handle(trusted, 'launch', true), /无效/);
+  window.emit('close', event());
+  assert.throws(() => handle(trusted, 'set', true), /正在退出/);
+  assert.deepEqual(fixture.loginWrites, []);
+  fixture.acknowledgeClose();
+});
+
+test('development and unsupported platforms cannot change native auto-start even through direct IPC', async () => {
+  for (const options of [{}, { packaged: true, platform: 'darwin' }, { packaged: true, platform: 'linux' }]) {
+    const fixture = mainFixture(options), window = await fixture.ready(), contents = window.webContents;
+    assert.ok(!window.options.webPreferences.additionalArguments?.includes('--reader-auto-start'));
+    assert.throws(() => fixture.ipcHandlers.get('reader:auto-start')({ sender: contents, senderFrame: contents.mainFrame }, 'set', true), /不可用/);
+    assert.deepEqual(fixture.loginWrites, []);
+  }
+});
+
+test('native login failures and silent Windows write failures return an actionable error', async () => {
+  for (const options of [{ loginFailure: 'get' }, { loginFailure: 'set' }, { ignoreLoginWrite: true }, { env: { PORTABLE_EXECUTABLE_FILE: 'relative.exe' } },
+    { ignoreLoginWrite: true, loginSettings: { openAtLogin: false, launchItems: [{ name: 'com.continuousreader.desktop', scope: 'user', enabled: true }] } }]) {
+    const fixture = mainFixture({ packaged: true, ...options }), window = await fixture.ready(), contents = window.webContents;
+    const trusted = { sender: contents, senderFrame: contents.mainFrame }, handle = fixture.ipcHandlers.get('reader:auto-start');
+    assert.throws(() => handle(trusted, 'set', true), /未能更改开机自启/);
+    assert.ok(fixture.log.some((line) => line.includes('Auto-start settings:')));
+    if (options.loginFailure === 'get') assert.throws(() => handle(trusted, 'get'), /无法读取开机自启/);
+  }
+});
+
+test('preload exposes only fixed auto-start actions when Windows is explicitly enabled', async () => {
+  assert.equal(preloadFixture().api.autoStart, undefined);
+  assert.equal(preloadFixture({ platform: 'linux', args: ['--reader-auto-start'] }).api.autoStart, undefined);
+  const fixture = preloadFixture({ args: ['--reader-auto-start'] });
+  await fixture.api.autoStart.get('untrusted-path');
+  await fixture.api.autoStart.set(true, 'untrusted-path');
+  await fixture.api.autoStart.set(false);
+  assert.deepEqual(fixture.invoked, [['reader:auto-start', 'get'], ['reader:auto-start', 'set', true], ['reader:auto-start', 'set', false]]);
 });
 
 test('repeated window and application close requests remain prevented until one renderer handshake finishes', async () => {
@@ -411,7 +567,7 @@ test('an early development restart waits until the window has loaded; packaged f
   const packaged = mainFixture({ args: developmentArgs, packaged: true, savedState: { devLastUrl: 'reader://app/?view=flow' } });
   const window = await packaged.ready();
   assert.equal(window.loadedUrl, 'reader://app/?view=collection');
-  assert.equal(window.options.webPreferences.additionalArguments, undefined);
+  assert.deepEqual(plain(window.options.webPreferences.additionalArguments), ['--reader-auto-start']);
   assert.equal(packaged.messages[0].sourceRoot, undefined);
   packaged.parentProcess.emit('message', { type: 'reader-dev:restart' });
   assert.equal(packaged.prepared().length, 0);
@@ -441,7 +597,7 @@ test('packaged updates use the bootstrap runtime, version and single-instance ow
   assert.equal(fixture.singleLocks, 0);
   assert.equal(fixture.messages[0].runtime, readerRuntime);
   assert.equal(JSON.parse(fixture.files.get(path.join(fixture.userData, 'connection.json'))).version, '0.2.0');
-  assert.deepEqual(plain(window.options.webPreferences.additionalArguments), ['--reader-updates']);
+  assert.deepEqual(plain(window.options.webPreferences.additionalArguments), ['--reader-updates', '--reader-auto-start']);
   assert.deepEqual(updater.calls, ['healthy']);
   const secondary = mainFixture({ packaged: true, updater, ownsInstance: false });
   assert.equal(secondary.singleLocks, 0);
@@ -497,7 +653,7 @@ test('cancelled update restart leaves the downloaded update, window and service 
 });
 
 test('Portable updates relaunch the persistent original executable and preserve arguments', async () => {
-  const executable = path.join(directory, 'Continuous-Reader-Portable.exe');
+  const executable = path.join(directory, 'Stread-Portable.exe');
   const fixture = mainFixture({ packaged: true, updater: updateController(), env: { PORTABLE_EXECUTABLE_FILE: executable } });
   const window = await fixture.ready(), contents = window.webContents;
   const request = fixture.ipcHandlers.get('reader:update')({ sender: contents, senderFrame: contents.mainFrame }, 'restart');

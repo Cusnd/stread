@@ -19,12 +19,12 @@ async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), 'reader-update-build-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const keys = generateKeyPairSync('ed25519', { publicKeyEncoding: { type: 'spki', format: 'pem' }, privateKeyEncoding: { type: 'pkcs8', format: 'pem' } });
-  const pkg = { name: 'continuous-reader', version: '1.0.0', type: 'module', main: 'electron/bootstrap.cjs', scripts: { privateBuildPath: 'not shipped' }, devDependencies: { electron: '45.0.0' } };
+  const pkg = { name: 'stread', version: '1.0.0', type: 'module', main: 'electron/bootstrap.cjs', scripts: { privateBuildPath: 'not shipped' }, devDependencies: { electron: '45.0.0' } };
   await put(root, 'package.json', JSON.stringify(pkg));
   for (const file of appFiles) await put(root, file, '// ' + file + '\n');
   for (const file of foundationFiles) await put(root, file, '// foundation ' + file + '\n');
   await put(root, 'electron/update-public-key.pem', keys.publicKey);
-  for (const file of ['continuous-reader.ico', 'continuous-reader.png']) await put(root, 'electron/assets/' + file, 'icon');
+  for (const file of ['stread.ico', 'stread.png']) await put(root, 'electron/assets/' + file, 'icon');
   await put(root, '.desktop/runtime/node_modules/example/index.js', 'dependency');
   await put(root, '.desktop/runtime/python/python.exe', 'python');
   await put(root, '.desktop/runtime/package.json', '{"type":"module"}');

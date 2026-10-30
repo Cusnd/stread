@@ -98,7 +98,7 @@ async function main() {
     const service = JSON.parse(await readFile(resolve(root, 'services/workspace/package.json'), 'utf8'));
     const client = JSON.parse(await readFile(resolve(root, 'prototypes/insight-composer/package.json'), 'utf8'));
     const dependencies = runtimeDependencies(service, { dependencies: { 'css-tree': client.dependencies['css-tree'] } });
-    await writeFile(join(stage, 'package.json'), JSON.stringify({ name: 'continuous-reader-runtime', private: true, type: 'module', dependencies }, null, 2));
+    await writeFile(join(stage, 'package.json'), JSON.stringify({ name: 'stread-runtime', private: true, type: 'module', dependencies }, null, 2));
     const lockPath = join(root, 'electron/runtime-package-lock.json');
     const lockBytes = !refreshLock ? await readFile(lockPath) : null;
     if (lockBytes && !matchingDependencyLock(JSON.parse(lockBytes), dependencies)) throw new Error('Runtime dependencies changed. Run npm run desktop:runtime:lock and release a full installer.');

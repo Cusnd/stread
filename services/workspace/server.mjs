@@ -108,7 +108,7 @@ export async function createWorkspaceServer(options = {}) {
       response.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id, ETag");
       if (request.method === "OPTIONS") { response.writeHead(204); response.end(); return; }
       const url = new URL(request.url, ownOrigin), pathname = url.pathname;
-      if (pathname === "/health" && request.method === "GET") return sendJson(response, 200, { ok: true, service: "continuous-reader-workspace", authentication: Boolean(authToken), backend: "local" });
+      if (pathname === "/health" && request.method === "GET") return sendJson(response, 200, { ok: true, service: "stread-workspace", authentication: Boolean(authToken), backend: "local" });
       if (pathname === "/api/session" && request.method === "POST") {
         const input = object(await jsonBody(request, 4096));
         check(authToken && secureEqual(input.token, authToken), "UNAUTHORIZED", "工作台访问令牌无效。", 401);

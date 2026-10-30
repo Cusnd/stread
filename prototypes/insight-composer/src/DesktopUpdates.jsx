@@ -55,7 +55,7 @@ export function DesktopUpdates({ active }) {
   const downloaded = ["downloaded", "restart-required"].includes(status.state);
   const message = pending === "restart" ? "正在保存并重启…" : description(status, checked);
   return <section className="desktop-updates" aria-label="程序更新" aria-busy={busy}>
-    <div className="desktop-updates-version"><span>Continuous Reader</span><span>{status.version ? `版本 ${status.version}` : ""}</span></div>
+    <div className="desktop-updates-version"><span>Stread</span><span>{status.version ? `版本 ${status.version}` : ""}</span></div>
     <div className="desktop-updates-status" role="status" aria-live="polite">{message}</div>
     {status.state === "downloading" && <progress aria-label="更新下载进度" max={status.bytes || 1} value={Math.min(status.receivedBytes || 0, status.bytes || 1)} />}
     {(error || status.error) && <p className="desktop-updates-error" role="alert">{error || status.error}</p>}

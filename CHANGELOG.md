@@ -2,6 +2,12 @@
 
 记录面向用户和维护者的行为变化。版本号以根 `package.json` 为准，正式产物与发布日期见 [GitHub Releases](https://github.com/Cusnd/stread/releases)。
 
+## 未发布
+
+- 产品从 Continuous Reader 更名为 **Stread**，统一桌面窗口、界面标题、MCP 服务显示名称、包元数据和构建产物名称。
+- 新构建使用 `Stread.exe`、`Stread-<版本>-Setup-x64.exe`、`Stread-<版本>-Portable-x64.exe` 和 `Stread-` 前缀的应用更新包。已发布的 0.1.3 附件保留原名。
+- 保留应用标识、默认 `.continuous-reader` 资料目录、已有设置与文档格式，以及 32 个 MCP 工具及其输入合同。
+
 ## 0.1.3
 
 首个以 `stread` 仓库公开维护的版本。桌面程序继续使用 **Continuous Reader** 名称，保留原有应用标识与本地资料目录。

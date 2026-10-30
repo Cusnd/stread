@@ -1,5 +1,5 @@
 appId: com.continuousreader.desktop
-productName: Continuous Reader
+productName: Stread
 electronLanguages: [en-US, zh-CN, zh-TW]
 afterPack: electron/verify-package.cjs
 directories:
@@ -22,8 +22,8 @@ extraResources:
   - from: electron/assets
     to: assets
     filter:
-      - continuous-reader.ico
-      - continuous-reader.png
+      - stread.ico
+      - stread.png
   - from: .desktop/runtime/node_modules
     to: runtime/node_modules
     filter:
@@ -38,7 +38,7 @@ extraResources:
       - '!**/*.pyc'
 asar: true
 win:
-  icon: electron/assets/continuous-reader.ico
+  icon: electron/assets/stread.ico
   target:
     - target: nsis
       arch: [x64]
@@ -54,6 +54,6 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   deleteAppDataOnUninstall: false
-  artifactName: Continuous-Reader-${version}-Setup-${arch}.${ext}
+  artifactName: Stread-${version}-Setup-${arch}.${ext}
 portable:
-  artifactName: Continuous-Reader-${version}-Portable-${arch}.${ext}
+  artifactName: Stread-${version}-Portable-${arch}.${ext}

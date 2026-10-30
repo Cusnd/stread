@@ -67,7 +67,7 @@ export async function foundationInventory({ root, runtime, electron, platform = 
   if (!validVersion(electron)) throw new Error('The Electron foundation version must be pinned');
   const files = [];
   for (const path of foundationFiles) files.push(await fileEntry(root, path, true));
-  for (const path of ['electron/assets/continuous-reader.ico', 'electron/assets/continuous-reader.png']) files.push(await fileEntry(root, path));
+  for (const path of ['electron/assets/stread.ico', 'electron/assets/stread.png']) files.push(await fileEntry(root, path));
   for (const path of ['services/workspace/workspace-schema.mjs', 'services/workspace/sync-schema.mjs']) {
     const entry = await fileEntry(runtime, path, true);
     files.push({ ...entry, path: 'runtime/' + path });
@@ -140,7 +140,7 @@ export async function buildUpdate({ root = repository, runtime = join(root, '.de
   if (Buffer.byteLength(baseline) > 8 * 1024 * 1024) throw new Error('Baseline inventory exceeds the client limit');
   await writeAtomic(join(root, '.desktop/update-base.json'), baseline);
   if (baselineOnly) return { baseline: join(root, '.desktop/update-base.json'), version: pkg.version, foundation, id, files: files.length };
-  const prefix = 'Continuous-Reader-' + pkg.version + '-win32-x64-' + id.slice(0, 12);
+  const prefix = 'Stread-' + pkg.version + '-win32-x64-' + id.slice(0, 12);
   async function payload(entries, suffix = '') {
     const data = Buffer.from(JSON.stringify({ schema: 1, files: entries.map(({ path }) => ({ path, data: contents.get(path).toString('base64') })) }));
     if (data.length > MAX_EXPANDED) throw new Error('Expanded update payload exceeds the client limit');

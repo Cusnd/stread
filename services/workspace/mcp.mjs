@@ -6,6 +6,7 @@ import { answerInput, branchInput } from "./mcp-management-schemas.mjs";
 import { createToolRegistrar } from "./mcp-tool-contract.mjs";
 import { revisionOperation as operation } from "./mcp-revision-schemas.mjs";
 import { readContextInput, readDocumentProjection, READ_CONTEXT_DESCRIPTION } from "./mcp-reading.mjs";
+import { isTaskReference, readQueueReference, registerQueueResources } from "./mcp-queue.mjs";
 import { McpViews, MCP_INSTRUCTIONS, MAX_CONTEXT_CHARS, page, receipt, itemSummary, proposalSummary, relationSummary, uploadedSourceView, authoringContractView, authoringArtifactsView, authoringPublicationView } from "./mcp-views.mjs";
 
 const id = z.string().min(1).max(160), revision = z.number().int().min(1);
@@ -18,10 +19,11 @@ const mapping = { relation_id: "relationId", target_document_id: "targetDocument
 const camel = (input) => Object.fromEntries(Object.entries(input).map(([key, value]) => [mapping[key] || key, value]));
 
 export function createWorkspaceMcp(workspace, actor = localActor, { baseUrl = "http://127.0.0.1:4177", fileAccess } = {}) {
-  const server = new McpServer({ name: "continuous-reader-workspace", version: "0.6.0", description: "Continuous Reader: bounded source-linked reading, explicit library and insight management, and reviewed Agent authoring." }, { instructions: MCP_INSTRUCTIONS, capabilities: { tools: { listChanged: false } } });
+  const server = new McpServer({ name: "stread-workspace", version: "0.6.0", description: "Stread: bounded source-linked reading, explicit library and insight management, and reviewed Agent authoring." }, { instructions: MCP_INSTRUCTIONS, capabilities: { tools: { listChanged: false }, resources: { listChanged: false, subscribe: false } } });
   const views = new McpViews(workspace, actor, baseUrl);
   const register = createToolRegistrar(server, workspace, actor, { fileAccess });
   const execute = async (command) => receipt(await workspace.execute(actor, command), baseUrl);
+  registerQueueResources(server, workspace, actor, { baseUrl, fileAccess });
 
   register("list_document_relations", "List local bibliography links, unresolved references and candidates, or incoming citations. Each relation has a stable ID and its own write version. No model or external lookup runs; uncertain matches remain candidates.", { document_id: id, direction: z.enum(["outgoing", "incoming"]).default("outgoing"), ...pagination }, async (input) => {
     const value = await workspace.query(actor, { kind: "document_relations", documentId: input.document_id });
@@ -86,7 +88,7 @@ export function createWorkspaceMcp(workspace, actor = localActor, { baseUrl = "h
     const value=await workspace.query(actor,{kind:"change_requests",...camel(input)});
     return page(value.changeRequests,"changeRequests",input,itemSummary,value.total);
   });
-  register("resolve_reference", "Resolve Q/N insight or R request reference. Return bounded title, body, quote or answer text with version-pinned continuation. Title is independent from body; untitled insights return empty title text. document_id disambiguates older references.", { reference: z.string().max(64), document_id: id.optional(), part: z.enum(["title", "body", "quote", "answer"]).default("body"), source_index: position.default(0), offset: position.default(0), expected_version: revision.optional(), max_chars: maxChars }, (input) => views.reference(camel(input)));
+  register("resolve_reference", "Resolve T task, Q/N insight or R request reference. Return bounded title, body, quote or answer text with version-pinned continuation. T tasks may precede a document; their answer stays on the linked Q reference. document_id disambiguates older references.", { reference: z.string().max(64), document_id: id.optional(), part: z.enum(["title", "body", "quote", "answer"]).default("body"), source_index: position.default(0), offset: position.default(0), expected_version: revision.optional(), max_chars: maxChars }, (input) => isTaskReference(input.reference) ? readQueueReference(workspace, actor, baseUrl, camel(input)) : views.reference(camel(input)));
   register("answer_question", "Save an explicitly approved answer and resolve the same question atomically. answer.blocks contains paragraph/heading with text or math with tex. Failed writes leave it unanswered. authorized declares intent, not authentication. Returns receipt.", { document_id: id, insight_id: id, expected_version: revision, request_id: id, answer: answerInput, authorized: z.literal(true) }, (input) => execute({ kind: "insight.answer", ...camel(input) }), true);
 
   registerManagementTools(register, workspace, actor, views, camel);

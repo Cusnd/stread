@@ -6,7 +6,7 @@
 
 先阅读 [开发指南](docs/DEVELOPMENT.md) 和相关目录的 `AGENTS.md`。较大的产品或数据格式修改先开 Issue 说明问题、预期行为和兼容性。小修复可以直接提交 PR。请使用独立测试资料目录，保留可复现步骤。
 
-本项目的桌面显示名称仍为 Continuous Reader，GitHub 项目名称为 stread。不要为统一命名而改变 `appId`、既有资料目录、环境变量或保存状态的键。
+本项目的产品名称为 **Stread**，原名 Continuous Reader，GitHub 仓库名称为 `stread`。窗口、程序文件与新构建产物使用 Stread；保留 `appId`、既有资料目录、环境变量、CLI 参数、保存状态的键及 `continous-reader` 文档格式和扩展标识，以维持兼容性。
 
 ## 提交一个修改
 

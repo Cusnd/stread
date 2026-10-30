@@ -55,7 +55,7 @@ export function ArticleNotesPage({ documentId, revision, title, notes = NO_NOTES
   useEffect(() => { store.start(); return () => store.stop(); }, [store]);
   useEffect(() => { store.setWritable(!readOnly); }, [store, readOnly]);
   useEffect(() => { store.receive(notes); }, [store, notes]);
-  useEffect(() => { document.title = title + " · 笔记 · 连续阅读"; }, [title]);
+  useEffect(() => { document.title = title + " · 笔记 · Stread"; }, [title]);
   useEffect(() => {
     try { if (selectedKey) sessionStorage.setItem("reader-notes-selected:" + documentId, JSON.stringify({ key: selectedKey, noteId: store.get(selectedKey)?.draft.id })); } catch {}
   }, [documentId, selectedKey, snapshot, store]);

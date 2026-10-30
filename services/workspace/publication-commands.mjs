@@ -7,6 +7,7 @@ import { OBJECT_MARKER } from './immutable-objects.mjs';
 import { createReadSet } from './sql-commit.mjs';
 import { commitAuxiliary, commitBusiness, findBusinessReceipt } from './business-commit.mjs';
 import { prepareRelationChanges } from './relations.mjs';
+import { queuePreviewBinding, queuePreviewChange, completeConversion, checkQueueDelivery } from './queue-data.mjs';
 
 const now = () => new Date().toISOString();
 
@@ -75,7 +76,14 @@ export async function createPreview(workspace, actor, input) {
       const draft=row&&JSON.parse(row.payload);
       if(draft?.currentPreviewId===previous.id&&!preview?.published_document_id){
         draft.lastError=errorBody(error);draft.version++;draft.updatedAt=now();
-        await commitAuxiliary(workspace,{reads,changes:[{entity:'authoring_drafts',value:{id:draft.id,payload:json(draft)}}],requestId:'preview-diagnostic-'+randomUUID()});
+        const changes=[{entity:'authoring_drafts',value:{id:draft.id,payload:json(draft)}}],statements=[];
+        const queued=await reads.get("SELECT q.id FROM queue_task_previews p JOIN queue_tasks q ON q.id=p.task_id AND q.version=p.task_version WHERE p.preview_id=? AND json_extract(q.payload,'$.status')='pending'",previous.id);
+        if(queued){
+          const revision=JSON.parse((await reads.get("SELECT value FROM metadata WHERE key='revision'")).value)+1;
+          changes.push({entity:'metadata',value:{key:'revision',value:json(revision)}});
+          statements.push({sql:'INSERT INTO changes VALUES(?,?,?)',values:[revision,json({kind:'queue.preview_diagnostic',taskId:queued.id}),now()]});
+        }
+        await commitAuxiliary(workspace,{reads,changes,statements,requestId:'preview-diagnostic-'+randomUUID()});
       }
     }
     throw error;
@@ -87,10 +95,11 @@ export async function createPreview(workspace, actor, input) {
   return commitBusiness(workspace,actor,command,async reads=>{
     const currentDraft=previous?await draftHead(reads,previous):null;
     await checkPublicationTarget(reads,prepared);
+    const queueTask=await queuePreviewBinding(workspace,reads,snapshot);
     const existing=await reads.get('SELECT * FROM authoring_previews WHERE id=?',snapshot.id),payload=json({[OBJECT_MARKER]:reference});
     const draft={id:snapshot.draftId,version:(currentDraft?.version||0)+1,currentPreviewId:snapshot.id,lastError:null,updatedAt:now()};
     return {workspaceChange:false,changes:[...(existing?[]:[{entity:'authoring_previews',value:{id:snapshot.id,payload,published_document_id:null}}]),
-      previewMetadata(snapshot,payload),{entity:'authoring_drafts',value:{id:draft.id,payload:json(draft)}}],result:{preview:previewDescriptor(snapshot),validation:snapshot.validation}};
+      previewMetadata(snapshot,payload),{entity:'authoring_drafts',value:{id:draft.id,payload:json(draft)}},...(queueTask?[queuePreviewChange(queueTask,snapshot)]:[])],result:{preview:previewDescriptor(snapshot),validation:snapshot.validation}};
   });
 }
 
@@ -128,7 +137,10 @@ export async function publishPreview(workspace,actor,input,execution){
   return commitBusiness(workspace,actor,command,async reads=>{
     const head=await draftHead(reads,snapshot);check(!head.lastError,'PREVIEW_INVALID_UPDATE','最新修改未通过校验，请修复后重新预览。',409);
     const request=await boundPublicationRequest(workspace,reads,prepared,binding);
+    const queueTask=await queuePreviewBinding(workspace,reads,snapshot);
     const result=await preparePublication(workspace,actor,prepared,reads);
+    checkQueueDelivery(queueTask,prepared);
+    if(queueTask) result.changes.push(completeConversion(queueTask,result.result.document));
     if(request){
       const completed={...request,status:'completed',version:request.version+1,appliedRevision:result.result.document.revision,updatedAt:now()};
       result.changes.push({entity:'change_requests',value:{id:completed.id,document_id:completed.documentId,version:completed.version,reference:completed.reference,payload:json(completed)}});
@@ -148,6 +160,7 @@ export async function publishAuthoringInput(workspace,actor,input){
   check(!submission.target,'PREVIEW_REQUIRED','已有文章的完整修订必须创建并审阅冻结预览后发布。',409);
   const existing=await findBusinessReceipt(workspace,command);if(existing.receipt)return existing.receipt;
   const prepared=await prepareAuthoring(workspace,{authoringSourceId:submission.authoringSourceId,resources:submission.resources});
+  check(prepared.compiled.authoring.extensions?.['stread.queue']===undefined,'PREVIEW_REQUIRED','队列转换必须创建并复审冻结预览后发布。',409);
   await workspace.prepareRevision(prepared.validated,prepared.resourceMap,prepared.compiled);
   return commitBusiness(workspace,actor,command,async reads=>{
     const result=await preparePublication(workspace,actor,prepared,reads);

@@ -1,8 +1,10 @@
 # 维护与发布
 
-`stread` 的正式源码与更新源是 [Cusnd/stread](https://github.com/Cusnd/stread)。桌面应用继续使用 **Continuous Reader** 名称和现有本地资料目录。当前发布目标是 Windows x64，版本来自根 `package.json`，GitHub Release 标签采用 `v<版本>`。
+Stread 的正式源码与更新源是 [Cusnd/stread](https://github.com/Cusnd/stread)。桌面应用与新构建产物统一使用 **Stread** 名称，继续沿用现有应用标识和本地资料目录。当前发布目标是 Windows x64，版本来自根 `package.json`，GitHub Release 标签采用 `v<版本>`。
 
 日常应用更新使用签名增量包，无需重新制作安装器。首次安装更新功能，或底层运行环境变化时，才发布完整安装器。本指南面向维护者；用户安装说明见 [快速开始](GETTING_STARTED.md)，更新协议细节见 [桌面增量更新说明](../electron/UPDATES.md)。
+
+Stread 更名涉及引导程序和安装器中的名称，首次发布更名版本应使用新的版本号和 `full` 模式。已发布的 0.1.3 附件保留原名，不覆盖旧 Release；完成新安装后，使用实际的 `Stread.exe` 路径更新外部 MCP 客户端配置。
 
 ## 选择发布方式
 
@@ -85,8 +87,8 @@ npx --no-install electron-builder --win --x64 --publish never
 | `updates/reader-update-win32-x64.json` | 必须 | 必须 |
 | 清单中 `payload.name` 对应的完整 `.crupdate` | 必须 | 必须 |
 | 清单中 `delta.name` 对应的差分 `.crupdate` | 有该字段时必须 | 通常不生成 |
-| `Continuous-Reader-<版本>-Setup-x64.exe` | 不生成 | 必须 |
-| `Continuous-Reader-<版本>-Portable-x64.exe` | 不生成 | 必须 |
+| `Stread-<版本>-Setup-x64.exe` | 不生成 | 必须 |
+| `Stread-<版本>-Portable-x64.exe` | 不生成 | 必须 |
 | `updates/SHA256SUMS.txt` | 必须 | 必须 |
 
 工作流在构建完成后生成 `SHA256SUMS.txt`，按附件文件名排序，记录签名清单、全部 `.crupdate` 和完整模式下的 `.exe` 的 SHA-256，不包含校验文件自身。每行格式为 `哈希值  文件名`，文件名与 Release 附件一致。本地手工发布也应对最终附件生成同样格式的校验文件。
@@ -119,7 +121,7 @@ schema 文件检查不能识别所有数据格式变化。若其他代码开始�
 
 ```powershell
 $profile = Join-Path $env:TEMP 'stread-release-review'
-& './release/0.1.3/win-unpacked/Continuous Reader.exe' "--reader-user-data=$profile"
+& './release/0.1.4/win-unpacked/Stread.exe' "--reader-user-data=$profile"
 ```
 
 路径中的版本要替换为本次版本。这个 profile 会保留试用数据；不要把它加入源码或 Release。
@@ -141,7 +143,7 @@ $profile = Join-Path $env:TEMP 'stread-release-review'
 用户或复核者下载附件后，可用 PowerShell 计算哈希，并与同一 Release 的 `SHA256SUMS.txt` 对应行比较：
 
 ```powershell
-Get-FileHash -LiteralPath './Continuous-Reader-0.1.3-Setup-x64.exe' -Algorithm SHA256
+Get-FileHash -LiteralPath './Stread-0.1.4-Setup-x64.exe' -Algorithm SHA256
 ```
 
 替换为实际下载的文件名；哈希大小写不影响比较。校验文件用于发现下载损坏，来源仍取决于所信任的 Release 页面。应用内更新另行验证内置公钥对应的 Ed25519 签名和文件哈希，不能用一个可随附件一起替换的校验文件代替签名验证。

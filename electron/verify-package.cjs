@@ -156,7 +156,7 @@ async function afterPack(context) {
   if (updateBase.schema !== 1 || !/^[a-f0-9]{64}$/.test(updateBase.foundation) || !/^[a-f0-9]{64}$/.test(updateBase.id) || !Array.isArray(updateBase.files) || !updateBase.files.length) fail('update foundation manifest is invalid');
   const stagedBase = await fs.readFile(path.join(projectDir, '.desktop/update-base.json'));
   if (!stagedBase.equals(await fs.readFile(path.join(resources, 'update-base.json')))) fail('update foundation differs from staged manifest');
-  for (const file of ['assets/continuous-reader.ico', 'assets/continuous-reader.png']) await requiredFile(resources, file);
+  for (const file of ['assets/stread.ico', 'assets/stread.png']) await requiredFile(resources, file);
   for (const file of appFiles) assertNoPrivateData(file);
   // Scan all external resources as well, including anything accidentally copied
   // beside runtime. The archive's entries have been checked above.

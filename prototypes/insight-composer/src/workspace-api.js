@@ -60,6 +60,7 @@ export function parseRoute(search) {
   if (query.get("view") === "notes" && query.get("document")) return { page: "notes", documentId: query.get("document") };
   if (query.get("document")) return { page: "reader", documentId: query.get("document"), insightId: query.get("insight") || null, ...(/^[1-9]\d*$/.test(query.get("revision")) ? { revision: Number(query.get("revision")) } : {}) };
   if (query.get("view") === "flow") return { page: "flow", section: ["overview", "insights", "plan", "history"].includes(query.get("section")) ? query.get("section") : "overview" };
+  if (query.get("view") === "queue") return { page: "queue", ...(query.get("task") && query.get("task").length <= 160 ? { taskId: query.get("task") } : {}) };
   return { page: "collection" };
 }
 
@@ -75,17 +76,21 @@ export function routeUrl(route) {
   } else if (route.page === "flow") {
     query.set("view", "flow");
     if (route.section && route.section !== "overview" && ["insights", "plan", "history"].includes(route.section)) query.set("section", route.section);
+  } else if (route.page === "queue") {
+    query.set("view", "queue");
+    if (route.taskId) query.set("task", route.taskId);
   } else query.set("view", "collection");
   return "?" + query;
 }
 
 function normalizedViewState(value, preferredPage = "collection") {
   const object = (candidate) => candidate && typeof candidate === "object" && !Array.isArray(candidate) ? candidate : {};
-  const collection = { ...object(value?.collection) }, flow = { ...object(value?.flow) };
-  const legacy = preferredPage === "flow" ? [flow.navigationExpanded, collection.navigationExpanded] : [collection.navigationExpanded, flow.navigationExpanded];
+  const collection = { ...object(value?.collection) }, flow = { ...object(value?.flow) }, queue = { ...object(value?.queue) };
+  const legacy = preferredPage === "queue" ? [queue.navigationExpanded, collection.navigationExpanded, flow.navigationExpanded]
+    : preferredPage === "flow" ? [flow.navigationExpanded, collection.navigationExpanded] : [collection.navigationExpanded, flow.navigationExpanded];
   const navigationExpanded = [value?.navigationExpanded, ...legacy].find((candidate) => typeof candidate === "boolean");
-  delete collection.navigationExpanded; delete flow.navigationExpanded;
-  return { collection, flow, ...(navigationExpanded === undefined ? {} : { navigationExpanded }) };
+  delete collection.navigationExpanded; delete flow.navigationExpanded; delete queue.navigationExpanded;
+  return { collection, flow, ...(value?.queue === undefined ? {} : { queue }), ...(navigationExpanded === undefined ? {} : { navigationExpanded }) };
 }
 
 export function readViewState(storage, preferredPage = "collection") {
@@ -116,9 +121,10 @@ export function accessibleLegacySessions(snapshot, storage) {
 
 export function referenceDestination(value) {
   const text = value.trim();
-  if (/^#?[QNR]\d{5,}$/i.test(text)) return { reference: "#" + text.replace(/^#/, "").toUpperCase() };
+  if (/^#?[QNRT]\d{5,}$/i.test(text)) return { reference: "#" + text.replace(/^#/, "").toUpperCase() };
   try {
     const url = new URL(text, "http://reader.local");
+    if (url.searchParams.get("view") === "queue" && url.searchParams.get("task")) return { taskId: url.searchParams.get("task") };
     const documentId = url.searchParams.get("document");
     if (documentId) return { documentId, insightId: url.searchParams.get("insight") || null, hash: url.hash, ...(/^[1-9]\d*$/.test(url.searchParams.get("revision")) ? { revision: Number(url.searchParams.get("revision")) } : {}) };
     if (text.startsWith("{")) {

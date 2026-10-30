@@ -33,7 +33,7 @@ try {
   assert.equal(await status().locator("selectedcontent").textContent(), "未读");
   assert.deepEqual(await page.evaluate(() => window.selectFixture.writes), [{ id: "select-fixture", version: 1, status: "unread" }]);
   assert.equal(await status().evaluate(element => document.activeElement === element), true);
-  check("status picker uses neutral styling and preserves command identity, value and focus");
+  check("standalone status picker uses neutral styling and preserves command identity, value and focus");
 
   await status().press("Space");
   assert.equal(await isOpen(status()), true);
