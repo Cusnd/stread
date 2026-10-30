@@ -1,7 +1,7 @@
 .article img { cursor: zoom-in; }
 .article img[role="button"]:focus-visible { outline: 2px solid #4b5158; outline-offset: 4px; }
 .reader-image-lightbox.viewer-container { background: #191a1c; color: #ededef; font-family: system-ui, sans-serif; }
-.reader-image-lightbox.viewer-transition { transition: opacity 140ms ease; }
+.reader-image-lightbox.viewer-transition { transition: opacity var(--motion-fade-duration) var(--motion-fade-ease); }
 .reader-image-lightbox .viewer-canvas > img { background: #fff; box-shadow: 0 12px 48px rgb(0 0 0 / .24); }
 .reader-image-lightbox .viewer-canvas > img.reader-image-transforming { transition: transform 180ms ease, width 180ms ease, height 180ms ease, margin 180ms ease; }
 .reader-image-header { position: absolute; inset: 16px 20px auto; display: flex; align-items: center; justify-content: space-between; pointer-events: none; }

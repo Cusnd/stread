@@ -9,6 +9,8 @@ import { Archive, ArrowCounterClockwise, BookmarkSimple, BookOpen, Books, Check,
 import { canRemoveCollection, collectionPath, deriveCollection, indexCollection, parseTags, sortNames, statusNames } from "./model.js";
 import { ActionError, focusByKey, MaterialIcon, useMedia, useTask, useView, WorkspaceDialog } from "./shared.jsx";
 import { DecorativeIcon } from "../InterfaceMode.jsx";
+import { EmptyState } from "../Feedback.jsx";
+import { WORKSPACE_COMPACT_NAVIGATION_WIDTH } from "./workspace-layout.js";
 import { MaterialDetails } from "./MaterialDetails.jsx";
 import { CollectionForm, DocumentForm } from "./CollectionForms.jsx";
 import { useReaderRuntime } from "../ReaderRuntime.jsx";
@@ -45,11 +47,9 @@ export function CollectionPage({ workspace, command, openDocument, onImport, vie
   const listRef = useRef(null);
   const detailTimer = useRef(null);
   const firstMount = useRef(true);
-  const mobileNav = useMedia(`(max-width: ${640 * scale}px)`);
+  const mobileNav = useMedia(`(max-width: ${WORKSPACE_COMPACT_NAVIGATION_WIDTH * scale}px)`);
   const mobileDetails = useMedia(`(max-width: ${980 * scale}px)`);
   const condensedLayout = useMedia(`(max-width: ${1100 * scale}px)`);
-  const previousMobile = useRef(mobileNav);
-  const desktopNavigation = useRef(view.navigationExpanded ?? true);
   const navigationExpanded = view.navigationExpanded ?? !mobileNav;
   const collectionIndex = useMemo(() => indexCollection(workspace), [workspace.documents, workspace.collections, workspace.planIds]);
   const derived = useMemo(() => deriveCollection(workspace, view, collectionIndex), [collectionIndex, view.collectionId, view.query, view.status, view.tags, view.sort, view.selectedId]);
@@ -80,12 +80,6 @@ export function CollectionPage({ workspace, command, openDocument, onImport, vie
     firstMount.current = false;
     listRef.current.scrollTop = view.listScrollTop || 0;
   }, []);
-  useEffect(() => {
-    if (previousMobile.current !== mobileNav) {
-      previousMobile.current = mobileNav;
-      change({ navigationExpanded: mobileNav ? false : desktopNavigation.current });
-    } else if (!mobileNav) desktopNavigation.current = navigationExpanded;
-  }, [mobileNav, navigationExpanded, change]);
   useEffect(() => { if (!mobileDetails && view.overlay?.kind === "detail") change({ overlay: null }); }, [mobileDetails, view.overlay?.kind, change]);
   const setFilters = (patch) => {
     if (listRef.current) listRef.current.scrollTop = 0;
@@ -240,12 +234,12 @@ export function CollectionPage({ workspace, command, openDocument, onImport, vie
       <AnimatePresence initial={false}>{undo && <MotionItem as="div" key="archive-notice" className="workspace-undo" role="status"><span>已归档 {undo.title}</span><button type="button" disabled={task.pending || !workspace.documents.some((item) => item.id === undo.id && item.archivedAt)} onClick={() => { const material = workspace.documents.find((item) => item.id === undo.id); if (material) restore(material); }}><ArrowCounterClockwise size={14} />撤销</button><button type="button" className="workspace-icon-button" aria-label="关闭归档提示" onClick={() => setUndo(null)}><X size={14} /></button></MotionItem>}</AnimatePresence>
       <motion.div layoutScroll className="workspace-list-scroll" ref={listRef} onScroll={(event) => change({ listScrollTop: event.currentTarget.scrollTop })}>
         <div className="workspace-list-heading"><span>资料</span><span>阅读状态</span></div><ul className="workspace-document-list" aria-label="资料列表" onKeyDown={listKeys}><AnimatePresence initial={false} mode="popLayout">{derived.rows.map((material) => <MotionItem key={material.id}><button type="button" className={"workspace-document-row" + (derived.selected?.id === material.id ? " workspace-selected" : "")} aria-pressed={derived.selected?.id === material.id} aria-label={material.title + "，" + statusNames[material.status]} title={material.title} data-material-id={material.id} data-context-target={contextMenu.targetId === material.id || undefined} onContextMenu={(event) => openMaterialMenu(event, material)} onKeyDown={(event) => openMaterialMenu(event, material)} data-focus-key={"material-" + material.id} onClick={(event) => clickMaterial(event, material)} onDoubleClick={() => doubleClickMaterial(material)} onBlur={cancelPendingDetail}>{derived.selected?.id === material.id && <MotionSelection layoutId="collection-row" className="workspace-selection-layer" />}<DecorativeIcon><MaterialIcon kind={material.kind} /></DecorativeIcon><span className="workspace-document-row-copy"><span className="workspace-document-title">{material.title}</span><span className="workspace-document-row-meta">{[material.kind, ...material.tags].join(" · ")}</span></span><span className={"workspace-row-status workspace-status-" + material.status}>{statusNames[material.status]}</span></button></MotionItem>)}</AnimatePresence></ul>
-        <AnimatePresence initial={false} mode="popLayout">{!derived.rows.length && <MotionItem as="div" key={emptyStateKey} className="workspace-empty-catalog">{derived.filtered ? <MagnifyingGlass size={25} /> : derived.collectionId === "archived" ? <Archive size={25} /> : <Books size={25} />}<p>{derived.filtered ? "没有符合条件的资料" : derived.collectionId === "plan" ? "阅读计划里还没有资料" : derived.collectionId === "archived" ? "还没有已归档资料" : "这个分类还没有资料"}</p>{derived.filtered ? <button className="workspace-quiet-button" type="button" onClick={() => setFilters({ query: "", status: "all", tags: [] })}>清除筛选</button> : derived.collectionId === "plan" || derived.collectionId === "archived" ? <button className="workspace-quiet-button" type="button" onClick={() => navigateCategory("all")}>浏览全部资料</button> : onImport && <button className="workspace-quiet-button" type="button" onClick={onImport}><Plus size={14} />添加资料</button>}</MotionItem>}</AnimatePresence>
+        <AnimatePresence initial={false} mode="popLayout">{!derived.rows.length && <EmptyState key={emptyStateKey} className="workspace-empty-catalog" action={derived.filtered ? <button className="workspace-quiet-button" type="button" onClick={() => setFilters({ query: "", status: "all", tags: [] })}>清除筛选</button> : derived.collectionId === "plan" || derived.collectionId === "archived" ? <button className="workspace-quiet-button" type="button" onClick={() => navigateCategory("all")}>浏览全部资料</button> : onImport && <button className="workspace-quiet-button" type="button" onClick={onImport}><Plus size={14} />添加资料</button>}>{derived.filtered ? "没有符合条件的资料" : derived.collectionId === "plan" ? "阅读计划里还没有资料" : derived.collectionId === "archived" ? "还没有已归档资料" : "这个分类还没有资料"}</EmptyState>}</AnimatePresence>
         <MotionItem as="div" initial={false} className="workspace-list-footer"><span className="workspace-result-summary"><AnimatePresence initial={false} mode="popLayout"><MotionItem as="span" layout={false} key={`${derived.rows.length}:${derived.filtered}`} transition={motionTransition("content", reduced)}>{derived.rows.length} 份资料{derived.filtered ? " · 已筛选" : ""}</MotionItem></AnimatePresence></span><AnimatePresence initial={false} mode="popLayout">{derived.filtered && <MotionItem as="button" key="clear-filters" layout={false} type="button" onClick={() => setFilters({ query: "", status: "all", tags: [] })} data-focus-key="collection-clear-filters" transition={motionTransition("content", reduced)}>清除筛选</MotionItem>}</AnimatePresence></MotionItem>
       </motion.div>
     </section>
     <aside className="workspace-details" aria-label="资料详情">{detail}</aside>
-    <WorkspaceDialog open={Boolean(overlay)} title={dialogTitles[overlay?.kind] || "资料详情"} onClose={closeOverlay} contentKey={overlay?.kind + ":" + (overlay?.documentId || view.collectionDraft?.id || "")} initialFocusKey={overlay?.initialFocusKey || (overlay?.kind === "detail" ? view.focusKey : undefined)} className={overlay?.kind === "nav" ? "workspace-navigation-dialog" : overlay?.kind === "detail" ? "workspace-detail-dialog" : ["tags", "sort"].includes(overlay?.kind) ? "workspace-menu-dialog" : ""}>
+    <WorkspaceDialog open={Boolean(overlay)} title={dialogTitles[overlay?.kind] || "资料详情"} onClose={closeOverlay} contentKey={overlay?.kind + ":" + (overlay?.documentId || view.collectionDraft?.id || "")} initialFocusKey={overlay?.initialFocusKey || (overlay?.kind === "detail" ? view.focusKey : undefined)} returnFocusKey={overlay?.kind === "nav" ? "collection-navigation-toggle" : undefined} className={overlay?.kind === "nav" ? "workspace-navigation-dialog" : overlay?.kind === "detail" ? "workspace-detail-dialog" : ["tags", "sort"].includes(overlay?.kind) ? "workspace-menu-dialog" : ""}>
       <ActionError message={task.error} onDismiss={() => task.setError("")} />
       {overlay?.kind === "nav" && navigation}
       {overlay?.kind === "detail" && detail}

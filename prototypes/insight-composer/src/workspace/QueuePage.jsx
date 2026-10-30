@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { MotionFeedback, MotionItem, MotionSelection } from "../Motion.jsx";
 import { ArrowCounterClockwise, ArrowUpRight, BookOpen, CaretRight, Check, Copy, MagnifyingGlass, Plus } from "../icons";
@@ -6,10 +6,14 @@ import { requestJson } from "../workspace-api.js";
 import { beginNavigationLoading } from "../navigation-loading.js";
 import { createVisiblePoller } from "../visible-poller.js";
 import { relatedDestinationState } from "../related-navigation.js";
-import { ActionError, useMedia, useTask, useView } from "./shared.jsx";
+import { ActionError, useMedia, useTask, useView, WorkspaceDialog } from "./shared.jsx";
 import { QueueTaskDialog } from "./QueueTaskDialog.jsx";
 import { restoreQueueScroll } from "./queue-scroll.js";
 import { queueDocumentTarget, queueDraftAfterSaveError, queueDraftFor, queueHandoff, queueListUrl, queueOutputLabel, queueResultLabel, queueSaveCommand, queueSourcePreview, queueSourceUrl, queueStatusLabel, queueTaskMatches, queueTaskMeta, queueTaskReveal, queueTaskTitle, queueTimeLabel, queueTypeLabel, queueTypes, queueView, readQueuePages } from "./queue-model.js";
+import { useReaderRuntime } from "../ReaderRuntime.jsx";
+import { UI_SCALE_BASE } from "../ui-scale.js";
+import { EmptyState, useClipboardFeedback } from "../Feedback.jsx";
+import { WORKSPACE_COMPACT_NAVIGATION_WIDTH } from "./workspace-layout.js";
 import "./workspace.css";
 import "./queue.css";
 
@@ -73,14 +77,14 @@ function useQueueTask(id, data, refreshKey) {
   return state.id === id ? state : { id, task: null, loading: Boolean(id), error: "" };
 }
 
-function QueueNavigation({ current, data, onNavigate }) {
+function QueueNavigation({ current, data, ready, onNavigate }) {
   const id = useId();
   return <LayoutGroup id={id}><nav className="workspace-category-navigation queue-navigation" aria-label="任务类型">
     <div>{queueTypes.map((item) => {
       const selected = current.status !== "cancelled" && current.type === item.id;
-      return <div className="workspace-nav-row" key={item.id}><button type="button" className={"workspace-nav-item" + (selected ? " workspace-selected" : "")} aria-current={selected ? "page" : undefined} data-focus-key={"queue-type-" + item.id} onClick={() => onNavigate({ type: item.id, status: current.status === "cancelled" ? "pending" : current.status })}>{selected && <MotionSelection layoutId="queue-nav-selection" className="workspace-selection-layer workspace-nav-selection" />}<span className="workspace-nav-name">{item.label}</span><span className="workspace-count">{data.typeCounts[item.id] ?? (item.id === "all" ? data.counts.all : 0) ?? 0}</span></button></div>;
+      return <div className="workspace-nav-row" key={item.id}><button type="button" className={"workspace-nav-item" + (selected ? " workspace-selected" : "")} aria-current={selected ? "page" : undefined} data-focus-key={"queue-type-" + item.id} onClick={() => onNavigate({ type: item.id, status: current.status === "cancelled" ? "pending" : current.status })}>{selected && <MotionSelection layoutId="queue-nav-selection" className="workspace-selection-layer workspace-nav-selection" />}<span className="workspace-nav-name">{item.label}</span><span className="workspace-count" aria-hidden={!ready || undefined}>{ready ? data.typeCounts[item.id] ?? (item.id === "all" ? data.counts.all : 0) ?? 0 : "\u00a0"}</span></button></div>;
     })}</div>
-    <div className="queue-nav-cancelled"><button type="button" className={"workspace-nav-item" + (current.status === "cancelled" ? " workspace-selected" : "")} aria-current={current.status === "cancelled" ? "page" : undefined} data-focus-key="queue-type-cancelled" onClick={() => onNavigate({ type: "all", status: "cancelled" })}>{current.status === "cancelled" && <MotionSelection layoutId="queue-nav-selection" className="workspace-selection-layer workspace-nav-selection" />}<span className="workspace-nav-name">已撤回</span><span className="workspace-count">{data.allCounts?.cancelled || 0}</span></button></div>
+    <div className="queue-nav-cancelled"><button type="button" className={"workspace-nav-item" + (current.status === "cancelled" ? " workspace-selected" : "")} aria-current={current.status === "cancelled" ? "page" : undefined} data-focus-key="queue-type-cancelled" onClick={() => onNavigate({ type: "all", status: "cancelled" })}>{current.status === "cancelled" && <MotionSelection layoutId="queue-nav-selection" className="workspace-selection-layer workspace-nav-selection" />}<span className="workspace-nav-name">已撤回</span><span className="workspace-count" aria-hidden={!ready || undefined}>{ready ? data.allCounts?.cancelled || 0 : "\u00a0"}</span></button></div>
   </nav></LayoutGroup>;
 }
 
@@ -131,7 +135,7 @@ const QueueTaskRow = forwardRef(function QueueTaskRow({ task, expanded, loading,
   }
   return <MotionItem ref={ref} as="li" className={"queue-task-row" + (expanded ? " is-expanded" : "")} layout="position" layoutDependency={layoutOrder} data-task-id={task.id}>
     <div className="queue-task-summary" onClick={(event) => { if (!event.target.closest("button, a, input, select, textarea, summary, [contenteditable], [role='button']")) toggle(event); }}>
-      <div className="queue-task-heading"><h2><button type="button" className="queue-task-title" onClick={toggle} aria-expanded={expanded} aria-controls={detailId} title={title}>{title}</button></h2><div className="queue-task-meta"><button type="button" className="queue-copy-reference" onClick={() => onCopyReference(task)} aria-label={"复制任务编号 " + task.reference} title={"复制 " + task.reference}><code>{task.reference}</code>{copiedReference ? <Check size={13} /> : <Copy size={13} />}</button>{metadata.map((value, index) => <span key={index}>{value}</span>)}</div></div>
+      <div className="queue-task-heading"><h2><button type="button" className="queue-task-title" onClick={toggle} aria-expanded={expanded} aria-controls={detailId} title={title}>{title}</button></h2><div className="queue-task-meta"><button type="button" className="queue-copy-reference" onClick={() => onCopyReference(task)} aria-label={(copiedReference ? "已复制任务编号 " : "复制任务编号 ") + task.reference} title={"复制 " + task.reference}><code>{task.reference}</code>{copiedReference ? <Check size={13} /> : <Copy size={13} />}</button>{metadata.map((value, index) => <span key={index}>{value}</span>)}</div></div>
       <time dateTime={task.createdAt} className="queue-task-time">{queueTimeLabel(task.createdAt)}</time>
       <button type="button" className="workspace-icon-button queue-expand" data-focus-key={"queue-expand-" + task.id} aria-label={(expanded ? "收起" : "展开") + "任务 " + task.reference} aria-expanded={expanded} aria-controls={detailId} onClick={toggle}><CaretRight size={15} className={expanded ? "is-expanded" : ""} aria-hidden="true" /></button>
     </div>
@@ -141,10 +145,26 @@ const QueueTaskRow = forwardRef(function QueueTaskRow({ task, expanded, loading,
 
 export function QueuePage({ workspace, command, openDocument, view = {}, setView, busy, onImport, onReview }) {
   const current = queueView(view), change = useView(view, setView), action = useTask(busy);
-  const mobileNavigation = useMedia("(max-width: 640px)");
+  const runtime = useReaderRuntime();
+  const { percent } = useSyncExternalStore(runtime.uiScale.subscribe, runtime.uiScale.getSnapshot);
+  const scale = percent / UI_SCALE_BASE;
+  const mobileNavigation = useMedia(`(max-width: ${WORKSPACE_COMPACT_NAVIGATION_WIDTH * scale}px)`);
+  const condensedLayout = useMedia(`(max-width: ${1100 * scale}px)`);
+  const contentViewport = useRef(null);
+  const [contentWidth, setContentWidth] = useState(() => document.body.clientWidth - (!mobileNavigation && view.navigationExpanded !== false ? 184 * scale : 0));
+  useLayoutEffect(() => {
+    const element = contentViewport.current;
+    if (!element) return;
+    setContentWidth(element.getBoundingClientRect().width);
+    const observer = new ResizeObserver(([entry]) => setContentWidth(entry.contentRect.width));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
   const viewRef = useRef(view); viewRef.current = view;
-  const [refreshKey, setRefreshKey] = useState(0), [copied, setCopied] = useState(null);
-  const copiedTimer = useRef(null), scrollRef = useRef(null), contentRef = useRef(null), restored = useRef(null), restoration = useRef(null), leaving = useRef(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const clipboard = useClipboardFeedback();
+  const copied = clipboard.feedback?.ok ? clipboard.feedback.key : null;
+  const scrollRef = useRef(null), contentRef = useRef(null), restored = useRef(null), restoration = useRef(null), leaving = useRef(false);
   const resource = useQueue(current, workspace?.revision, refreshKey), data = resource.data || emptyQueue;
   const detail = useQueueTask(current.selectedId, resource.data, refreshKey);
   const tasks = useMemo(() => {
@@ -161,7 +181,7 @@ export function QueuePage({ workspace, command, openDocument, view = {}, setView
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => window.continuousReaderDesktop?.ready?.());
-    return () => { cancelAnimationFrame(frame); clearTimeout(copiedTimer.current); };
+    return () => cancelAnimationFrame(frame);
   }, []);
   useLayoutEffect(() => {
     if (!resource.data || restored.current === resource.key || !scrollRef.current || !contentRef.current) return;
@@ -183,16 +203,14 @@ export function QueuePage({ workspace, command, openDocument, view = {}, setView
 
   function filter(patch) {
     action.setError("");
-    change({ ...patch, selectedId: null, scrollTop: 0, limit: 100 });
+    change({ ...patch, selectedId: null, scrollTop: 0, limit: 100, ...(mobileNavigation ? { navigationExpanded: false } : {}) });
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }
   function toggle(task) { change({ selectedId: current.selectedId === task.id || current.selectedId === task.reference ? null : task.id }); }
   async function copy(task, referenceOnly = false) {
-    try {
-      await navigator.clipboard.writeText(referenceOnly ? task.reference : queueHandoff(task));
-      clearTimeout(copiedTimer.current); setCopied({ id: task.id, referenceOnly });
-      copiedTimer.current = setTimeout(() => setCopied(null), 1800);
-    } catch { action.setError("暂时无法复制，请允许剪贴板访问后重试。"); }
+    action.setError("");
+    const result = await clipboard.copy(referenceOnly ? task.reference : queueHandoff(task), { key: { id: task.id, referenceOnly }, failureMessage: "暂时无法复制，请允许剪贴板访问后重试。" });
+    if (result.current && !result.ok) { action.setError(result.message); clipboard.clear(); }
   }
   function edit(task) { action.setError(""); change({ draft: queueDraftFor(task), savedDraft: null }); }
   function closeDraft() {
@@ -246,19 +264,21 @@ export function QueuePage({ workspace, command, openDocument, view = {}, setView
   }
   const emptyMessage = current.query ? "没有匹配的任务" : current.status === "cancelled" ? "没有已撤回的任务" : current.status === "completed" ? "还没有已完成的任务" : current.status === "needs_attention" ? "没有需要处理的任务" : "队列中还没有任务";
   const navigationExpanded = view.navigationExpanded !== false;
-  return <main className={"workspace-ui queue-page" + (!navigationExpanded ? " queue-nav-collapsed" : "")} onPointerDownCapture={() => { leaving.current = false; }} onWheelCapture={() => { leaving.current = false; }} onKeyDownCapture={() => { leaving.current = false; }}>
-    <aside className="queue-sidebar" inert={!navigationExpanded || undefined} aria-hidden={!navigationExpanded || undefined}><QueueNavigation current={current} data={data} onNavigate={filter} /></aside>
-    {navigationExpanded && <button className="queue-nav-scrim" type="button" aria-label="收起任务类型" onClick={() => change({ navigationExpanded: false })} />}
-    <section className="queue-workspace" aria-labelledby="workspace-queue-title" inert={mobileNavigation && navigationExpanded || undefined}>
-      <header className="queue-page-heading"><h1 id="workspace-queue-title" tabIndex={-1}>{heading}</h1><span className="workspace-count">{headingCount || 0}</span><label className="workspace-search queue-search"><MagnifyingGlass size={15} aria-hidden="true" /><input type="search" aria-label="搜索任务或 ID" placeholder="搜索任务或 ID" value={current.query} data-focus-key="queue-search" onChange={(event) => filter({ query: event.target.value })} /></label></header>
-      {current.status !== "cancelled" && <nav className="queue-status-tabs" aria-label="任务状态">{statuses.map((status) => <button type="button" key={status} aria-pressed={current.status === status} className={current.status === status ? "is-selected" : ""} onClick={() => filter({ status })}>{queueStatusLabel(status)}<span>{counts[status] || 0}</span></button>)}</nav>}
+  const navigation = <QueueNavigation current={current} data={data} ready={Boolean(resource.data)} onNavigate={filter} />;
+  return <main className={"workspace-ui queue-page" + (condensedLayout ? " queue-condensed-layout" : "") + (mobileNavigation ? " queue-compact-navigation" : "") + (!navigationExpanded ? " queue-nav-collapsed" : "")} onPointerDownCapture={() => { leaving.current = false; }} onWheelCapture={() => { leaving.current = false; }} onKeyDownCapture={() => { leaving.current = false; }}>
+    <aside className="queue-sidebar" inert={!navigationExpanded || mobileNavigation || undefined} aria-hidden={!navigationExpanded || mobileNavigation || undefined}>{!mobileNavigation && navigation}</aside>
+    <section ref={contentViewport} className={"queue-workspace" + (contentWidth <= 760 * scale ? " queue-condensed-content" : "") + (contentWidth <= 540 * scale ? " queue-compact-content" : "")} aria-labelledby="workspace-queue-title">
+      <header className="workspace-catalog-heading queue-page-heading"><h1 id="workspace-queue-title" tabIndex={-1}>{heading}</h1><span className="workspace-count" aria-hidden={!resource.data || undefined}>{resource.data ? headingCount || 0 : "\u00a0"}</span><label className="workspace-search queue-search"><MagnifyingGlass size={15} aria-hidden="true" /><input type="search" aria-label="搜索任务或 ID" placeholder="搜索任务或 ID" value={current.query} data-focus-key="queue-search" onChange={(event) => filter({ query: event.target.value })} /></label></header>
+      {current.status !== "cancelled" && <nav className="queue-status-tabs" aria-label="任务状态">{statuses.map((status) => <button type="button" key={status} aria-pressed={current.status === status} className={current.status === status ? "is-selected" : ""} onClick={() => filter({ status })}>{queueStatusLabel(status)}<span aria-hidden={!resource.data || undefined}>{resource.data ? counts[status] || 0 : "\u00a0"}</span></button>)}</nav>}
+      <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">{copied ? (copied.referenceOnly ? "任务编号已复制" : "任务请求已复制") : ""}</span>
       <div className="queue-feedback"><ActionError message={action.error && !view.draft ? action.error : resource.error || detail.error} onDismiss={action.error && !view.draft ? () => action.setError("") : undefined} />{(resource.error || detail.error) && <button type="button" className="workspace-text-button" onClick={() => setRefreshKey((value) => value + 1)}>重新读取</button>}</div>
       <motion.div layoutScroll ref={scrollRef} className="queue-scroll" aria-busy={resource.loading || undefined} onScroll={(event) => { if (!leaving.current && restored.current === resource.key) change({ scrollTop: event.currentTarget.scrollTop }); }}>
         <ul ref={contentRef} className="queue-task-list" aria-label="任务列表"><AnimatePresence initial={false} mode="popLayout">{tasks.map((task) => <QueueTaskRow key={task.id} task={task} layoutOrder={layoutOrder} expanded={current.selectedId === task.id || current.selectedId === task.reference} loading={detail.loading && (current.selectedId === task.id || current.selectedId === task.reference)} pending={action.pending} copiedReference={copied?.id === task.id && copied.referenceOnly} copiedTask={copied?.id === task.id && !copied.referenceOnly} onDetailsSettled={() => restoration.current?.refresh()} onToggle={toggle} onCopyReference={(item) => copy(item, true)} onCopy={copy} onEdit={edit} onCancel={(item) => updateStatus(item, "queue.cancel")} onRestore={(item) => updateStatus(item, "queue.reopen")} onOpen={openTaskDocument} onReview={onReview} />)}</AnimatePresence></ul>
-        {!resource.loading && !tasks.length && !resource.error && <div className="queue-empty" role="status"><p>{emptyMessage}</p>{!current.query && current.status === "pending" && <button type="button" className="workspace-quiet-button" onClick={() => change({ draft: view.savedDraft || { type: current.type === "all" ? "conversion" : current.type, body: "" }, savedDraft: null })}><Plus size={14} />添加任务</button>}</div>}
+        {!resource.loading && !tasks.length && !resource.error && <EmptyState className="queue-empty" action={!current.query && current.status === "pending" ? <button type="button" className="workspace-quiet-button ui-button" data-ui-button="entry" onClick={() => change({ draft: view.savedDraft || { type: current.type === "all" ? "conversion" : current.type, body: "" }, savedDraft: null })}><Plus size={14} />添加任务</button> : undefined}>{emptyMessage}</EmptyState>}
         {data.total > data.tasks.length && <div className="queue-load-more"><button type="button" className="workspace-quiet-button" disabled={resource.loading} onClick={() => change({ limit: current.limit + 100 })}>{`显示更多（${data.tasks.length} / ${data.total}）`}</button></div>}
       </motion.div>
     </section>
+    {mobileNavigation && <WorkspaceDialog open={navigationExpanded} title="任务类型" className="workspace-navigation-dialog queue-navigation-dialog" initialFocusKey={"queue-type-" + (current.status === "cancelled" ? "cancelled" : current.type)} returnFocusKey="queue-navigation-toggle" onClose={() => change({ navigationExpanded: false })}>{navigation}</WorkspaceDialog>}
     <QueueTaskDialog draft={view.draft || null} workspace={workspace} busy={action.pending} error={action.error} onChange={(patch) => { action.setError(""); change({ draft: { ...viewRef.current.draft, ...patch } }); }} onSave={saveDraft} onClose={closeDraft} onImport={onImport ? importFile : undefined} onReload={reloadDraft} />
   </main>;
 }

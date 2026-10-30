@@ -4,6 +4,7 @@ import { FileArrowUp, CheckCircle } from "./icons";
 import { WorkspaceDialog } from "./WorkspaceDialog.jsx";
 import { executeCommand, requestJson } from "./workspace-api.js";
 import { MotionFeedback } from "./Motion.jsx";
+import { InlineError } from "./Feedback.jsx";
 import { CONVERSION_REQUIREMENTS } from "./conversion-request.js";
 import { definiteImportRejection, importQueueCommand, readPendingImport, savePendingImport } from "./import-queue.js";
 
@@ -86,8 +87,8 @@ export function ImportDialog({ open, onClose, command = executeCommand, onQueued
       <label>转换要求<textarea value={body} onChange={(event) => setBody(event.target.value)} disabled={uploading || frozen} maxLength={10000} rows={3} /></label>
       <label>输出语言<ReaderSelect value={(outputLanguages || (language === "zh-CN" ? ["source"] : ["source", "zh-CN"])).includes("zh-CN") ? "bilingual" : "source"} onChange={(event) => setOutputLanguages(event.target.value === "source" ? ["source"] : ["source", "zh-CN"])} disabled={uploading || frozen}><option value="bilingual">原文 + 简体中文</option><option value="source">仅原文</option></ReaderSelect></label>
       <MotionFeedback show={Boolean(pending)}><div className="workspace-import-status" role="status"><CheckCircle size={18} /><div><strong>原文件已保存</strong>{frozen && <p>重试会确认同一项任务，不会重复入队。</p>}</div></div></MotionFeedback>
-      <MotionFeedback show={Boolean(error)}><p role="alert" className="workspace-service-error">{error}</p></MotionFeedback>
-      <footer><button type="button" onClick={onClose} disabled={uploading}>取消</button><button type="submit" className="workspace-primary" disabled={uploading || (!file && !pending)}>{uploading ? "正在保存…" : frozen ? "重试入队" : "加入队列"}</button></footer>
+      <InlineError className="workspace-service-error" message={error} />
+      <footer><button type="button" className="ui-button" data-ui-button="text" onClick={onClose} disabled={uploading}>取消</button><button type="submit" className="workspace-primary ui-button" data-ui-button="submit" disabled={uploading || (!file && !pending)}>{uploading ? "正在保存…" : frozen ? "重试入队" : "加入队列"}</button></footer>
     </form>
   </WorkspaceDialog>;
 }

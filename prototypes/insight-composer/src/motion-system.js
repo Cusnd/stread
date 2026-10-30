@@ -12,6 +12,15 @@ export const MOTION_SPRINGS = Object.freeze({
 
 export const MOTION_FADE = Object.freeze({ type: "tween", duration: 0.14, ease: "linear" });
 
+// Select pickers, menus and the image viewer consume the same fade policy as
+// Motion. Native modal backdrops consume the surface MotionValue directly.
+// Keep the duration here; CSS adapters only reference these tokens.
+export function installMotionCssTokens(root = globalThis.document?.documentElement) {
+  root?.style.setProperty("--motion-fade-duration", `${MOTION_FADE.duration * 1000}ms`);
+  root?.style.setProperty("--motion-fade-ease", MOTION_FADE.ease);
+}
+installMotionCssTokens();
+
 export function motionTransition(kind = "surface", reduced = false) {
   if (reduced) return { type: "tween", duration: 0, reduceMotion: true, opacity: { type: "tween", duration: 0 } };
   return {

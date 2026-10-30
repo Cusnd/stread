@@ -30,16 +30,16 @@ try {
   await page.waitForTimeout(500);
 
   const surfaces = [
-    { name: "insights", overlay: ".insights-overlay", panel: ".insights-modal", close: '.insights-modal [aria-label="关闭洞见"]', trigger: ".insight-tool", alpha: 48 / 255, key: "I", shiftKey: true },
+    { name: "insights", overlay: ".insights-overlay", panel: ".insights-modal", close: '.insights-modal [aria-label="关闭洞见"]', trigger: ".insight-tool", alpha: 56 / 255, blur: 2, key: "I", shiftKey: true },
     { name: "settings", overlay: ".settings-overlay", panel: ".settings", close: "[data-settings-close]", trigger: ".settings-tool", alpha: 56 / 255, blur: 2, key: ",", ctrlKey: true },
   ];
   const settleOpen = surface => page.waitForFunction(({ overlay, panel }) => {
     const backdrop = document.querySelector(overlay), content = document.querySelector(panel);
-    return backdrop && !backdrop.inert && content && Number(getComputedStyle(content).opacity) === 1;
+    return backdrop?.open && !backdrop.inert && content && Number(getComputedStyle(content).opacity) === 1;
   }, surface);
   const settleClosed = surface => page.waitForFunction(({ overlay }) => {
     const backdrop = document.querySelector(overlay);
-    return !backdrop || getComputedStyle(backdrop).visibility === "hidden";
+    return !backdrop?.open;
   }, surface);
   const open = async surface => {
     await page.locator(surface.trigger).focus();
@@ -60,21 +60,21 @@ try {
         reopened = true;
       }
       const overlay = document.querySelector(surface.overlay), panel = document.querySelector(surface.panel);
-      const style = overlay && getComputedStyle(overlay);
+      const style = overlay && getComputedStyle(overlay, "::backdrop");
       const color = style?.backgroundColor.match(/[\d.]+/g)?.map(Number) || [];
       const alpha = color.length === 4 ? color[3] : color.length === 3 ? 1 : 0;
       window.overlayMotionFrames.push({ elapsed, opacity: panel ? Number(getComputedStyle(panel).opacity) : 0, tint: alpha / surface.alpha,
         blur: Number(style?.backdropFilter.match(/blur\(([\d.]+)px\)/)?.[1] || 0),
-        visible: Boolean(overlay && style.visibility !== "hidden"), inert: overlay?.inert ?? true, samePanel: panel === originalPanel,
+        visible: Boolean(overlay?.open), inert: overlay?.inert ?? true, samePanel: panel === originalPanel,
         overflow: document.documentElement.style.overflow, reopened });
-      // Read after Motion's frame writes; otherwise JS-driven backdropFilter
-      // can still contain the prior frame while compositor opacity has advanced.
-      if (elapsed < 650) requestAnimationFrame(() => setTimeout(record, 0));
+      // Sample each rendered frame. The backdrop now consumes the same motion
+      // value as the panel, so no timer-based CSS transition needs a second read.
+      if (elapsed < 650) requestAnimationFrame(record);
       else window.overlayMotionDone = true;
     };
     if (opening) document.body.dispatchEvent(new KeyboardEvent("keydown", { key: surface.key, shiftKey: Boolean(surface.shiftKey), ctrlKey: Boolean(surface.ctrlKey), bubbles: true }));
     else document.querySelector(surface.close).click();
-    requestAnimationFrame(() => setTimeout(record, 0));
+    requestAnimationFrame(record);
   }, { surface, reverse, opening });
   const finishSample = async name => {
     await page.waitForFunction(() => window.overlayMotionDone);
@@ -94,7 +94,7 @@ try {
       }
       assert.equal(opening.at(-1).blur, surface.blur, `${surface.name}: fully open backdrop must be blurred`);
       await settleOpen(surface);
-      await page.screenshot({ path: resolve(output, "settings-open.png") });
+      await page.screenshot({ path: resolve(output, `${surface.name}-open.png`) });
       check(`${surface.name}: opening blur interpolates with the panel and settles at 2px`);
     } else await open(surface);
     await startSample(surface);
@@ -132,14 +132,36 @@ try {
     await page.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done)))));
     const reduced = await page.evaluate(({ overlay, panel }) => {
       const backdrop = document.querySelector(overlay), content = document.querySelector(panel);
-      return { visible: Boolean(backdrop && getComputedStyle(backdrop).visibility !== "hidden"), opacity: content ? Number(getComputedStyle(content).opacity) : 0,
-        blur: Number((backdrop && getComputedStyle(backdrop).backdropFilter.match(/blur\(([\d.]+)px\)/)?.[1]) || 0), overflow: document.documentElement.style.overflow };
+      return { visible: Boolean(backdrop?.open), opacity: content ? Number(getComputedStyle(content).opacity) : 0,
+        blur: Number((backdrop && getComputedStyle(backdrop, "::backdrop").backdropFilter.match(/blur\(([\d.]+)px\)/)?.[1]) || 0), overflow: document.documentElement.style.overflow };
     }, surface);
     assert.deepEqual(reduced, { visible: false, opacity: 0, blur: 0, overflow: "" }, `${surface.name}: live reduced motion must finish the current exit`);
     await finishSample(`${surface.name}: reduced motion during exit`);
     check(`${surface.name}: enabling reduced motion during exit immediately releases the overlay`);
     await page.emulateMedia({ reducedMotion: "no-preference" });
+    for (const method of ["Escape", "backdrop"]) {
+      await open(surface);
+      if (method === "Escape") await page.keyboard.press("Escape");
+      else await page.mouse.click(5, 5);
+      await settleClosed(surface);
+      assert.equal(await page.locator(surface.trigger).evaluate(node => document.activeElement === node), true, `${surface.name}: ${method} restores invoking focus`);
+      assert.equal(await page.evaluate(() => document.documentElement.style.overflow), "", `${surface.name}: ${method} releases lock`);
+    }
+    check(`${surface.name}: native Escape and backdrop clicks share the close lifecycle`);
   }
+  await open(surfaces[0]);
+  await page.locator(surfaces[0].close).focus();
+  await page.keyboard.press("Control+,");
+  await settleOpen(surfaces[1]);
+  assert.equal(await page.locator("dialog:modal").count(), 2, "Reader settings is a nested native modal over insights");
+  await page.keyboard.press("Escape");
+  await settleClosed(surfaces[1]);
+  assert.equal(await page.locator("dialog:modal").count(), 1, "closing Settings preserves the underlying insights modal");
+  assert.equal(await page.locator(surfaces[0].close).evaluate(node => document.activeElement === node), true, "nested Settings restores its invoking Reader control");
+  assert.equal(await page.evaluate(() => document.documentElement.style.overflow), "hidden", "nested Settings does not release Reader's lock");
+  await page.keyboard.press("Escape");
+  await settleClosed(surfaces[0]);
+  check("Reader nested Settings: native top layer, returning focus and independent scroll locks");
   assert.deepEqual(evidence.pageErrors, []);
 } finally {
   await writeFile(resolve(output, "results.json"), JSON.stringify(evidence, null, 2));

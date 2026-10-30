@@ -1,0 +1,147 @@
+/* Explicit button roles, with compatibility aliases for existing consumers.
+   Local component CSS owns placement, never a second copy of the paint recipe. */
+:where(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button) {
+  --ui-button-height: var(--ui-control-height);
+  --ui-button-surface: transparent;
+  --ui-button-hover: var(--hover-surface);
+  --ui-button-border: transparent;
+  --ui-button-ink: var(--text-primary);
+}
+:is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: var(--ui-space-inline);
+  min-height: var(--ui-button-height);
+  max-width: 100%;
+  padding: calc(5px * var(--ui-scale, 1)) var(--ui-space-control);
+  border: 1px solid var(--ui-button-border);
+  border-radius: var(--ui-radius-control);
+  color: var(--ui-button-ink);
+  background: var(--ui-button-surface);
+  font-family: var(--ui-font-family);
+  font-size: var(--ui-font-control);
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+:is(button, a).workspace-primary-button, .ui-button[data-ui-button="entry"] {
+  --ui-button-surface: var(--action-surface);
+  --ui-button-hover: var(--action-hover);
+  --ui-button-border: var(--action-border);
+  font-weight: 600;
+  box-shadow: var(--action-shadow);
+}
+:is(button, a).workspace-quiet-button, .ui-button[data-ui-button="secondary"] {
+  --ui-button-surface: var(--action-surface);
+  --ui-button-hover: var(--action-hover);
+  --ui-button-border: transparent;
+  box-shadow: none;
+}
+.ui-button:is([data-ui-button="submit"], [data-ui-button="read"]) {
+  --ui-button-height: var(--ui-action-height);
+  --ui-button-surface: var(--text-primary);
+  --ui-button-hover: var(--accent-hover);
+  --ui-button-border: var(--text-primary);
+  --ui-button-ink: var(--surface-reading);
+  font-weight: 600;
+  box-shadow: var(--action-shadow);
+}
+:is(button, a).workspace-text-button, .ui-button[data-ui-button="text"] {
+  --ui-button-height: var(--ui-tool-size);
+  --ui-button-surface: transparent;
+  --ui-button-hover: transparent;
+  --ui-button-border: transparent;
+  --ui-button-ink: var(--text-secondary);
+  padding-inline: var(--ui-space-inline);
+  font-size: var(--ui-font-small);
+  box-shadow: none;
+}
+:is(button, a):is(.workspace-icon-button, .icon-button), .ui-button[data-ui-button="tool"] {
+  --ui-button-height: var(--ui-tool-size);
+  --ui-button-ink: var(--text-secondary);
+  width: var(--ui-button-height);
+  height: var(--ui-button-height);
+  padding: 0;
+}
+:is(button, a).tool-button {
+  --ui-button-height: var(--ui-tool-size);
+  padding-block: 0;
+  padding-inline: calc(8px * var(--ui-scale, 1));
+  white-space: nowrap;
+}
+.ui-button[data-ui-size="compact"] { --ui-button-height: var(--ui-compact-size); }
+.ui-button[data-ui-size="compact"]:not([data-ui-button="tool"]) { padding-block: 0; padding-inline: calc(9px * var(--ui-scale, 1)); font-size: var(--ui-font-small); }
+
+:is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button):not(:disabled, [aria-disabled="true"]):hover {
+  background: var(--ui-button-hover);
+}
+:is(button, a):is(.workspace-text-button, .ui-button[data-ui-button="text"]):not(:disabled, [aria-disabled="true"]):hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+:is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button):is(:disabled, [aria-disabled="true"]) {
+  opacity: var(--ui-disabled-opacity);
+  cursor: default;
+}
+:is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button):focus-visible {
+  outline: 1px solid var(--ui-focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--ui-focus-halo);
+}
+
+/* White fields retain a light, continuous boundary in their resting state.
+   Hover and focus reinforce the same shape without filling the writing area.
+   Native inputs own selection, validation and keyboard behavior. */
+.workspace-field, .workspace-form, .workspace-review, .ui-field {
+  --ui-field-radius: var(--ui-radius-field);
+  --ui-select-padding: var(--ui-field-padding-inline);
+}
+:is(input, textarea, select).ui-field,
+:is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select) {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ui-field-height);
+  padding: calc(8px * var(--ui-scale, 1)) var(--ui-field-padding-inline);
+  border: 1px solid var(--ui-field-border);
+  border-radius: var(--ui-field-radius);
+  background-color: var(--ui-field-surface);
+  color: var(--text-primary);
+  font: var(--ui-font-control)/1.5 var(--ui-font-family);
+  box-shadow: none;
+}
+textarea.ui-field, :is(.workspace-field, .workspace-form, .workspace-review) textarea { min-height: calc(90px * var(--ui-scale, 1)); padding: var(--ui-field-padding-inline); line-height: 1.8; resize: vertical; }
+:is(input, textarea, select).ui-field:not(:disabled, :focus-visible):hover,
+:is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select):not(:disabled, :focus-visible):hover {
+  border-color: var(--ui-field-hover-border);
+}
+:is(input, textarea, select).ui-field:focus,
+:is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select):focus {
+  background-color: var(--ui-field-surface);
+}
+:is(input, textarea, select).ui-field:focus-visible,
+:is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select):focus-visible {
+  border-color: var(--ui-field-focus-border);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ui-field-focus-halo);
+}
+:is(input, textarea, select).ui-field:disabled,
+:is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select):disabled { opacity: var(--ui-disabled-opacity); cursor: default; }
+
+@media (forced-colors: active) {
+  :is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button),
+  :is(input, textarea, select).ui-field,
+  :is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select) { border-color: ButtonText; }
+  :is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button):is(:disabled, [aria-disabled="true"]) { border-color: GrayText; color: GrayText; opacity: 1; }
+  :is(button, a):is(.ui-button, .workspace-primary-button, .workspace-quiet-button, .workspace-text-button, .workspace-icon-button, .tool-button, .icon-button):focus-visible,
+  :is(input, textarea, select).ui-field:focus-visible,
+  :is(.workspace-field, .workspace-form, .workspace-review) :is(input:not(:where([type="checkbox"], [type="radio"], [type="file"], [type="hidden"])), textarea, select):focus-visible { outline: 2px solid Highlight; box-shadow: none; }
+}

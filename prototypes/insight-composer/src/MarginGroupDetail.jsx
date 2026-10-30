@@ -6,15 +6,13 @@ import { InsightActions } from "./InsightActions";
 import { InsightQuote } from "./InsightQuote";
 import { useReaderRuntime } from "./ReaderRuntime";
 import { formatShortcut, matchesShortcut } from "./reading-shortcuts";
-import { acquirePageScrollLock } from "./page-scroll-lock.js";
-import { useMotionPresence } from "./useMotionPresence.js";
+import { useModalDialog } from "./useModalDialog.js";
 import "./margin-group-detail.css";
 
 const EMPTY_NOTES = Object.freeze([]);
 const kindFor = (note) => note.type === "question"
   ? { label: "问题", Icon: note.answer ? CheckCircle : Question, status: note.answer ? "已解决" : "待回答" }
   : note.type === "note" ? { label: "笔记", Icon: NotePencil } : { label: "批注", Icon: ChatText };
-const focusable = (element) => element?.isConnected && !element.closest('[inert], [aria-hidden="true"]');
 
 /** The margin groups presentation only: every action receives the original note. */
 export function MarginGroupDetail({ open, notes = EMPTY_NOTES, groupId, selectedNoteId, returnFocus, sourceLanguage, colorFor,
@@ -26,8 +24,6 @@ export function MarginGroupDetail({ open, notes = EMPTY_NOTES, groupId, selected
   const dialogRef = useRef(null);
   const scrollRef = useRef(null);
   const closeRef = useRef(null);
-  const releaseScroll = useRef(null);
-  const openingFocus = useRef(null);
   const initialized = useRef(null);
   const closing = useRef(null);
   const pendingDeleteFocus = useRef(null);
@@ -39,34 +35,21 @@ export function MarginGroupDetail({ open, notes = EMPTY_NOTES, groupId, selected
   const [actionError, setActionError] = useState("");
   latest.current = { open, onClose, returnFocus, busy, groupId };
 
-  function restoreOpeningFocus() {
-    const target = focusable(latest.current.returnFocus) ? latest.current.returnFocus : openingFocus.current;
-    const fallback = dialogRef.current?.closest(".reader-app")?.querySelector(".article");
-    if (focusable(target)) target.focus({ preventScroll: true });
-    else if (focusable(fallback)) fallback.focus({ preventScroll: true });
-    openingFocus.current = null;
-  }
-
-  function releaseDialog(restore = true) {
-    const wasOpen = Boolean(dialogRef.current?.open || releaseScroll.current);
-    if (dialogRef.current?.open) dialogRef.current.close();
-    releaseScroll.current?.();
-    releaseScroll.current = null;
-    if (restore && wasOpen) restoreOpeningFocus();
-  }
-
-  function finishClose() {
+  function finishClose(trigger) {
     const action = closing.current?.after;
     closing.current = null;
     initialized.current = null;
-    const trigger = focusable(latest.current.returnFocus) ? latest.current.returnFocus : openingFocus.current;
-    // Release the native top layer before the next composer/dialog receives focus.
-    releaseDialog();
+    // The shared lifecycle releases the native layer before the next action.
     if (latest.current.open) latest.current.onClose?.();
     action?.(trigger);
   }
 
-  const presence = useMotionPresence(open && visible, { kind: "surface", onExit: finishClose });
+  const presence = useModalDialog(open && visible, {
+    ref: dialogRef, onClose: () => requestClose(), initialFocus: closeRef,
+    returnFocus: () => latest.current.returnFocus,
+    fallbackFocus: () => dialogRef.current?.closest(".reader-app")?.querySelector(".article"),
+    afterClose: finishClose, allowEscape: () => shortcuts.close === "Escape",
+  });
 
   function requestClose(after = null, force = false) {
     if (closing.current || !latest.current.open || (!force && latest.current.busy)) return;
@@ -84,16 +67,6 @@ export function MarginGroupDetail({ open, notes = EMPTY_NOTES, groupId, selected
     setCopyStatus(null);
     setVisible(true);
   }, [open, groupId, selectedNoteId]);
-
-  useLayoutEffect(() => {
-    if (!presence.present) return;
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    openingFocus.current = latest.current.returnFocus || document.activeElement;
-    releaseScroll.current = acquirePageScrollLock();
-    if (!dialog.open) dialog.showModal();
-    return () => releaseDialog();
-  }, [presence.present]);
 
   useLayoutEffect(() => {
     if (!presence.present || !open || !visible || !scrollRef.current) return;
@@ -156,30 +129,17 @@ export function MarginGroupDetail({ open, notes = EMPTY_NOTES, groupId, selected
     if (matchesShortcut(event.nativeEvent, "close", shortcuts)) {
       event.preventDefault(); event.stopPropagation(); requestClose(); return;
     }
-    if (event.key !== "Tab") return;
-    const items = [...event.currentTarget.querySelectorAll("button:not(:disabled), a[href], [tabindex='0']")]
-      .filter((item) => item.getClientRects().length && focusable(item));
-    const first = items[0], last = items.at(-1);
-    if (!items.length) { event.preventDefault(); return; }
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus({ preventScroll: true }); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus({ preventScroll: true }); }
+    presence.dialogProps.onKeyDown(event);
   }
 
   if (!presence.present) return null;
   const kinds = new Set(notes.map((note) => kindFor(note).label));
   const groupLabel = kinds.size === 1 ? kinds.values().next().value : "洞见";
-  return <motion.dialog {...presence.motionProps} ref={dialogRef} className="margin-group-dialog" data-motion-surface="margin-group-detail"
-    data-state={open && visible ? "open" : "closed"} inert={!open || !visible} aria-hidden={!open || !visible || undefined}
-    aria-modal="true" aria-labelledby={titleId} onKeyDown={handleKeys}
-    onCancel={(event) => { event.preventDefault(); if (shortcuts.close === "Escape") requestClose(); }}
-    onClick={(event) => {
-      if (event.target !== event.currentTarget) return;
-      const bounds = event.currentTarget.getBoundingClientRect();
-      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) requestClose();
-    }}>
+  return <motion.dialog {...presence.motionProps} {...presence.dialogProps} className="margin-group-dialog ui-modal" data-motion-surface="margin-group-detail"
+    aria-labelledby={titleId} onKeyDown={handleKeys}>
     <header className="margin-group-dialog-header">
       <h2 id={titleId}>本段{groupLabel}<span>{notes.length}</span></h2>
-      <button ref={closeRef} className="icon-button" aria-label="关闭段落批注" title={"关闭" + (shortcuts.close ? " · " + formatShortcut(shortcuts.close) : "")}
+      <button ref={closeRef} className="icon-button ui-button" data-ui-button="tool" aria-label="关闭段落批注" title={"关闭" + (shortcuts.close ? " · " + formatShortcut(shortcuts.close) : "")}
         disabled={busy} onClick={() => requestClose()}><X size={18} /></button>
     </header>
     {(error || actionError) && <p className="margin-group-dialog-error" role="alert">{error || actionError}</p>}

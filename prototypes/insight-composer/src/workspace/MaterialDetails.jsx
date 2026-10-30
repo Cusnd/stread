@@ -159,7 +159,7 @@ function ReadLabel({ value, selected }) {
 
 function ReadButton({ material, pending, onRead }) {
   const label = readingLabels[material.status] || readingLabels.unread;
-  return <button type="button" className="workspace-primary-button workspace-read-button"
+  return <button type="button" className="ui-button workspace-read-button" data-ui-button="read"
     aria-disabled={pending || undefined} aria-label={label}
     onClick={() => { if (!pending) onRead(material, material.status === "done"); }} data-focus-key={"read-" + material.id}>
     <span className="workspace-read-labels" aria-hidden="true">
@@ -173,7 +173,7 @@ function PlanButton({ material, planned, pending, onPlan }) {
   const buttonRef = useImmediateReducedMotion(reduced);
   const addRef = useImmediateReducedMotion(reduced);
   const addedRef = useImmediateReducedMotion(reduced);
-  return <motion.button ref={buttonRef} type="button" className="workspace-detail-plan"
+  return <motion.button ref={buttonRef} type="button" className="ui-button workspace-detail-plan" data-ui-button="text"
     aria-disabled={pending || undefined} aria-pressed={planned} aria-label={planned ? "已加入阅读计划" : "加入阅读计划"}
     data-focus-key={"detail-plan-" + material.id} onClick={() => { if (!pending) onPlan(material); }}
     whileTap={pending || reduced ? undefined : { scale: 0.98 }} transition={motionTransition("control", reduced)}>

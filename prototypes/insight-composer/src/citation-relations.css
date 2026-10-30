@@ -31,10 +31,10 @@
 .reference-text { margin: 0; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
 .reference-text a { color: inherit; }
 .reference-targets { display: grid; gap: 6px; margin-top: 14px; }
-.reference-open { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-floating); text-align: start; font-size: 12px; }
+.reference-open { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: var(--ui-radius-surface); background: var(--action-surface); text-align: start; font-size: 12px; }
 .reference-open span { flex: 1; }
 .reference-open svg { flex-shrink: 0; }
-.reference-open:hover { background: var(--hover-surface); }
+.reference-open:hover:not(:disabled) { background: var(--action-hover); }
 .reference-state { margin: 12px 0 0; color: var(--text-secondary); }
 .reference-candidates { padding: 0; margin: 7px 0 0; list-style: none; }
 .reference-candidates li { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
@@ -42,14 +42,14 @@
 .reference-candidate-meta, .reference-candidate-difference { display: block; font-size: 11px; line-height: 1.5; margin-top: 3px; overflow-wrap: anywhere; }
 .reference-candidate-meta { color: var(--text-secondary); }
 .reference-candidate-difference { color: var(--text-primary); }
-.reference-candidates button { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; padding: 4px 8px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-floating); }
-.reference-candidates button:hover { background: var(--hover-surface); }
+.reference-candidates button { display: inline-flex; align-items: center; gap: var(--ui-space-inline); flex-shrink: 0; min-height: var(--ui-compact-size); padding: calc(4px * var(--ui-scale, 1)) calc(8px * var(--ui-scale, 1)); border: 1px solid transparent; border-radius: var(--ui-radius-control); background: var(--action-surface); }
+.reference-candidates button:hover:not(:disabled) { background: var(--action-hover); }
 .reference-preview-content > footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 9px 16px 11px; flex-shrink: 0; background: var(--surface-navigation); }
 .reference-preview-content > footer :is(button, a) { display: inline-flex; align-items: center; gap: 4px; padding: 0; font-size: 11px; color: var(--text-secondary); background: transparent; text-decoration: none; }
 .reference-preview-content > footer :is(button, a):hover { color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; }
 .reference-preview-content > footer .reference-unlink { margin-left: auto; }
 .reference-preview button:disabled { opacity: .5; cursor: default; }
-.reference-preview :is(button, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.reference-preview :is(button, a):focus-visible { outline: 1px solid var(--ui-focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--ui-focus-halo); }
 .reference-error { color: #a83b32; margin: 8px 0 0; }
 .paper-reader .article .citation-backlinks { margin: 32px 0 20px; font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; font-size: 12px; }
 .paper-reader .article .citation-relations-error { font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; font-size: 12px; color: var(--text-secondary); }

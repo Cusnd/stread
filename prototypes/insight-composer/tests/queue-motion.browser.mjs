@@ -16,17 +16,20 @@ const bundle = await build({ stdin: { contents: `
   import { createRoot } from "react-dom/client";
   import { QueuePage } from "./src/workspace/QueuePage.jsx";
   import { ContinuousMotion } from "./src/Motion.jsx";
+  import { ReaderRuntimeProvider } from "./src/ReaderRuntime.jsx";
+  import { createPreviewReaderRuntime } from "./src/reader-runtime.js";
   import "./src/styles.css";
   const params = new URLSearchParams(location.search);
   const scale = Number(params.get("scale") || 1);
   document.documentElement.style.setProperty("--ui-scale", scale);
+  const runtime = createPreviewReaderRuntime("queue-motion-fixture", { uiScale: { percent: scale * 80 } });
   function Fixture() {
-    const [view, setView] = useState({ type: "conversion", status: "pending", navigationExpanded: innerWidth > 640, selectedId: params.get("selected"), scrollTop: Number(params.get("scroll") || 0) });
+    const [view, setView] = useState({ type: "conversion", status: "pending", navigationExpanded: innerWidth > 640 * scale, selectedId: params.get("selected"), scrollTop: Number(params.get("scroll") || 0) });
     window.fixtureView = view;
     window.setFixtureView = setView;
     return <ContinuousMotion><header style={{ height: 56 * scale }}>Queue</header><QueuePage workspace={{ revision: 1, documents: [] }} view={view} setView={setView} command={async () => { throw new Error("Read-only fixture"); }} openDocument={async () => {}} /></ContinuousMotion>;
   }
-  createRoot(document.getElementById("root")).render(<React.StrictMode><Fixture /></React.StrictMode>);
+  createRoot(document.getElementById("root")).render(<React.StrictMode><ReaderRuntimeProvider value={runtime}><Fixture /></ReaderRuntimeProvider></React.StrictMode>);
 `, resolveDir: frontend, loader: "jsx" }, bundle: true, write: false, outdir: "queue-fixture", format: "iife", platform: "browser", jsx: "automatic", logLevel: "silent" });
 const javascript = bundle.outputFiles.find(file => file.path.endsWith(".js")).text;
 const stylesheet = bundle.outputFiles.find(file => file.path.endsWith(".css")).text;

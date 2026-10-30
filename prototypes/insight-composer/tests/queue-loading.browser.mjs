@@ -81,6 +81,7 @@ try {
 
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await activeLine(); await noLoadingPlaceholder();
+  assert.deepEqual(await page.locator(".queue-navigation .workspace-count, .queue-page-heading > .workspace-count, .queue-status-tabs button > span").allTextContents(), Array(await page.locator(".queue-navigation .workspace-count, .queue-page-heading > .workspace-count, .queue-status-tabs button > span").count()).fill("\u00a0"), "unknown Queue counts reserve space without falsely displaying zero");
   await page.locator('[data-task-id="conversion"]').waitFor(); await idle();
   console.log("PASS initial Queue read uses the shared header line and waits before empty-state rendering");
 
@@ -113,10 +114,13 @@ try {
   await activeLine(); await noLoadingPlaceholder();
   await page.getByText("Fixture list failed", { exact: true }).waitFor(); await idle();
   await page.getByRole("button", { name: "重新读取", exact: true }).waitFor();
+  assert.equal((await page.locator(".queue-page-heading > .workspace-count").textContent()).trim(), "", "failed initial reads do not turn unknown counts into zero");
+  assert.equal(await page.locator(".queue-empty").count(), 0, "read failure remains distinct from a valid empty queue");
   failType = null;
   await page.getByRole("button", { name: "重新读取", exact: true }).click();
   await activeLine();
   await page.getByText("队列中还没有任务", { exact: true }).waitFor(); await idle();
+  assert.equal(await page.locator(".queue-page-heading > .workspace-count").getAttribute("aria-hidden"), null, "confirmed counts become accessible after retry");
   console.log("PASS failed reads release the line and retry tracks new foreground work");
 
   delayMs = 1000;

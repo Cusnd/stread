@@ -60,11 +60,11 @@ export function DesktopUpdates({ active }) {
     {status.state === "downloading" && <progress aria-label="更新下载进度" max={status.bytes || 1} value={Math.min(status.receivedBytes || 0, status.bytes || 1)} />}
     {(error || status.error) && <p className="desktop-updates-error" role="alert">{error || status.error}</p>}
     <div className="desktop-updates-actions">
-      {downloaded ? <button className="desktop-updates-primary" disabled={busy} onClick={() => action("restart")}>重启并更新</button>
-        : status.state === "available" ? <button className="desktop-updates-primary" disabled={busy} onClick={() => action("download")}>下载更新{status.bytes > 0 ? ` · ${(status.bytes / 1024 / 1024).toFixed(1)} MB` : ""}</button>
-          : status.state === "full-update-required" ? <button className="desktop-updates-primary" disabled={busy} onClick={() => action("openRelease")}>下载安装包</button>
-            : <button className="desktop-updates-primary" disabled={busy} onClick={() => action("check")}>{pending === "check" || status.state === "checking" ? "正在检查…" : "检查更新"}</button>}
-      {status.releaseUrl && status.state !== "full-update-required" && <button disabled={busy} onClick={() => action("openRelease")}>版本说明</button>}
+      {downloaded ? <button type="button" className="ui-button" data-ui-button="submit" disabled={busy} onClick={() => action("restart")}>重启并更新</button>
+        : status.state === "available" ? <button type="button" className="ui-button" data-ui-button="submit" disabled={busy} onClick={() => action("download")}>下载更新{status.bytes > 0 ? ` · ${(status.bytes / 1024 / 1024).toFixed(1)} MB` : ""}</button>
+          : status.state === "full-update-required" ? <button type="button" className="ui-button" data-ui-button="entry" disabled={busy} onClick={() => action("openRelease")}>下载安装包</button>
+            : <button type="button" className="ui-button" data-ui-button="entry" disabled={busy} onClick={() => action("check")}>{pending === "check" || status.state === "checking" ? "正在检查…" : "检查更新"}</button>}
+      {status.releaseUrl && status.state !== "full-update-required" && <button type="button" className="ui-button" data-ui-button="text" disabled={busy} onClick={() => action("openRelease")}>版本说明</button>}
     </div>
   </section>;
 }

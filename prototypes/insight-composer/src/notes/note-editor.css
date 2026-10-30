@@ -30,7 +30,8 @@
 .note-editor .cm-panels { color: inherit; background: var(--surface-navigation, #f4f4f3); border: 0; }
 .note-editor .cm-search { padding: calc(8px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1)); font-size: calc(11px * var(--ui-scale, 1)); }
 .note-editor .cm-textfield { border: 1px solid var(--line, #ddd); border-radius: 4px; padding: 3px 6px; background: var(--surface-reading, white); color: inherit; font: inherit; }
-.note-editor .cm-button { background: var(--surface-reading, white); border: 1px solid var(--line, #ddd); border-radius: 4px; color: inherit; font: inherit; }
+.note-editor .cm-button { background: var(--action-surface); border: 1px solid transparent; border-radius: var(--ui-radius-control); color: inherit; font: inherit; box-shadow: none; }
+.note-editor .cm-button:hover:not(:disabled) { background: var(--action-hover); }
 .note-editor-preview { overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: calc(14px * var(--ui-scale, 1)) calc(28px * var(--ui-scale, 1)) calc(70px * var(--ui-scale, 1)); }
 .note-markdown { font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; font-size: calc(14px * var(--ui-scale, 1)); line-height: 1.9; overflow-wrap: anywhere; }
 .note-markdown > :first-child { margin-top: 0; }

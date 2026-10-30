@@ -1,0 +1,76 @@
+/* Ordinary task surfaces share one backdrop and window constraint. Menus and
+   the image viewer have distinct roles and deliberately do not use this class. */
+:root, .ui-modal {
+  --modal-backdrop-color: #24282d38;
+  --modal-backdrop-blur: 2px;
+  --modal-window-gap: clamp(12px, calc(24px * var(--ui-scale, 1)), 32px);
+  --modal-simple-width: calc(440px * var(--ui-scale, 1));
+  --modal-wide-width: calc(800px * var(--ui-scale, 1));
+  --modal-panel-width: calc(560px * var(--ui-scale, 1));
+  --modal-panel-height: calc(640px * var(--ui-scale, 1));
+  --modal-composer-width: calc(560px * var(--ui-scale, 1));
+  --modal-composer-height: calc(420px * var(--ui-scale, 1));
+}
+
+dialog.ui-modal::backdrop {
+  background-color: color-mix(in srgb, var(--modal-backdrop-color) calc(var(--modal-backdrop-progress, 0) * 100%), transparent);
+  backdrop-filter: blur(calc(var(--modal-backdrop-blur) * var(--modal-backdrop-progress, 0)));
+}
+dialog.ui-modal:is([data-state="closed"], [data-modal-covered="true"])::backdrop {
+  background-color: #24282d00;
+  backdrop-filter: blur(0px);
+}
+dialog.ui-modal:is([data-state="closing"], [data-state="closed"]) { pointer-events: none; }
+dialog.ui-modal:not([open]) { display: none; }
+
+/* A simple form may grow with content; a fixed panel preserves page identity
+   and its header/footer while each page owns its own scroll container. */
+dialog.ui-modal:not(.ui-modal-layer), .ui-modal-surface[data-modal-size] {
+  max-width: calc(100vw - var(--modal-window-gap) * 2);
+  max-height: calc(100dvh - var(--modal-window-gap) * 2);
+  border: 1px solid var(--border-floating);
+  border-radius: var(--ui-radius-dialog);
+  color: var(--text-primary);
+  background: var(--surface-floating);
+  box-shadow: var(--shadow-floating);
+}
+dialog.ui-modal[data-modal-size="simple"], .ui-modal-surface[data-modal-size="simple"] { width: var(--modal-simple-width); }
+dialog.ui-modal[data-modal-size="wide"], .ui-modal-surface[data-modal-size="wide"] { width: var(--modal-wide-width); }
+dialog.ui-modal[data-modal-size="panel"], .ui-modal-surface[data-modal-size="panel"] {
+  width: var(--modal-panel-width);
+  height: var(--modal-panel-height);
+  border-radius: var(--ui-radius-panel);
+}
+dialog.ui-modal[data-modal-size="composer"], .ui-modal-surface[data-modal-size="composer"] {
+  width: var(--modal-composer-width);
+  height: var(--modal-composer-height);
+  border-radius: var(--ui-radius-panel);
+}
+dialog.ui-modal[data-modal-size="navigation"] {
+  max-height: 100dvh; border: 0; border-radius: 0; background: var(--surface-navigation);
+}
+/* Long simple forms still expose the decision while the form scrolls. Fixed
+   panel pages (Settings and Queue) already keep their footer outside scrolling. */
+dialog.ui-modal:is([data-modal-size="simple"], [data-modal-size="wide"]),
+dialog.ui-modal .workspace-service-body {
+  scroll-padding-bottom: calc(var(--ui-action-height) + var(--ui-space-control) * 2 + var(--ui-space-panel));
+}
+dialog.ui-modal:is([data-modal-size="simple"], [data-modal-size="wide"]) .workspace-edit-form > .workspace-dialog-actions,
+dialog.ui-modal .workspace-service-body :is(.workspace-form, .workspace-review) > footer {
+  position: sticky; bottom: 0; z-index: 1;
+  padding-block: var(--ui-space-control);
+  border-top: 1px solid var(--line);
+  background: var(--surface-floating);
+}
+
+/* Settings and Reader insights keep their own content surfaces inside a native
+   full-window dialog. The native backdrop covers the entire window, not only
+   the area beneath Reader's topbar, and remains present throughout the exit. */
+dialog.ui-modal-layer {
+  position: fixed; inset: 0; width: 100vw; height: 100dvh;
+  max-width: none; max-height: none; margin: 0;
+  padding: var(--modal-window-gap); border: 0; overflow: hidden;
+  background: transparent; color: var(--text-primary); outline: none;
+}
+dialog.ui-modal-layer[open] { display: grid; place-items: center; }
+dialog.ui-modal-layer > .ui-modal-surface { min-width: 0; min-height: 0; margin: 0; }

@@ -1,21 +1,20 @@
 /* Native selection, form values, labels, typeahead and focus remain browser
    owned. Older browser engines retain their functional native picker. */
 .reader-select:not([multiple]) {
-  --select-inline-padding: calc(10px * var(--ui-scale, 1));
-  --select-picker-padding: calc(4px * var(--ui-scale, 1));
+  --select-inline-padding: var(--ui-select-padding, var(--ui-field-padding-inline));
+  --select-picker-padding: calc(5px * var(--ui-scale, 1));
   color-scheme: light;
   color: var(--text-primary);
-  background-color: var(--surface-floating);
-  border: 1px solid var(--line);
-  border-radius: calc(4px * var(--ui-scale, 1));
+  background-color: var(--ui-field-surface, #fff);
+  border: 1px solid var(--ui-field-border);
+  border-radius: var(--ui-field-radius, var(--ui-radius-field));
   outline: none;
   box-shadow: none;
   cursor: pointer;
 }
-.reader-select:not([multiple]):disabled { color: var(--text-disabled, #929292); cursor: default; opacity: .6; }
-/* Keyboard focus uses the existing single border, without a second outer box.
-   Opening or hovering with a pointer keeps the same quiet control edge. */
-.reader-select:not([multiple]):focus-visible { outline: none; border-color: var(--text-secondary); box-shadow: none; }
+.reader-select:not([multiple]):disabled { color: var(--text-disabled); cursor: default; opacity: var(--ui-disabled-opacity); }
+.reader-select:not([multiple]):not(:disabled, :focus-visible):hover { border-color: var(--ui-field-hover-border); }
+.reader-select:not([multiple]):focus-visible { border-color: var(--ui-field-focus-border); outline: none; box-shadow: 0 0 0 3px var(--ui-field-focus-halo); }
 
 @supports (appearance: base-select) {
   .reader-select:not([multiple]), .reader-select::picker(select) { appearance: base-select; }
@@ -67,25 +66,26 @@
   .reader-select::picker(select) {
     box-sizing: border-box;
     width: anchor-size(width);
-    min-width: 0;
+    /* Compact triggers still need room for a complete label and checkmark.
+       The native picker keeps its anchor fallback near viewport edges. */
+    min-width: min(calc(160px * var(--ui-scale, 1)), calc(100dvw - 16px));
     max-width: calc(100vw - 16px);
     max-height: min(calc(320px * var(--ui-scale, 1)), calc(100dvh - 24px));
     margin-block: calc(4px * var(--ui-scale, 1));
     padding-block: var(--select-picker-padding);
     padding-inline: 0;
-    border: 1px solid var(--border-floating, #dedede);
-    border-radius: calc(6px * var(--ui-scale, 1));
+    border: 1px solid color-mix(in srgb, var(--text-primary, #242424) 11%, var(--surface-floating, #fff));
+    border-radius: calc(8px * var(--ui-scale, 1));
     background: var(--surface-floating, #fff);
     color: var(--text-primary, #242424);
-    box-shadow: 0 4px 16px #24242414;
+    box-shadow: 0 2px 6px #24242405, 0 10px 28px #24242412;
     outline: none;
-    font: inherit;
-    line-height: 1.5;
+    font: 400 calc(12px * var(--ui-scale, 1))/1.5 var(--ui-font-family, system-ui);
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     opacity: 0;
-    transition: opacity 140ms linear, display 140ms allow-discrete, overlay 140ms allow-discrete;
+    transition: opacity var(--motion-fade-duration) var(--motion-fade-ease), display var(--motion-fade-duration) allow-discrete, overlay var(--motion-fade-duration) allow-discrete;
   }
   .reader-select::picker(select):popover-open { opacity: 1; }
   @starting-style { .reader-select::picker(select):popover-open { opacity: 0; } }
@@ -100,18 +100,26 @@
     border-radius: 0;
     background: var(--surface-floating, #fff);
     color: var(--text-primary, #242424);
-    font: inherit;
-    line-height: 1.5;
+    /* Options inherit from select, not ::picker: keep menu type independent
+       of a trigger's heading or field size. */
+    font: 400 calc(12px * var(--ui-scale, 1))/1.5 var(--ui-font-family, system-ui);
     text-align: start;
     white-space: normal;
     overflow-wrap: anywhere;
     outline: none;
     cursor: pointer;
   }
-  .reader-select option:checked { background: var(--selected-surface, #f0f0f0); font-weight: 500; }
-  .reader-select option:not(:disabled):is(:hover, :focus-visible) { background: var(--hover-surface, #e9e9e9); }
-  .reader-select option:not(:disabled):focus-visible { background: color-mix(in srgb, var(--text-primary) 10%, var(--surface-floating)); box-shadow: none; }
+  .reader-select option[hidden] { display: none; }
+  .reader-select option:checked { font-weight: 500; }
+  .reader-select option:not(:disabled):hover { background: color-mix(in srgb, var(--text-primary) 3%, var(--surface-floating)); }
+  .reader-select option:not(:disabled):focus-visible { background: color-mix(in srgb, var(--text-primary) 7%, var(--surface-floating)); box-shadow: none; }
   .reader-select option:disabled { color: var(--text-disabled, #929292); cursor: default; }
-  .reader-select option::checkmark { order: 1; flex: none; margin-inline-start: auto; color: currentColor; }
+  .reader-select option::checkmark { order: 1; flex: none; margin-inline-start: auto; color: currentColor; font-size: calc(11px * var(--ui-scale, 1)); font-weight: 500; }
   @media (prefers-reduced-motion: reduce) { .reader-select::picker(select) { transition: none; } }
+}
+
+@media (forced-colors: active) {
+  .reader-select:not([multiple]) { border-color: ButtonText; }
+  .reader-select:not([multiple]):focus-visible { outline: 2px solid Highlight; box-shadow: none; }
+  .reader-select:not([multiple]):disabled { color: GrayText; opacity: 1; }
 }

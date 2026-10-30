@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, ArrowClockwise, ArrowCounterClockwise, ArrowsClo
 import { acquirePageScrollLock } from "./page-scroll-lock.js";
 import { matchesShortcut } from "./reading-shortcuts";
 import { useReducedMotionPreference } from "./useReducedMotionPreference.js";
+import "./motion-system.js";
 import { getImageViewerFit } from "./image-viewer-geometry.js";
 import "viewerjs/dist/viewer.css";
 import "./image-lightbox.css";

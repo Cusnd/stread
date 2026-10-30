@@ -2,16 +2,17 @@
 
 [设计系统](README.md) · 相关：[按钮](buttons.md)、[表单](forms.md)、[动效](motion.md)
 
-初始核对：2026-10-30。本页区分现有容器与共同行为；尺寸相同不代表它们已经使用同一个组件。
+实现核对：2026-10-30。普通模态现已共用 [useModalDialog.js](../../prototypes/insight-composer/src/useModalDialog.js) 的原生顶层、退场、焦点和滚动锁策略，以及 [modal.css](../../prototypes/insight-composer/src/modal.css) 的背景与尺寸规则。各业务容器保留自己的内容布局。
 
 ## 按任务选择容器
 
 | 任务 | 当前入口 | 使用规则 |
 | --- | --- | --- |
-| 工作区内的编辑、确认、导航与详情 | [workspace/shared.jsx 的 WorkspaceDialog](../../prototypes/insight-composer/src/workspace/shared.jsx) | 使用工作区的标题、内容、操作区与焦点恢复机制 |
-| 添加或编辑 Queue 任务 | [QueueTaskDialog.jsx](../../prototypes/insight-composer/src/workspace/QueueTaskDialog.jsx) | 复用上述容器，固定外框，标题旁的小下拉切换任务类型，字段区独立滚动 |
-| 导入源文件、审阅修订、打开引用 | [WorkspaceDialog.jsx 的 WorkspaceDialog](../../prototypes/insight-composer/src/WorkspaceDialog.jsx) | 当前服务弹窗族；与上一行的同名组件是两个实现，接入时必须确认导入路径 |
-| 阅读和界面偏好 | [ReadingSettings.jsx](../../prototypes/insight-composer/src/ReadingSettings.jsx) | 固定外框、多页常驻、每页独立滚动；偏好即时生效 |
+| 工作区内的编辑、确认、导航与详情 | [workspace/shared.jsx 的 WorkspaceDialog](../../prototypes/insight-composer/src/workspace/shared.jsx) | 使用工作区的标题、内容、操作区；保留业务 focus key，接入共享模态生命周期 |
+| 添加或编辑 Queue 任务 | [QueueTaskDialog.jsx](../../prototypes/insight-composer/src/workspace/QueueTaskDialog.jsx) | 复用上述容器的 `composer` 角色；固定紧凑外框，任务类型在表单首行、位于类型页上方，上下文行与书写区内部独立滚动 |
+| 导入源文件、审阅修订、打开引用 | [WorkspaceDialog.jsx 的 WorkspaceDialog](../../prototypes/insight-composer/src/WorkspaceDialog.jsx) | 与工作区同名组件保留不同的内容 API，但共用生命周期和 simple / wide 外框；接入时确认导入路径 |
+| 阅读和界面偏好 | [ReadingSettings.jsx](../../prototypes/insight-composer/src/ReadingSettings.jsx) | 原生 dialog 内固定 panel、多页常驻、每页独立滚动；偏好即时生效 |
+| Reader 洞见、问题及本段洞见详情 | [App.jsx](../../prototypes/insight-composer/src/App.jsx)、[QuestionDetail.jsx](../../prototypes/insight-composer/src/QuestionDetail.jsx)、[MarginGroupDetail.jsx](../../prototypes/insight-composer/src/MarginGroupDetail.jsx) | 同样使用共享原生模态策略；保留来源定位、编辑动作和 Reader 快捷键 |
 | 对现有对象执行短操作 | [ContextMenu.jsx](../../prototypes/insight-composer/src/ContextMenu.jsx) | 使用同一右键菜单，保持目标对象与列表选中状态独立，不再加一套专属菜单 |
 | 从有限选项中选择一个值 | [ReaderSelect.jsx](../../prototypes/insight-composer/src/ReaderSelect.jsx) | 使用原生 select 语义及共享 picker；具体规则见[表单](forms.md) |
 | 查看、平移、缩放文章图片 | [ImageLightbox.jsx](../../prototypes/insight-composer/src/ImageLightbox.jsx) | 使用图片灯箱；深色背景服务于图片查看，不作为普通弹窗配色范例 |
@@ -20,20 +21,23 @@
 
 ## 当前外框与布局
 
-以下为界面比例 1 时的源码基准值；带缩放的值通过 `--ui-scale` 计算，并受窗口宽高约束。
+以下为 `--ui-scale: 1` 时的基准值（设置中的 80%）。普通外框统一由 `data-modal-size` 选择，不再在工作区和服务弹窗各写一套宽度、圆角和缩放算法。
 
-| 容器 | 当前代表值 | 内容布局与边界 |
+| 角色及容器 | 当前代表值 | 内容布局与边界 |
 | --- | --- | --- |
-| `.workspace-dialog` | 宽 440px，圆角 8px，最大高为视口高减 40px | 外层可滚动，标题 sticky；标题区默认高至少 54px，内容 padding 20px |
-| `.workspace-service-dialog` | 宽 490px，wide 为 800px，圆角 12px，最大高为视口高减 32px | 外层可滚动，标题 sticky；这组尺寸目前使用固定 px，未统一按 `--ui-scale` 缩放 |
-| `.settings` | 宽 560px，高 640px，圆角 14px，最大高为视口高减 48px | 标题、页签、底部完成按钮不随内容滚动；`.settings-page` 各自滚动 |
-| `.queue-task-dialog` | 宽 560px，高 640px，圆角 14px，最大高为视口高减 48px | 标题、底部操作区固定；`.queue-task-form-scroll` 各自滚动；任务类型切换不改变外框 |
+| `simple`：普通工作区和服务表单 | 宽 440px，圆角 8px | 内容按需增长；工作区标题 sticky，服务弹窗标题在滚动区外；长表单操作区 sticky |
+| `wide`：修订审阅、Reader 洞见等 | 宽 800px，圆角 8px | 为对照和内容管理提供宽度；仍受统一窗口边距约束 |
+| `panel`：设置 | 宽 560px、高 640px，圆角 14px | 多分类设置需要较多可见内容，页签切换不改变外框 |
+| `composer`：Queue 任务编辑 | 宽 560px、高 420px，圆角 14px | 编辑任务以短上下文和正文为主；五种任务保持相同外框，标题、表单首行的任务类型、取消与提交固定，类型页中的复杂字段内部滚动 |
+| `navigation`：窄窗口工作区导航 | 使用所属侧栏宽度、全视口高，无圆角 | 保留侧边导航的空间关系；背景和交互生命周期仍共用模态策略 |
 
-来源：[工作区样式](../../prototypes/insight-composer/src/workspace/workspace.css)、[服务弹窗样式](../../prototypes/insight-composer/src/workspace-shell.css)、[设置样式](../../prototypes/insight-composer/src/reading-settings.css)、[Queue 样式](../../prototypes/insight-composer/src/workspace/queue.css)。窄窗口有额外约束，不能只复制表中的宽高。
+尺寸均随 `--ui-scale` 计算。普通弹窗的窗口边距为 `clamp(12px, 24px × scale, 32px)`；最大宽高为当前视口减去两侧边距，使用 `100dvh`。圆角来自 [ui-tokens.css](../../prototypes/insight-composer/src/ui-tokens.css)，布局分别见[工作区](../../prototypes/insight-composer/src/workspace/workspace.css)、[服务弹窗](../../prototypes/insight-composer/src/workspace-shell.css)、[设置](../../prototypes/insight-composer/src/reading-settings.css)、[Queue](../../prototypes/insight-composer/src/workspace/queue.css)。
 
-统一的是布局关系：标题和退出入口稳定，内容超过可用高度时在所属区域滚动，主操作始终容易找到。复杂表单参考设置与 Queue 的固定框架；新增变体要说明必要性，并与相邻场景对照。
+设置与 Reader 洞见的原生 dialog 覆盖整个视口，内部 `.ui-modal-surface` 承担内容和运动；背景不会在 Reader 顶栏或滚动条处留下空隙。设置在本次打开时固定其外框比例，拖动 UI 比例滑块时不让当前设置面板跟着改变尺寸；下次打开使用新比例。
 
-标题应直接说明任务。不要在标题下重复解释显而易见的页面用途。Queue 的“任务类型”是标题旁的紧凑下拉；不恢复占用大面积的类型导航或额外说明卡片。新文件上传保留明确的文字动作。
+统一的是布局关系：标题和退出入口稳定，内容超过可用高度时在所属区域滚动，主操作始终容易找到。Queue 的短任务编辑不沿用设置的高面板，避免简单表单留下大片空白；复杂转换仍通过紧凑字段与内部滚动适配同一个编辑器。新增变体要说明必要性，并与相邻场景对照。
+
+标题应直接说明任务。Queue 标题区保留“添加任务”或“编辑任务”及关闭入口；“任务类型”是下方表单第一行，与关联文章、文件等字段使用相同的标签列。选择器宽 `min(200px × scale, 100%)`，使用普通白底浅边框，箭头右对齐并保留共享文字间距，详见[表单规范](forms.md#queue-表单模式)。不增加重复的用途描述、大面积类型导航或说明卡片。新文件上传保留明确的文字动作。
 
 ## 打开、关闭与背景
 
@@ -47,27 +51,25 @@
 
 `open` 表示当前交互意图，`present` 表示为完成视觉退场而仍在场。不得用 `open && <Dialog />` 从外部提前卸载拥有退出动画的容器；必须先确认组件自身的生命周期设计。
 
-**背景是面板的从属反馈，不能独立拖尾。** 当前实现中，透明度一般采用 140ms 淡变，位置/缩放弹簧可能更晚结束；遮罩与模糊跟随淡变，原生模态生命周期等弹簧结束。这里的“同步”指可见内容与背景的视觉退场一致，不是把所有物理参数强行变成固定 140ms。
+**背景直接消费面板的实际透明度。** `useModalDialog` 将面板 opacity MotionValue 的更新写入原生 dialog 的 `--modal-backdrop-progress`，`modal.css` 据此计算背景颜色和 blur，不再启动另一个 CSS 过渡。普通透明度使用共享 140ms 淡变；位置/缩放弹簧可以更晚结束，但已经透明的模态不会留下灰幕或模糊。原生生命周期仍等完整退场结束。
 
-### 当前背景差异
+### 统一背景与专属场景
 
 | 场景 | 当前背景 | 实现方式 |
 | --- | --- | --- |
-| 设置 | `#24282d38`，`blur(2px)` | 独立的 Motion overlay 同时插值背景颜色与模糊；不能只让子面板淡出 |
-| 服务弹窗 | `#24242428`，`blur(2px)` | 原生 `::backdrop`，颜色与模糊分别用 140ms 线性过渡；closing 时变透明、blur 归零 |
-| 工作区弹窗，包括 Queue | `#24242436`，无 blur | 原生 `::backdrop` 的颜色过渡；closing 时变透明 |
-| Reader 居中洞见 | `#24282d30`，无 blur | [App.jsx](../../prototypes/insight-composer/src/App.jsx) 中独立 Motion 背景 |
+| 普通工作区弹窗、Queue、服务弹窗、设置、Reader 洞见与详情 | `#24282d38`，`blur(2px)` | 同一 `.ui-modal::backdrop`，颜色与模糊都消费同一个面板进度 |
 | 右键菜单、select picker | 不压暗页面 | 锚定当前操作对象，保留周围阅读上下文 |
 | 图片灯箱 | `#191a1c` 的不透明深色场景 | Viewer 管理整个图片模态，整体淡出 |
 
-这些背景目前没有统一的 token 和容器策略。本次只记录实际差异；不要把“普通弹窗是否模糊”当作已经统一的结论。后续收敛应同时比较设置、Queue、导入与 Reader 洞见，不在单个页面继续微调新的透明度。
+嵌套模态始终只显示一层背景，由最后进入原生顶层的 dialog 持有，包括它正在退出的阶段。背景进度取仍在场各面板透明度的最大值；父层保持打开时，打开或关闭子层不会让背景重复变深、叠加模糊或短暂恢复清晰。最后一层退出才让背景完整淡去。下层先关闭也不能抢走上层焦点或释放上层的滚动锁。
 
 ## 滚动与焦点
 
 - 复用 [acquirePageScrollLock](../../prototypes/insight-composer/src/page-scroll-lock.js)。它按根节点计数，保留原有 overflow、scrollbar gutter 与补偿 padding；嵌套浮层关闭一个不能释放另一个仍需要的锁。释放函数可以重复调用。
 - 模态内容内部使用自己的滚动容器与 `overscroll-behavior: contain`。不要为全屏遮罩留下未覆盖的滚动条边缘，也不要因锁滚动让整个页面横向跳动。
-- 原生 `showModal()` 提供顶层与背景模态行为。设置等自绘 dialog 需要宿主配合背景不可交互和焦点约束，`aria-modal="true"` 本身不能完成这些行为。
-- 工作区弹窗通过 `initialFocusKey` 和 `returnFocusKey` 处理进入与返回；触发项消失时回到有效的同类控件或工作区入口。服务弹窗目前主要恢复保存的 DOM 元素，回退策略较少。
+- 普通模态统一使用原生 `showModal()`，由浏览器提供顶层和背景不可交互，hook 补充 Tab 环绕与退出行为；仅设置 `aria-modal="true"` 不能替代该策略。
+- 共享 hook 接受 `initialFocus`、`returnFocus` 和 `fallbackFocus`；恢复前检查节点仍连接、可见、可交互，且属于仍有效的顶层。业务容器继续提供自己的回退入口，不能假定共享 hook 知道正确的业务位置。
+- 工作区弹窗保留 `initialFocusKey`、`returnFocusKey` 及工作区搜索/导航回退；Reader 详情保留触发项或文章入口。子层关闭回到父层有效控件；父层先卸载时沿返回链恢复原页面触发项。
 - 关闭按钮、Esc 和点击背景应进入同一关闭流程；弹窗内部点击不能误判为背景点击。业务正在处理时哪些关闭动作可用，应按真实业务设计，不用视觉忙碌状态替代决策。
 - Tab/Shift+Tab 只访问当前活动内容；隐藏页、关闭中的控件和禁用字段不参与交互。设置页和 Queue 类型页切换时保留各自容器与滚动位置。
 
@@ -91,4 +93,6 @@ Esc、Tab 和菜单动作先恢复触发焦点，再交给业务操作；若动�
 
 检查一次完整交互，而不只看打开后的截图：关闭按钮、Esc、背景点击；关闭中再次打开；弹窗内菜单和嵌套浮层；长内容与短窗口；Tab 环绕、失效触发项的焦点回退；退出中实时开启减少动态效果。逐帧检查背景颜色与 blur，不允许面板消失后背景残留。
 
-现有验证入口包括 [dialog-backdrop.browser.mjs](../../prototypes/insight-composer/tests/dialog-backdrop.browser.mjs)、[reader-overlay-motion.browser.mjs](../../prototypes/insight-composer/tests/reader-overlay-motion.browser.mjs)、[workspace-dialog-scroll.browser.mjs](../../prototypes/insight-composer/tests/workspace-dialog-scroll.browser.mjs)、[page-scroll-lock.test.mjs](../../prototypes/insight-composer/tests/page-scroll-lock.test.mjs)、[image-lightbox-desktop.browser.mjs](../../prototypes/insight-composer/tests/image-lightbox-desktop.browser.mjs)。列出脚本表示可复用的验证入口，不表示本轮已运行，也不代替真实 Electron 验收。
+验证入口包括 [dialog-backdrop.browser.mjs](../../prototypes/insight-composer/tests/dialog-backdrop.browser.mjs)、[reader-overlay-motion.browser.mjs](../../prototypes/insight-composer/tests/reader-overlay-motion.browser.mjs)、[workspace-dialog-scroll.browser.mjs](../../prototypes/insight-composer/tests/workspace-dialog-scroll.browser.mjs)、[page-scroll-lock.test.mjs](../../prototypes/insight-composer/tests/page-scroll-lock.test.mjs)、[image-lightbox-desktop.browser.mjs](../../prototypes/insight-composer/tests/image-lightbox-desktop.browser.mjs)。浏览器样例使用独立内存资料，不接触真实 profile；浏览器结果不代替 Electron 或安装版验收。
+
+2026-10-30 已完成的共享模态浏览器回归：服务表单、工作区弹窗、长表单、Queue、设置、导航、问题详情和本段洞见共八类入口的关闭按钮 / Esc / 背景点击、退场中重开、实时减少动态效果、焦点、滚动锁及 StrictMode 卸载通过。退出至面板 opacity ≤ 0.01 的保留帧中，背景残余 blur 最大约 0.014px，alpha 约 0.002。嵌套打开、关闭及下层先关的逐帧检查确认仅一层可见背景；灰幕与 blur 没有重复叠加或闪空。服务表单、普通长表单、Queue 和设置的 80 / 100 / 120 三档比例 × 900 / 420px 窗口高共 24 组几何检查通过，标题及主操作可见、无横向溢出。真实 Reader fixture 另通过洞见 / 设置显隐、反向、实时减少动态效果、焦点和嵌套共 11 组检查。该记录早于任务类型移至表单首行；本轮另外通过 26 组控件复验，确认新位置、类型切换中间帧和 900×600 / 120% 下的固定类型行、独立内容滚动及页脚可达。完整应用 4 组联测同时通过。

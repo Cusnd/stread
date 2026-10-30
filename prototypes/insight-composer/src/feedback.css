@@ -1,0 +1,23 @@
+.ui-feedback-presence { min-width: 0; }
+.ui-feedback {
+  display: flex; align-items: flex-start; gap: var(--ui-space-inline); min-width: 0;
+  padding: calc(10px * var(--ui-scale, 1)) var(--ui-space-control);
+  border: 1px solid var(--ui-error-border); border-radius: var(--ui-radius-control);
+  background: var(--ui-error-surface); color: var(--ui-error-text);
+  font-size: var(--ui-font-control); line-height: 1.7;
+}
+.ui-feedback > svg { flex: none; margin-top: calc(2px * var(--ui-scale, 1)); }
+.ui-feedback > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ui-feedback > .ui-button { flex: none; margin-block: calc(-3px * var(--ui-scale, 1)); color: inherit; }
+.ui-empty {
+  padding: calc(56px * var(--ui-scale, 1)) var(--ui-space-panel);
+  color: var(--text-secondary); font-size: var(--ui-font-control); line-height: 1.8; text-align: center;
+}
+.ui-empty > p { margin: 0; overflow-wrap: anywhere; }
+.ui-empty-action { margin-top: var(--ui-space-section); }
+.ui-empty.is-compact { padding: var(--ui-space-section) 0; text-align: start; }
+.ui-empty.is-compact .ui-empty-action { margin-top: var(--ui-space-control); }
+.ui-copy-feedback { color: var(--text-secondary); font-size: var(--ui-font-small); line-height: 1.7; overflow-wrap: anywhere; }
+@media (forced-colors: active) {
+  .ui-feedback { border-color: CanvasText; background: Canvas; color: CanvasText; }
+}

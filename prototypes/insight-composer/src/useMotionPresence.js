@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useAnimationControls } from "motion/react";
+import { cancelFrame, frame, useAnimationControls } from "motion/react";
 import { motionTransition } from "./motion-system.js";
 import { useReducedMotionPreference } from "./useReducedMotionPreference.js";
 
@@ -55,16 +55,23 @@ export function useMotionPresence(open, {
       latest.current.onExit?.();
       setPresent(false);
     };
+    const start = () => {
+      if (generation.current !== current || !subscribers.current.size) return;
+      controls.start(target, motionTransition(kind, false)).then(finish, () => {});
+    };
     if (reduced) {
       controls.stop();
       controls.set(target);
       finish();
     } else {
-      controls.start(target, motionTransition(kind, false)).then(finish, () => {});
+      // Mounting a large settings surface (and its StrictMode subscription
+      // replay) must finish before the fade clock starts. Otherwise a stopped
+      // first command can advance to its end before the first painted frame.
+      frame.update(start);
     }
     // Do not stop on a target change: the replacement spring needs the current
     // velocity. useAnimationControls stops its values when the owner unmounts.
-    return () => { generation.current += 1; };
+    return () => { generation.current += 1; cancelFrame(start); };
   }, [open, present, reduced, kind, controls, subscriptionVersion]);
 
   return {

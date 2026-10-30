@@ -16,9 +16,9 @@
 .icon-gallery-index { font-size: 11px; color: #9b9b98; font-variant-numeric: tabular-nums; }
 .icon-gallery h2 { margin: 0; font-size: 17px; font-weight: 550; letter-spacing: .04em; }
 .icon-gallery-name p { margin: 0; color: #858582; font-size: 12px; }
-.icon-gallery-apply { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 83px; height: 30px; padding: 0 12px; color: #555; background: #fff; border: 1px solid #e1e1de; border-radius: 5px; font-size: 11px; }
-.icon-gallery-apply:hover { border-color: #949490; }
-.icon-gallery-apply[aria-pressed="true"] { color: #fff; background: #282a2b; border-color: #282a2b; }
+.icon-gallery-apply { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 83px; height: 30px; padding: 0 12px; color: var(--text-secondary); background: var(--action-surface); border: 1px solid transparent; border-radius: var(--ui-radius-control); font-size: 11px; }
+.icon-gallery-apply:hover { background: var(--action-hover); }
+.icon-gallery-apply[aria-pressed="true"] { color: var(--text-primary); background: var(--action-selected); }
 .icon-gallery-toolbar.reader-app { min-height: 0; height: auto; background: #fafaf9; padding: 12px 0; border-radius: 5px; overflow: hidden; }
 .icon-gallery .icon-gallery-toolbar .topbar.reader-topbar { position: relative; top: auto; background: transparent; border: 0; box-shadow: none; z-index: auto; padding-inline: 18px; }
 .icon-gallery-glyphs { display: grid; grid-template-columns: repeat(12, 1fr); padding: 17px 10px 0; color: #3d3e3f; }
@@ -27,5 +27,5 @@
 .icon-gallery-glyph > span { color: #90908c; font-size: 10px; line-height: 1.5; }
 .icon-gallery[data-size="detail"] .icon-gallery-glyph > svg { width: 34px; height: 34px; }
 .icon-gallery-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 32px; color: #959591; font-size: 11px; }
-.icon-gallery :is(button, a):focus-visible { outline: 2px solid #292929; outline-offset: 3px; }
+.icon-gallery :is(button, a):focus-visible { outline: 1px solid var(--ui-focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--ui-focus-halo); }
 @media (max-width: 1180px) { .icon-gallery { padding: 30px 24px 24px; } .icon-gallery-name p { max-width: 340px; } }

@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useLayoutEffect, useRef } from "react";
+import "./motion-system.js";
 import "./reader-select.css";
 
 /** Keep native select semantics and events while sharing the desktop picker.

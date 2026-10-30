@@ -2,7 +2,7 @@ import { ReaderSelect } from "./ReaderSelect.jsx";
 import { useEffect, useState } from "react";
 import { WorkspaceDialog } from "./WorkspaceDialog.jsx";
 import { InlineContent } from "./InlineContent.jsx";
-import { MotionFeedback } from "./Motion.jsx";
+import { EmptyState, InlineError } from "./Feedback.jsx";
 
 function printable(value) { return value === null || value === undefined ? "（无）" : typeof value === "string" ? value : JSON.stringify(value, null, 2); }
 function relationSummary(relation) {
@@ -41,7 +41,7 @@ export function RevisionReview({ open, onClose, proposals, workspace, command, r
     finally { setBusy(false); }
   }
   return <WorkspaceDialog open={open} onClose={onClose} title="待审阅修订" wide busy={busy}>
-    {!proposal ? <p className="workspace-empty">没有等待审阅的修订。</p> : <div className="workspace-review">
+    {!proposal ? <EmptyState compact className="workspace-empty">没有等待审阅的修订。</EmptyState> : <div className="workspace-review">
       {pending.length > 1 && <label>选择修订<ReaderSelect value={proposal.id} onChange={(event) => { setSelected(event.target.value); setError(""); }}>{pending.map((item) => <option value={item.id} key={item.id}>{workspace.documents.find((doc) => doc.id === item.documentId)?.title || item.documentId} · {item.id.slice(-8)}</option>)}</ReaderSelect></label>}
       <h3>{workspace.documents.find((doc) => doc.id === proposal.documentId)?.title || proposal.documentId}</h3>
       {proposal.kind === "relation" ? <section className="workspace-change">
@@ -51,7 +51,7 @@ export function RevisionReview({ open, onClose, proposals, workspace, command, r
       </section> : <><p className="workspace-muted">基于正文版本 {proposal.expectedRevision} · {proposal.operations.length} 处修改</p>
         {proposal.operations.map((operation, index) => <section className="workspace-change" key={index}><h4>{({ replace: "替换内容", insert: "插入补充", remove: "移除内容", move: "调整顺序" })[operation.kind || operation.type || operation.op] || "修改内容"}<code>{operation.blockId || operation.afterBlockId || operation.beforeBlockId}</code>{operation.variant && <span>{operation.variant}</span>}</h4><div className="workspace-diff"><div><small>修改前</small><pre>{printable(changeValue(proposal, operation, "before", index))}</pre></div><div><small>修改后</small><pre>{printable(changeValue(proposal, operation, "after", index))}</pre></div></div></section>)}
       </>}
-      <MotionFeedback show={Boolean(error)}><p className="workspace-service-error" role="alert">{error}</p></MotionFeedback><footer><button disabled={busy} onClick={() => decide("proposal.reject")}>拒绝</button><button disabled={busy} className="workspace-primary" onClick={() => decide("proposal.accept")}>接受这份修订</button></footer>
+      <InlineError className="workspace-service-error" message={error} /><footer><button className="ui-button" data-ui-button="secondary" disabled={busy} onClick={() => decide("proposal.reject")}>拒绝</button><button disabled={busy} className="workspace-primary ui-button" data-ui-button="submit" onClick={() => decide("proposal.accept")}>接受这份修订</button></footer>
     </div>}
   </WorkspaceDialog>;
 }

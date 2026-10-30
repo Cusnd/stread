@@ -3,11 +3,15 @@
 .icon-style-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(8px * var(--ui-scale, 1)); }
 .icon-style-option { position: relative; min-width: 0; cursor: pointer; }
 .icon-style-option input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
-.icon-style-sample { display: flex; align-items: center; flex-direction: column; gap: calc(12px * var(--ui-scale, 1)); padding: calc(14px * var(--ui-scale, 1)) calc(7px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1)); border-radius: 5px; border: 1px solid var(--border-floating); color: var(--text-secondary); font-size: calc(11px * var(--ui-scale, 1)); }
+.icon-style-sample { display: flex; align-items: center; flex-direction: column; gap: calc(12px * var(--ui-scale, 1)); padding: calc(14px * var(--ui-scale, 1)) calc(7px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1)); border-radius: var(--ui-radius-control); border: 1px solid transparent; background: var(--action-surface); color: var(--text-secondary); font-size: var(--ui-font-small); }
 .icon-style-glyphs { display: flex; justify-content: center; align-items: center; gap: calc(7px * var(--ui-scale, 1)); }
-.icon-style-option:hover .icon-style-sample { background: var(--hover-surface); }
-.icon-style-option input:checked + .icon-style-sample { color: var(--text-primary); border-color: var(--text-primary); }
-.icon-style-option input:focus-visible + .icon-style-sample { outline: 2px solid var(--text-primary); outline-offset: 3px; }
+.icon-style-option:hover .icon-style-sample { background: var(--action-hover); }
+.icon-style-option input:checked + .icon-style-sample { color: var(--text-primary); background: var(--action-selected); font-weight: 600; }
+.icon-style-option input:focus-visible + .icon-style-sample { outline: 1px solid var(--ui-focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--ui-focus-halo); }
 .icon-style-compare { display: inline-block; margin-top: calc(10px * var(--ui-scale, 1)); font-size: calc(11px * var(--ui-scale, 1)); color: var(--text-secondary); text-underline-offset: 3px; }
 .icon-style-compare:hover { color: var(--text-primary); text-decoration: underline; }
 .icon-style-storage-note { margin: 8px 0 0; color: var(--text-secondary); font-size: 11px; }
+@media (forced-colors: active) {
+  .icon-style-option input:checked + .icon-style-sample { border-color: Highlight; }
+  .icon-style-option input:focus-visible + .icon-style-sample { outline: 2px solid Highlight; box-shadow: none; }
+}

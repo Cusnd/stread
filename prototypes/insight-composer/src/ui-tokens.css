@@ -1,0 +1,78 @@
+/* Interface tokens. Reading content and source geometry keep their own scale. */
+:root {
+  --surface-reading: #ffffff;
+  --surface-navigation: #f7f7f7;
+  --surface-floating: #ffffff;
+  --text-primary: #252525;
+  --text-secondary: #686868;
+  --text-disabled: #989898;
+  --line: #e5e5e5;
+  --border-control: #919191;
+  --border-floating: #d9d9d9;
+  --accent: #303030;
+  --accent-hover: #111111;
+  --selected-surface: #f0f0f0;
+  --selected-text: #242424;
+  --hover-surface: #f3f3f3;
+  --disabled-surface: #ededed;
+  --selection: #dedede;
+  --action-surface: #f1f1f1;
+  --action-hover: #e8e8e8;
+  --action-selected: #dedede;
+  --action-border: transparent;
+  --action-shadow: none;
+  --shadow-floating: 0 8px 28px #24282d0f, 0 2px 6px #24282d08;
+  --ui-focus-ring: #737b83;
+  --ui-focus-halo: #737b8324;
+  --ui-field-surface: #fff;
+  --ui-field-border: #d9dfe4;
+  --ui-field-hover-border: #bdc7cf;
+  --ui-field-focus-border: #8c9daa;
+  --ui-field-focus-halo: #8c9daa20;
+  --focus-halo: var(--ui-focus-halo);
+  --ui-error-text: #923f38;
+  --ui-error-surface: #fff7f5;
+  --ui-error-border: #e8cecb;
+  --ui-disabled-opacity: .5;
+  --ui-scale: 1;
+  --ui-font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+/* An open settings dialog freezes its own scale while the surrounding UI
+   updates. Recompute derived lengths there, rather than inheriting root px. */
+:root, [data-ui-scale-scope] {
+  --ui-font-small: calc(11px * var(--ui-scale, 1));
+  --ui-font-control: calc(12px * var(--ui-scale, 1));
+  --ui-font-label: calc(13px * var(--ui-scale, 1));
+  --ui-font-heading: calc(16px * var(--ui-scale, 1));
+  --ui-control-height: calc(34px * var(--ui-scale, 1));
+  --ui-action-height: calc(36px * var(--ui-scale, 1));
+  --ui-tool-size: calc(30px * var(--ui-scale, 1));
+  --ui-compact-size: calc(28px * var(--ui-scale, 1));
+  --ui-field-height: calc(38px * var(--ui-scale, 1));
+  --ui-radius-control: calc(4px * var(--ui-scale, 1));
+  --ui-radius-field: calc(6px * var(--ui-scale, 1));
+  --ui-radius-surface: calc(7px * var(--ui-scale, 1));
+  --ui-radius-dialog: calc(8px * var(--ui-scale, 1));
+  --ui-radius-panel: calc(14px * var(--ui-scale, 1));
+  --ui-space-inline: calc(6px * var(--ui-scale, 1));
+  --ui-field-padding-inline: calc(10px * var(--ui-scale, 1));
+  --ui-space-control: calc(12px * var(--ui-scale, 1));
+  --ui-space-section: calc(18px * var(--ui-scale, 1));
+  --ui-space-panel: calc(24px * var(--ui-scale, 1));
+}
+
+@media (forced-colors: active) {
+  :root {
+    --ui-focus-ring: Highlight;
+    --ui-focus-halo: transparent;
+    --ui-field-border: ButtonText;
+    --ui-field-hover-border: ButtonText;
+    --ui-field-focus-border: Highlight;
+    --ui-field-focus-halo: transparent;
+    --text-disabled: GrayText;
+    --ui-error-text: CanvasText;
+    --ui-error-surface: Canvas;
+    --ui-error-border: CanvasText;
+  }
+}

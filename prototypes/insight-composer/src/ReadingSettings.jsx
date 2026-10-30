@@ -1,5 +1,5 @@
 import { ReaderSelect } from "./ReaderSelect.jsx";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowClockwise, Clock, Keyboard, Palette, SlidersHorizontal, TextAa, X } from "./icons.jsx";
 import { IconStyleControl } from "./IconStyleControl.jsx";
@@ -11,16 +11,13 @@ import { DesktopAutoStart } from "./DesktopAutoStart.jsx";
 import { requestJson } from "./workspace-api.js";
 import { matchesShortcut } from "./reading-shortcuts";
 import { HighlightPaletteSettings } from "./HighlightPaletteSettings";
-import { useMotionPresence } from "./useMotionPresence.js";
-import { useImmediateReducedMotion } from "./useImmediateReducedMotion.js";
-import { MOTION_FADE } from "./motion-system.js";
+import { useModalDialog } from "./useModalDialog.js";
 import { MotionPanelIndicator, MotionPanelPage } from "./Motion.jsx";
 import { InterfaceScaleControl } from "./InterfaceScale";
 import { UI_SCALE_BASE } from "./ui-scale";
 import { useReaderRuntime } from "./ReaderRuntime";
 import { FONT_SIZE_MIN, FONT_SIZE_MAX, READING_WIDTH_PERCENT_MIN, READING_WIDTH_PERCENT_MAX, READING_WIDTH_PERCENT_STEP, READING_WIDTH_PERCENT_DEFAULT } from "./reading-preferences";
 import { languageLabel } from "./reading-language";
-import { acquirePageScrollLock } from "./page-scroll-lock.js";
 import "./reading-settings.css";
 
 const TABS = [{ id: "reading", label: "阅读", Icon: TextAa }, { id: "interface", label: "界面", Icon: SlidersHorizontal }, { id: "highlight", label: "高亮", Icon: Palette }, { id: "shortcuts", label: "快捷键", Icon: Keyboard }];
@@ -42,16 +39,13 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
   const updatesAvailable = desktopUpdatesAvailable();
   const tabs = [...TABS, ...(history.available ? [HISTORY_TAB] : []), ...(updatesAvailable ? [UPDATES_TAB] : [])];
   const rootRef = useRef(null);
-  const previousFocus = useRef(null);
-  const releaseScroll = useRef(null);
-  const restore = () => {
-    releaseScroll.current?.();
-    releaseScroll.current = null;
-    if (previousFocus.current?.isConnected) previousFocus.current.focus({ preventScroll: true });
-    previousFocus.current = null;
-  };
-  const { present, entered, reduced, motionProps } = useMotionPresence(open, { onExit: restore });
-  const backdropRef = useImmediateReducedMotion(reduced);
+  const { present, reduced, motionProps, dialogProps } = useModalDialog(open, {
+    onClose, surfaceRef: rootRef, returnFocus: returnFocusRef,
+    initialFocus: () => rootRef.current?.querySelector("[data-settings-close]"),
+    // The open panel keeps its size while the interface slider updates the app.
+    beforeOpen: (dialog) => dialog.style.setProperty("--ui-scale", String(runtime.uiScale.getSnapshot().percent / UI_SCALE_BASE)),
+    allowEscape: () => runtime.shortcuts.getSnapshot().close === "Escape",
+  });
   const tabIndex = tabs.findIndex((item) => item.id === tab);
   const pageMotion = (id) => ({ active: tab === id, reduced, offset: tabs.findIndex((item) => item.id === id) < tabIndex ? -8 : 8 });
 
@@ -69,31 +63,12 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
     return () => controller.abort();
   }, [open, runtime.mode]);
 
-  useLayoutEffect(() => {
-    if (!open || !present) return;
-    // Keep the open settings surface stable while the user drags its slider.
-    // The next opening uses the newly saved interface size.
-    if (!releaseScroll.current) {
-      rootRef.current.parentElement.style.setProperty("--ui-scale", String(runtime.uiScale.getSnapshot().percent / UI_SCALE_BASE));
-      previousFocus.current = returnFocusRef?.current || document.activeElement;
-      releaseScroll.current = acquirePageScrollLock();
-    }
-    rootRef.current.querySelector('[data-settings-close]')?.focus({ preventScroll: true });
-  }, [open, present, runtime, returnFocusRef]);
-  useEffect(() => () => restore(), []);
-
   function onKeys(event) {
     if (matchesShortcut(event.nativeEvent, "close", runtime.shortcuts.getSnapshot())) {
       event.preventDefault();
       event.stopPropagation();
       onClose();
-    } else if (event.key === "Tab") {
-      const items = [...rootRef.current.querySelectorAll('button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), a[href], [tabindex="0"]')].filter((item) => !item.closest("[inert]") && item.tabIndex >= 0 && item.getClientRects().length);
-      const first = items[0];
-      const last = items.at(-1);
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-    }
+    } else dialogProps.onKeyDown(event);
   }
 
   function onTabKeys(event) {
@@ -106,10 +81,9 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
   }
 
   if (!present) return null;
-  return <motion.div ref={backdropRef} className="settings-overlay" data-state={open && entered ? "open" : "closed"} inert={!open} aria-hidden={!open || undefined} onClick={(event) => { if (open && event.target === event.currentTarget) onClose(); }}
-    initial={{ backgroundColor: "#24282d00", backdropFilter: "blur(0px)" }} animate={{ backgroundColor: open ? "#24282d38" : "#24282d00", backdropFilter: open ? "blur(2px)" : "blur(0px)" }} transition={{ ...MOTION_FADE, duration: reduced ? 0 : MOTION_FADE.duration }}>
-    <motion.section {...motionProps} ref={rootRef} className="settings" role="dialog" aria-modal="true" aria-label={title} onKeyDown={onKeys}>
-      <header className="settings-heading"><h2>{title}</h2><button className="icon-button" data-settings-close aria-label={"关闭" + title} onClick={onClose}><X size={20} /></button></header>
+  return <dialog {...dialogProps} className="settings-overlay ui-modal ui-modal-layer" data-ui-scale-scope="" aria-label={title} onKeyDown={onKeys}>
+    <motion.section {...motionProps} ref={rootRef} className="settings ui-modal-surface" data-modal-size="panel">
+      <header className="settings-heading"><h2>{title}</h2><button className="icon-button ui-button" data-ui-button="tool" data-settings-close aria-label={"关闭" + title} onClick={onClose}><X size={20} /></button></header>
       <div className="settings-tabs" role="tablist" aria-label="设置分类" onKeyDown={onTabKeys} style={{ "--settings-tab-count": tabs.length }}>
         <MotionPanelIndicator reduced={reduced} className="settings-tab-indicator" animate={{ x: `${tabIndex * 100}%` }} />
         {tabs.map(({ id, label, Icon }) => <button key={id} id={"reading-settings-tab-" + id} role="tab" aria-selected={tab === id} aria-controls={"reading-settings-panel-" + id} tabIndex={tab === id ? 0 : -1} onClick={() => setTab(id)}><Icon size={17} /><span>{label}</span></button>)}
@@ -145,7 +119,7 @@ export function ReadingSettings({ open, onClose, returnFocusRef, title = "设置
           {history.available && <SettingsPage id={HISTORY_TAB.id} {...pageMotion(HISTORY_TAB.id)}><LocalHistoryConflicts active={open && tab === HISTORY_TAB.id} conflicts={history.conflicts} initialError={history.error} onChange={(conflicts) => setHistory({ available: true, conflicts, error: "" })} /></SettingsPage>}
           {updatesAvailable && <SettingsPage id={UPDATES_TAB.id} {...pageMotion(UPDATES_TAB.id)}><DesktopUpdates active={open && tab === UPDATES_TAB.id} /></SettingsPage>}
       </div>
-      <footer className="settings-footer"><span>{tab === UPDATES_TAB.id ? "" : "更改即时生效"}</span><button onClick={onClose}>完成</button></footer>
+      <footer className="settings-footer"><span>{tab === UPDATES_TAB.id ? "" : "更改即时生效"}</span><button className="ui-button" data-ui-button="entry" onClick={onClose}>完成</button></footer>
     </motion.section>
-  </motion.div>;
+  </dialog>;
 }

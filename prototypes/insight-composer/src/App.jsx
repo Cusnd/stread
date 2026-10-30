@@ -4,10 +4,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { MotionItem, MotionNotice } from "./Motion.jsx";
 import { useContextMenu } from "./ContextMenu.jsx";
 import { captureArticleSelection, restoreArticleSelection, selectionContextHit } from "./reader-context-selection.js";
-import { MOTION_FADE, motionTransition } from "./motion-system.js";
+import { motionTransition } from "./motion-system.js";
 import { useReducedMotionPreference } from "./useReducedMotionPreference.js";
-import { useMotionPresence } from "./useMotionPresence.js";
-import { useImmediateReducedMotion } from "./useImmediateReducedMotion.js";
+import { useModalDialog } from "./useModalDialog.js";
 import { useCommittedActions } from "./useCommittedActions.js";
 import { animateReaderContent, stopPageMotion, stopReaderContentMotion } from "./page-motion.js";
 import { developmentReadingState, isDesktopDevelopment } from "./development-state.js";
@@ -55,7 +54,6 @@ import { captureReadingPosition, restoreReadingPosition, readingPositionTop, rea
 import { animateReaderNavigation } from "./reader-navigation-motion.js";
 import { readerNavigation } from "./reader-navigation.js";
 import { documentAssetUrl } from "./document-resource";
-import { acquirePageScrollLock } from "./page-scroll-lock.js";
 import { insightWrite, mergeSavedInsights, reconcileInsight, sourceCitation, upsertInsight } from "./reader-state";
 import { documentLanguages, languageLabel } from "./reading-language";
 import { formatShortcut, matchesShortcut as matchesConfiguredShortcut } from "./reading-shortcuts";
@@ -237,8 +235,13 @@ function ReaderContent({ paper, insightItems, onSaveInsight, onDeleteInsight, on
     if (!hasNavigation) { clearTocPreviewTimer(); setTocTemporary(false); }
   }, [hasNavigation]);
   const [insights, setInsights] = useState(null);
-  const insightsModalPresence = useMotionPresence(insights === "modal", { kind: "surface" });
-  const insightsBackdropRef = useImmediateReducedMotion(reducedMotion);
+  const insightsSurfaceRef = useRef(null);
+  const insightsModalPresence = useModalDialog(insights === "modal", {
+    surfaceRef: insightsSurfaceRef, onClose: closeInsights,
+    fallbackFocus: () => insightTrigger.current || articleRef.current,
+    initialFocus: () => insightsSurfaceRef.current?.querySelector('[aria-label="关闭洞见"]'),
+    allowEscape: () => runtime.shortcuts.getSnapshot().close === "Escape",
+  });
   const [settings, setSettings] = useState(false);
   const [filter, setFilter] = useState("all");
   const { fontSize, readingWidthPercent } = useSyncExternalStore(runtime.reading.subscribe, runtime.reading.getSnapshot);
@@ -419,7 +422,8 @@ function ReaderContent({ paper, insightItems, onSaveInsight, onDeleteInsight, on
   }
   function closeInsights() {
     setTool(null);
-    requestAnimationFrame(() => insightTrigger.current?.focus({ preventScroll: true }));
+    // Modal focus returns only after the top layer exits. The drawer is direct.
+    if (insights !== "modal") requestAnimationFrame(() => insightTrigger.current?.focus({ preventScroll: true }));
   }
   function toggleToc() {
     if (!hasNavigation) return;
@@ -763,30 +767,6 @@ function ReaderContent({ paper, insightItems, onSaveInsight, onDeleteInsight, on
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [typeMenu, colorMenu, settings, insights, tocTemporary, shortcuts, readerReadOnly, paper, readingMode, targetLanguage, sourceApiBase, contextMenu.open, imagePreview, citationPreview.open?.pinned]);
-  useEffect(() => {
-    const selector = !settings && insightsModalPresence.present ? ".insights-modal" : null;
-    if (!selector) return;
-    const panel = document.querySelector(selector);
-    if (!panel) return;
-    const previous = document.activeElement;
-    const releaseScrollLock = acquirePageScrollLock();
-    const focusables = () => [...panel.querySelectorAll("button:not(:disabled), input:not(:disabled), select, textarea, summary, [tabindex='0']")].filter((item) => item.getClientRects().length && !item.closest("[inert]"));
-    if (insights === "modal" && !panel.contains(document.activeElement)) focusables()[0]?.focus({ preventScroll: true });
-    const trap = (event) => {
-      if (questionOpenRef.current || marginOpenRef.current) return;
-      if (event.key !== "Tab") return;
-      const items = focusables();
-      if (event.shiftKey && document.activeElement === items[0]) { event.preventDefault(); items.at(-1)?.focus(); }
-      else if (!event.shiftKey && document.activeElement === items.at(-1)) { event.preventDefault(); items[0]?.focus(); }
-    };
-    document.addEventListener("keydown", trap);
-    return () => {
-      document.removeEventListener("keydown", trap);
-      releaseScrollLock();
-      const active = document.activeElement;
-      if (previous?.isConnected && (panel.contains(active) || active === document.body || active === document.documentElement) && !previous.closest('[inert], [aria-hidden="true"]')) previous.focus({ preventScroll: true });
-    };
-  }, [settings, insightsModalPresence.present]);
   useLayoutEffect(() => {
     function measure() {
       if (railRef.current) {
@@ -1231,7 +1211,7 @@ function ReaderContent({ paper, insightItems, onSaveInsight, onDeleteInsight, on
   const undoContent = useMemo(() => <><span>已删除 {removed?.reference}{insightHistory.deleted.length > 1 ? " · 共 " + insightHistory.deleted.length + " 条" : ""}</span><button disabled={readerReadOnly || saving || managed && !onRestoreInsight} onClick={actions.restoreNote}>撤销删除</button></>, [removed?.reference, insightHistory.deleted.length, readerReadOnly, saving, managed, Boolean(onRestoreInsight), actions]);
   function insightList(modal = false) {
     return <>
-      <div className="insights-heading"><div><h2>洞见</h2><p>{documentTitle} <span>· {notes.length} 条</span></p></div><button className="icon-button" aria-label="关闭洞见" onClick={actions.closeInsights}><X size={20} /></button></div>
+      <div className="insights-heading"><div><h2>洞见</h2><p>{documentTitle} <span>· {notes.length} 条</span></p></div><button className="icon-button ui-button" data-ui-button="tool" aria-label="关闭洞见" onClick={actions.closeInsights}><X size={20} /></button></div>
       <div className="insight-create-actions"><button disabled={readerReadOnly} onClick={() => actions.beginDocumentInsight("note")}><Plus size={14} />文档笔记</button><button disabled={readerReadOnly} onClick={() => actions.beginDocumentInsight("question")}><Question size={14} />文章问题</button></div>
       <AnimatePresence>{removed && <MotionItem as="div" key="undo" className="insight-undo-inline" role="status">{undoContent}</MotionItem>}</AnimatePresence>
       <div className="insight-tabs" role="tablist" aria-label="洞见分类">{[{ id: "all", label: "全部" }, ...TYPES].map((type) => <button key={type.id} role="tab" aria-selected={filter === type.id} onClick={() => setFilter(type.id)}>{type.label}<small>{type.id === "all" ? notes.length : notes.filter((note) => note.type === type.id).length}</small></button>)}</div>
@@ -1323,7 +1303,7 @@ function ReaderContent({ paper, insightItems, onSaveInsight, onDeleteInsight, on
       </div>
     </ComposerSurface>}
     <div className="insights-drawer" style={{ visibility: "visible" }} data-state={insights === "sidebar" ? "open" : "closed"} inert={insights !== "sidebar"} aria-hidden={insights !== "sidebar" || undefined}><motion.aside initial={false} animate={{ x: insights === "sidebar" ? 0 : "100%", opacity: insights === "sidebar" ? 1 : 0 }} transition={motionTransition("panel", reducedMotion)} data-motion-surface="insights" className="insights-panel" aria-label="洞见边栏" onKeyDown={(event) => { if (!event.defaultPrevented && matchesShortcut(event.nativeEvent, "close", shortcuts)) { event.preventDefault(); event.stopPropagation(); closeInsights(); } }}>{sidebarContent}</motion.aside></div>
-    <motion.div ref={insightsBackdropRef} initial={false} animate={{ backgroundColor: insights === "modal" ? "#24282d30" : "#24282d00" }} transition={{ ...MOTION_FADE, duration: reducedMotion ? 0 : MOTION_FADE.duration }} className="overlay insights-overlay" data-motion-surface="insights-overlay" style={{ visibility: insightsModalPresence.present ? "visible" : "hidden" }} data-state={insights === "modal" ? "open" : "closed"} inert={insights !== "modal" || settings} aria-hidden={insights !== "modal" || settings || undefined} onClick={(event) => { if (event.target === event.currentTarget) setTool(null); }}><motion.section {...insightsModalPresence.motionProps} data-motion-surface="insights-modal" className="insights-modal" role="dialog" aria-modal="true" aria-label="洞见面板">{modalContent}</motion.section></motion.div>
+    <dialog {...insightsModalPresence.dialogProps} className="overlay insights-overlay ui-modal ui-modal-layer" data-motion-surface="insights-overlay" aria-label="洞见面板"><motion.section {...insightsModalPresence.motionProps} ref={insightsSurfaceRef} data-motion-surface="insights-modal" className="insights-modal ui-modal-surface" data-modal-size="wide">{modalContent}</motion.section></dialog>
     {runtime.capabilities.glossary && <GlossaryPanel open={insights === "glossary"} onClose={() => setTool(null)} documentId={documentId} documentTitle={documentTitle} apiBase={glossaryApi || (managed ? "/api/glossary" : undefined)} />}
     {sourceApiBase && <PdfPanel open={insights === "pdf"} onClose={() => { setTool(null); requestAnimationFrame(() => sourceTrigger.current?.focus({ preventScroll: true })); }} paper={paper} apiBase={sourceApiBase} follow={pdfFollow} onFollowChange={setPdfFollow} target={pdfTarget} articleRef={articleRef} ownership={scrollOwnership.current} onLocate={fromPdf} onLocateCurrent={() => locatePdf()} panelWidth={pdfResize.width} separatorProps={pdfResize.separatorProps} />}
     {imagePreview && <ImageLightbox image={imagePreview} shortcuts={shortcuts} onClose={() => setImagePreview(null)} />}

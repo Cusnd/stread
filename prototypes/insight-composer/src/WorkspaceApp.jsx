@@ -2,7 +2,12 @@ import { ReaderSelect } from "./ReaderSelect.jsx";
 import { lazy, startTransition, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 import { AnimatePresence } from "motion/react";
-import { MotionFeedback, MotionNotice } from "./Motion.jsx";
+import { MotionNotice } from "./Motion.jsx";
+import { InlineError } from "./Feedback.jsx";
+import { useReaderRuntime } from "./ReaderRuntime.jsx";
+import { UI_SCALE_BASE } from "./ui-scale.js";
+import { useMedia } from "./workspace/shared.jsx";
+import { WORKSPACE_COMPACT_NAVIGATION_WIDTH } from "./workspace/workspace-layout.js";
 import { commitPageMotion, stopPageMotion } from "./page-motion.js";
 import { bundledDocumentInfo, documentPresentation } from "./bundled-document-info.js";
 import { ArrowClockwise, BookOpen, MagnifyingGlass } from "./icons";
@@ -68,7 +73,7 @@ function ReferenceDialog({ open, onClose, onNavigate, workspace }) {
     } catch (failure) { setError(failure.message); setAmbiguousDocuments(failure.details?.documentIds || []); }
     finally { setBusy(false); }
   }
-  return <WorkspaceDialog open={open} onClose={onClose} title="打开引用" busy={busy}><form onSubmit={resolve} className="workspace-form"><label>引用编号或链接<input autoFocus value={value} onChange={(event) => { setValue(event.target.value); setAmbiguousDocuments([]); setDocumentId(""); }} placeholder="#T00001、#Q00001、#N00001、#R00001 或文章链接" /></label>{ambiguousDocuments.length > 0 && <label>旧编号所属文章<ReaderSelect value={documentId} onChange={(event) => setDocumentId(event.target.value)}><option value="">选择文章</option>{ambiguousDocuments.map((id) => <option key={id} value={id}>{workspace.documents.find((item) => item.id === id)?.title || id}</option>)}</ReaderSelect></label>}<MotionFeedback show={Boolean(error)} role="alert"><p className="workspace-service-error">{error}</p></MotionFeedback><footer><button type="button" onClick={onClose}>取消</button><button className="workspace-primary" disabled={busy || !value.trim() || (ambiguousDocuments.length > 0 && !documentId)}><MagnifyingGlass size={15} />打开引用</button></footer></form></WorkspaceDialog>;
+  return <WorkspaceDialog open={open} onClose={onClose} title="打开引用" busy={busy}><form onSubmit={resolve} className="workspace-form"><label>引用编号或链接<input autoFocus value={value} onChange={(event) => { setValue(event.target.value); setAmbiguousDocuments([]); setDocumentId(""); }} placeholder="#T00001、#Q00001、#N00001、#R00001 或文章链接" /></label>{ambiguousDocuments.length > 0 && <label>旧编号所属文章<ReaderSelect value={documentId} onChange={(event) => setDocumentId(event.target.value)}><option value="">选择文章</option>{ambiguousDocuments.map((id) => <option key={id} value={id}>{workspace.documents.find((item) => item.id === id)?.title || id}</option>)}</ReaderSelect></label>}<InlineError className="workspace-service-error" message={error} /><footer><button type="button" className="ui-button" data-ui-button="text" onClick={onClose}>取消</button><button className="workspace-primary ui-button" data-ui-button="entry" disabled={busy || !value.trim() || (ambiguousDocuments.length > 0 && !documentId)}><MagnifyingGlass size={15} />打开引用</button></footer></form></WorkspaceDialog>;
 }
 
 function ServiceGate({ error, retry }) {
@@ -81,7 +86,7 @@ function ServiceGate({ error, retry }) {
     catch (next) { setFailure(next.message); }
     finally { setBusy(false); }
   }
-  return <main className="workspace-gate"><BookOpen size={27} /><h1>Stread</h1>{error?.status === 401 ? <form className="workspace-form" onSubmit={login}><p>输入工作台访问令牌以继续。</p><label>访问令牌<input type="password" value={token} onChange={(event) => setToken(event.target.value)} autoComplete="current-password" /></label><MotionFeedback show={Boolean(failure)} role="alert"><p className="workspace-service-error">{failure}</p></MotionFeedback><button className="workspace-primary" disabled={busy || !token}>进入工作台</button></form> : <><p role={error ? "alert" : "status"}>{error ? "暂时无法连接工作台。" : "正在打开工作台…"}</p>{error && <><p className="workspace-muted">{error.message}</p><button onClick={retry}><ArrowClockwise size={15} />重新连接</button></>}</>}</main>;
+  return <main className="workspace-gate"><BookOpen size={27} /><h1>Stread</h1>{error?.status === 401 ? <form className="workspace-form" onSubmit={login}><p>输入工作台访问令牌以继续。</p><label>访问令牌<input type="password" value={token} onChange={(event) => setToken(event.target.value)} autoComplete="current-password" /></label><InlineError className="workspace-service-error" message={failure} /><button className="workspace-primary ui-button" data-ui-button="entry" disabled={busy || !token}>进入工作台</button></form> : <><p role={error ? "alert" : "status"}>{error ? "暂时无法连接工作台。" : "正在打开工作台…"}</p>{error && <><p className="workspace-muted">{error.message}</p><button className="ui-button" data-ui-button="entry" onClick={retry}><ArrowClockwise size={15} />重新连接</button></>}</>}</main>;
 }
 
 function activeFocusKey() { return document.activeElement?.closest("[data-focus-key]")?.dataset.focusKey || null; }
@@ -94,6 +99,16 @@ const activityNotices = {
 export function WorkspaceApp() {
   const [route, setRoute] = useState(() => parseRoute(location.search));
   const { navigationExpanded } = useSyncExternalStore(subscribeWorkspaceNavigation, getWorkspaceNavigationSnapshot, getServerWorkspaceNavigationSnapshot);
+  const runtime = useReaderRuntime();
+  const { percent } = useSyncExternalStore(runtime.uiScale.subscribe, runtime.uiScale.getSnapshot);
+  const compactNavigation = useMedia(`(max-width: ${WORKSPACE_COMPACT_NAVIGATION_WIDTH * percent / UI_SCALE_BASE}px)`);
+  const [temporaryNavigation, setTemporaryNavigation] = useState({ page: null, open: false });
+  const effectiveNavigationExpanded = compactNavigation ? temporaryNavigation.page === route.page && temporaryNavigation.open : navigationExpanded;
+  // A compact navigation dialog is transient, not a new desktop preference.
+  useEffect(() => { setTemporaryNavigation({ page: null, open: false }); }, [compactNavigation, route.page]);
+  const toggleNavigation = () => compactNavigation
+    ? setTemporaryNavigation({ page: route.page, open: !effectiveNavigationExpanded })
+    : updateWorkspaceNavigation(!getWorkspaceNavigationSnapshot().navigationExpanded);
   const [navigationEntry, setNavigationEntry] = useState(() => history.state || {});
   const [workspace, setWorkspace] = useState(null);
   const [envelope, setEnvelope] = useState(null);
@@ -157,7 +172,10 @@ export function WorkspaceApp() {
   const updateView = useCallback((page, value) => {
     // Page components still receive their familiar view shape, but only the
     // shared preference owns navigation visibility and its persistence.
-    if (typeof value.navigationExpanded === "boolean" && value.navigationExpanded !== navigationExpanded) updateWorkspaceNavigation(value.navigationExpanded);
+    if (typeof value.navigationExpanded === "boolean") {
+      if (compactNavigation) setTemporaryNavigation((previous) => previous.page === page && previous.open === value.navigationExpanded ? previous : { page, open: value.navigationExpanded });
+      else if (value.navigationExpanded !== navigationExpanded) updateWorkspaceNavigation(value.navigationExpanded);
+    }
     const pageView = { ...value };
     delete pageView.navigationExpanded;
     setViews((previous) => {
@@ -165,7 +183,7 @@ export function WorkspaceApp() {
       viewsRef.current = next;
       return next;
     });
-  }, [navigationExpanded]);
+  }, [navigationExpanded, compactNavigation]);
 
   useEffect(() => {
     if (!["collection", "flow", "queue", "notes"].includes(route.page)) return;
@@ -693,11 +711,11 @@ export function WorkspaceApp() {
       </>}
     </div> : route.page === "reader" ? paper && paper.id === route.documentId && envelope.readerReady && (!desiredRevision || paper.revision === desiredRevision) && ReaderComponent ? <ReaderComponent key={paper.id + ":" + (navigationEntry.readerEntryKey || "initial")} paper={paper} insightItems={envelope.insights} changeRequestItems={envelope.changeRequests} onSaveChangeRequest={saveChangeRequest} onChangeRequestStatus={changeRequestStatus} initialReadingState={initialReadingState} onReadingStateChange={saveReaderCheckpoint} onSaveInsight={saveInsight} onDeleteInsight={archiveInsight} onRestoreInsight={restoreInsight} onReviewInsight={reviewInsight} editInsightId={navigationEntry.editInsightId} onBack={returnFromReader} backLabel={readerBackLabel} onOpenNotes={openArticleNotes} onPreloadNotes={preloadArticleNotes} openInsightId={route.insightId} sourceApiBase={"/api/documents/" + encodeURIComponent(paper.id)} glossaryApi="/api/glossary" readOnly={envelope.readOnly} relations={envelope.relations} onRelationCommand={command} onOpenRelatedDocument={openRelatedDocument} onReturnRelatedDocument={relatedReturn ? returnToRelatedDocument : undefined} relatedReturnTitle={relatedReturn?.title} /> : <div className="workspace-app">
       <WorkspaceHeader page="collection" onNavigate={navigate} onPreload={preloadWorkspacePage} />
-      {documentError || prepared.error ? <main className="workspace-gate"><p role="alert">{documentError?.message || "当前阅读器无法呈现这份文档，原文件与已保存内容仍保留。"}</p><div className="workspace-actions">{documentError && <button onClick={() => hydrateDocument(route.documentId, { foreground: true })}>重新加载</button>}{prepared.error && <a href={"/api/documents/" + encodeURIComponent(route.documentId) + "/export"}>下载结构化文档</a>}<button onClick={returnFromReader}>{readerBackLabel}</button></div></main> : <WorkspacePagePlaceholder navigationExpanded={navigationExpanded} />}
+      {documentError || prepared.error ? <main className="workspace-gate"><p role="alert">{documentError?.message || "当前阅读器无法呈现这份文档，原文件与已保存内容仍保留。"}</p><div className="workspace-actions">{documentError && <button onClick={() => hydrateDocument(route.documentId, { foreground: true })}>重新加载</button>}{prepared.error && <a href={"/api/documents/" + encodeURIComponent(route.documentId) + "/export"}>下载结构化文档</a>}<button onClick={returnFromReader}>{readerBackLabel}</button></div></main> : <WorkspacePagePlaceholder navigationExpanded={effectiveNavigationExpanded} />}
     </div> : <div className="workspace-app" inert={overlay === "settings"}>
-      <WorkspaceHeader page={route.page} loading={!workspace} onNavigate={navigate} onPreload={preloadWorkspacePage} onImport={route.page === "collection" ? () => openImport() : undefined} onAddTask={route.page === "queue" ? openQueueTaskDialog : undefined} onReference={() => setOverlay("reference")} onReview={() => reviewQueueTask(null)} onSettings={(event) => { settingsTrigger.current = event.currentTarget; setOverlay("settings"); }} pendingCount={pendingCount} navigationExpanded={navigationExpanded} onToggleNavigation={() => updateWorkspaceNavigation(!getWorkspaceNavigationSnapshot().navigationExpanded)} />
-      {!workspace ? startupError ? <ServiceGate error={startupError} retry={() => setAttempt((value) => value + 1)} /> : <WorkspacePagePlaceholder page={route.page} navigationExpanded={navigationExpanded} /> : <WorkspacePageBoundary routeKey={route.page}><Suspense fallback={<WorkspacePagePlaceholder page={route.page} navigationExpanded={navigationExpanded} />}>
-        {route.page === "queue" ? <QueuePage workspace={workspace} command={command} openDocument={openDocument} view={{ ...views.queue, navigationExpanded, ...(route.taskId ? { selectedId: route.taskId } : {}) }} setView={setQueueView} busy={busyCount > 0} onImport={openImport} onReview={reviewQueueTask} /> : route.page === "flow" ? <FlowPage workspace={workspace} command={command} openDocument={openDocument} onEditInsight={editFlowInsight} view={{ ...views.flow, navigationExpanded, section: route.section || views.flow.section || "overview" }} setView={setFlowView} busy={busyCount > 0} /> : <CollectionPage workspace={workspace} command={command} openDocument={openDocument} onImport={() => openImport()} view={{ ...views.collection, navigationExpanded }} setView={(value) => updateView("collection", value)} busy={busyCount > 0} />}
+      <WorkspaceHeader page={route.page} loading={!workspace} onNavigate={navigate} onPreload={preloadWorkspacePage} onImport={route.page === "collection" ? () => openImport() : undefined} onAddTask={route.page === "queue" ? openQueueTaskDialog : undefined} onReference={() => setOverlay("reference")} onReview={() => reviewQueueTask(null)} onSettings={(event) => { settingsTrigger.current = event.currentTarget; setOverlay("settings"); }} pendingCount={pendingCount} navigationExpanded={effectiveNavigationExpanded} onToggleNavigation={toggleNavigation} />
+      {!workspace ? startupError ? <ServiceGate error={startupError} retry={() => setAttempt((value) => value + 1)} /> : <WorkspacePagePlaceholder page={route.page} navigationExpanded={effectiveNavigationExpanded} view={{ ...views[route.page], ...(route.page === "flow" ? { section: route.section || views.flow.section || "overview" } : {}) }} /> : <WorkspacePageBoundary routeKey={route.page}><Suspense fallback={<WorkspacePagePlaceholder page={route.page} navigationExpanded={effectiveNavigationExpanded} view={{ ...views[route.page], ...(route.page === "flow" ? { section: route.section || views.flow.section || "overview" } : {}) }} />}>
+        {route.page === "queue" ? <QueuePage workspace={workspace} command={command} openDocument={openDocument} view={{ ...views.queue, navigationExpanded: effectiveNavigationExpanded, ...(route.taskId ? { selectedId: route.taskId } : {}) }} setView={setQueueView} busy={busyCount > 0} onImport={openImport} onReview={reviewQueueTask} /> : route.page === "flow" ? <FlowPage overlayActive={Boolean(overlay)} workspace={workspace} command={command} openDocument={openDocument} onEditInsight={editFlowInsight} view={{ ...views.flow, navigationExpanded: effectiveNavigationExpanded, section: route.section || views.flow.section || "overview" }} setView={setFlowView} busy={busyCount > 0} /> : <CollectionPage workspace={workspace} command={command} openDocument={openDocument} onImport={() => openImport()} view={{ ...views.collection, navigationExpanded: effectiveNavigationExpanded }} setView={(value) => updateView("collection", value)} busy={busyCount > 0} />}
       </Suspense></WorkspacePageBoundary>}
     </div>}
     <AnimatePresence initial={false}>{notice && <MotionNotice key="workspace-notice" className="workspace-toast" role="status"><span>{notice}</span><button onClick={() => setNotice("")}>关闭</button></MotionNotice>}</AnimatePresence>

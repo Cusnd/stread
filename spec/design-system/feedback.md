@@ -2,7 +2,7 @@
 
 [设计系统](README.md) · 更新：2026-10-30
 
-反馈要告诉用户当前发生了什么，以及是否需要操作。尽量放在动作发生的位置；不为普通切换增加解释段落，也不把后台刷新表现为整页重新打开。本页区分当前实现和后续应收敛的规则。
+反馈要告诉用户当前发生了什么，以及是否需要操作。尽量放在动作发生的位置；不为普通切换增加解释段落，也不把后台刷新表现为整页重新打开。本页记录共享实现与业务反馈边界。
 
 ## 反馈放在哪里
 
@@ -11,12 +11,12 @@
 | 用户主动打开页面、文档或切换需要读取的内容 | [NavigationLoadingLine](../../prototypes/insight-composer/src/NavigationLoadingLine.jsx) | 顶栏底部细线，不挤动内容，不伪造完成百分比 |
 | 首次加载模块或工作区 | [WorkspaceLoadingShell / WorkspacePagePlaceholder](../../prototypes/insight-composer/src/WorkspaceLoading.jsx) | 尽量保留导航和栏位几何；用 `aria-busy` 标识忙碌 |
 | 列表或详情后台刷新 | Flow / Queue 自身资源逻辑 | 已有有效内容保留；后台轮询不反复播放前景加载提示 |
-| 操作失败 | [ActionError](../../prototypes/insight-composer/src/workspace/shared.jsx) | 就近显示可读错误，保留输入；有恢复动作时给出明确入口 |
+| 操作失败 | [InlineError / ActionError](../../prototypes/insight-composer/src/Feedback.jsx) | 就近显示可读错误，保留输入；有恢复动作时给出明确入口 |
 | 模块载入失败 | `WorkspacePageBoundary` | 页面级错误与“重新加载”；不继续展示假的空列表 |
 | 服务暂不可达、访问令牌缺失 | [WorkspaceApp 的 ServiceGate](../../prototypes/insight-composer/src/WorkspaceApp.jsx) | 区分连接失败与授权输入，提供重新连接或继续入口 |
 | 归档 / 删除后可恢复 | Collection `.workspace-undo`、Flow `.flow-undo` | 说明发生的动作并就近提供撤销；不要依赖用户记住另一处入口 |
 | 跨页面操作结果或状态提示 | `WorkspaceApp` 的 `MotionNotice` / `.workspace-toast` | 用于当前页面局部反馈不足以表达的状态，提供关闭操作 |
-| 简单复制结果 | Queue 按钮“已复制”、Flow 局部复制状态 | 反馈留在原操作附近，避免为每次复制弹出新对话框 |
+| 简单复制结果 | [useClipboardFeedback / CopyFeedback](../../prototypes/insight-composer/src/Feedback.jsx) | 反馈留在原操作附近，避免为每次复制弹出新对话框 |
 
 “反馈在原位置”是默认选择，是否允许关闭、是否需要重试取决于实际动作。关闭错误提示不等于写入成功；取消任务、撤销归档、重新读取也不是同一个操作。
 
@@ -59,13 +59,13 @@
 | Queue 搜索为空 | “没有匹配的任务” | 不和任务读取失败混用 |
 | Queue 某状态为空 | “没有需要处理的任务”等 | 按所选状态描述；添加入口只在适用场景显示 |
 
-数量是辅助信息，沿用较小字号与等宽数字；不挤压标题、不替代状态文字。当前实现尚有首轮 Queue 数据未返回时显示回落计数 `0` 的情况，不能将这个实现当成“加载时显示零”的统一规范。
+数量是辅助信息，沿用较小字号与等宽数字；不挤压标题、不替代状态文字。Queue 首轮尚未取得计数时保留原位空白，并从辅助技术隐藏；只有收到真实数据后才显示数字。加载中、真实零值与请求失败分别表达。Flow 的加载壳通过 `flowPanelLayout` 复用实际页面的右栏、选中详情、缩放与窄容器规则，避免先渲染另一套栏位。
 
 ## 错误、忙碌与恢复
 
 `useTask` 在执行期间拦截重复提交；`ActionError` 用 `role="alert"` 和警告图标表达错误，退出时设为不可交互并从辅助技术隐藏。调用方仍需决定禁用哪些按钮、何时保存或清除草稿、如何重试，不能只把按钮改成灰色。
 
-当前 `.workspace-error` 的代表样式是细红色边框 `#e8cecb`、浅底 `#fff7f5`、文字 `#923f38`、`4px` 圆角，尺寸随 UI scale。它适用于工作区内操作错误；此处记录的是现有样式，尚未有统一的全局错误色 token。详见 [workspace.css](../../prototypes/insight-composer/src/workspace/workspace.css)。
+`InlineError` 是工作区和导入/修订弹窗的同一个错误组件；`ActionError` 保留为兼容导出。颜色来自 `--ui-error-border` / `--ui-error-surface` / `--ui-error-text`，圆角、字号、内边距来自共享 token，并随 UI scale 变化。当前细框/浅底仍为 `#e8cecb` / `#fff7f5`，错误文字为 `#923f38`。退出保留最后一份内容，同时设为 inert 与 aria-hidden；关闭中重开可反向继续。详见 [Feedback.jsx](../../prototypes/insight-composer/src/Feedback.jsx)、[feedback.css](../../prototypes/insight-composer/src/feedback.css)、[ui-tokens.css](../../prototypes/insight-composer/src/ui-tokens.css)。
 
 行为要求：
 
@@ -78,13 +78,15 @@
 
 全局 `.workspace-toast` 当前位于视口底部居中，最大宽度为视口减 `32px`，使用浮层表面、边框、`8px` 圆角，采用 `role="status"` 和显式关闭按钮。它不是所有错误的默认去处。源码：[WorkspaceApp](../../prototypes/insight-composer/src/WorkspaceApp.jsx)、[workspace-shell.css](../../prototypes/insight-composer/src/workspace-shell.css)。
 
-## 已知差异与后续收敛
+## 共享空态与复制反馈
 
-1. 工作区 `ActionError` 与服务弹窗 `.workspace-service-error` 使用不同字号、圆角和硬编码颜色；后者还通过 `MotionFeedback` 包装。后续应先统一反馈语义与 token，再调整容器适配。
-2. Collection、Flow、Queue 的空状态分别实现：Collection 含图标、Flow 有局部 `EmptyState`、Queue 使用状态文本。尚无统一组件；不要把装饰性图标设成必需，也不能删除有助于恢复的动作。
-3. 首次加载壳与实际页面布局并非逐状态一致，尤其 Flow 可变右栏；当前加载壳是基础占位，不是完整最终布局的验收结论。
-4. 复制反馈存在按钮原位变化与独立状态文字两种形式；新场景默认就近反馈，只有动作位置无法承载时才扩大提示范围。
-5. Queue 首轮计数使用 `0` 回落，部分占位未逐处提供独立文案。这些是待核对的呈现细节，不意味着真实业务结果为零。
+三页复用 `EmptyState`：列表空态采用相同文字层级、间距及恢复动作位置；Flow 概览中嵌入局部面板时使用 `compact`，保持该面板的内容流。文案与“清除筛选”“添加资料”等动作仍由业务场景决定，组件不自动插入装饰图标或重复标题。
+
+Queue 和 Flow 共用 `useClipboardFeedback`：剪贴板 Promise 成功后才展示“已复制”；最新请求拥有结果，迟到的旧成功或失败不能覆盖它；成功提示持续 2400ms，失败保留到下一次尝试或显式清除。卸载取消旧回调。Queue 以按钮原位文本表达成功、行内错误表达失败；Flow 用靠近编号的 `CopyFeedback`。位置不同有业务原因，但成功边界与生命周期相同。
+
+## 本轮核验
+
+2026-10-30 的 [feedback.browser](../../prototypes/insight-composer/tests/feedback.browser.mjs) 已在实际浏览器通过：两类错误计算样式一致；关闭退出内容保留、退出中重开与草稿保留；复制等待不假报成功、异步乱序、失败保持与成功重试；320px / 120% 下长错误换行；中途打开减少动态效果时立即完成退场；空态恢复按钮可用。Queue 慢加载及 Flow 占位几何见 [导航与布局](navigation-layout.md) 的本轮验证记录。
 
 ## 修改后的检查
 
@@ -92,4 +94,4 @@
 - 切筛选、连续展开两项、返回页面、后台轮询时，旧结果和旧动画都不会覆盖当前内容。
 - 加载中不显示错误的空状态；失败后可重试；复制失败不显示成功；重复点击不产生重复写入。
 - 检查长错误文本、键盘焦点、减少动态效果、列表滚动和窄窗口，不只截取正常状态。
-- 可按改动选择 [navigation-loading.test](../../prototypes/insight-composer/tests/navigation-loading.test.mjs)、[queue-loading.browser](../../prototypes/insight-composer/tests/queue-loading.browser.mjs)、[flow-resource-store.test](../../prototypes/insight-composer/tests/flow-resource-store.test.mjs)、[collection-plan-feedback.browser](../../prototypes/insight-composer/tests/collection-plan-feedback.browser.mjs)。本页是源码核对记录，未据此宣称这些检查本轮已运行或安装版已验收。
+- 可按改动选择 [navigation-loading.test](../../prototypes/insight-composer/tests/navigation-loading.test.mjs)、[queue-loading.browser](../../prototypes/insight-composer/tests/queue-loading.browser.mjs)、[flow-resource-store.test](../../prototypes/insight-composer/tests/flow-resource-store.test.mjs)、[collection-plan-feedback.browser](../../prototypes/insight-composer/tests/collection-plan-feedback.browser.mjs)。仅“本轮核验”及本次变更记录列出的实际执行结果是本轮证据；未运行的其他脚本只是复验入口，浏览器结果不代表安装版验收。

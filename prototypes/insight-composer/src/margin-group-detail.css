@@ -12,9 +12,6 @@
   box-shadow: 0 18px 70px #24282d20;
 }
 .margin-group-dialog[open] { display: flex; flex-direction: column; }
-.margin-group-dialog::backdrop { background: #24282d00; transition: background-color 140ms linear; }
-.margin-group-dialog[data-state="open"]::backdrop { background: #24282d38; }
-@starting-style { .margin-group-dialog[data-state="open"]::backdrop { background: #24282d00; } }
 .margin-group-dialog-header {
   display: flex;
   align-items: center;
@@ -49,4 +46,3 @@
 .margin-group-detail-actions button { display: inline-flex; align-items: center; gap: 3px; padding: 2px 0; background: transparent; color: var(--accent); font-size: 12px; line-height: 1.7; }
 .margin-group-detail-actions button:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 .margin-group-copy-status { display: block; margin-top: 5px; color: var(--text-secondary); font-size: 11px; line-height: 1.6; }
-@media (prefers-reduced-motion: reduce) { .margin-group-dialog::backdrop { transition: none; } }

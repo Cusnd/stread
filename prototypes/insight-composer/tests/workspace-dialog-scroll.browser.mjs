@@ -12,14 +12,19 @@ const bundle = await build({ stdin: { contents: `
   import React from "react";
   import { createRoot } from "react-dom/client";
   import { WorkspaceDialog } from "./src/WorkspaceDialog.jsx";
+  import "./src/styles.css";
+  import "./src/workspace-shell.css";
   const root = createRoot(document.getElementById("root"));
   window.fixtureKey = 0;
   window.renderDialog = open => root.render(<React.StrictMode><WorkspaceDialog key={fixtureKey} open={open} title="Test import" onClose={() => renderDialog(false)}><input aria-label="Title" /></WorkspaceDialog></React.StrictMode>);
   window.unmountFixture = () => root.render(null);
-`, resolveDir: frontend, loader: "jsx" }, bundle: true, write: false, format: "iife", platform: "browser", jsx: "automatic", logLevel: "silent" });
-const server = createServer((_request, response) => {
-  response.setHeader("Content-Type", "text/html; charset=utf-8");
-  response.end('<!doctype html><html><head><style>html{scrollbar-gutter:stable}body{margin:0;min-height:2000px}dialog::backdrop{background:#24242428}</style></head><body><button id="trigger">Open</button><div id="root"></div><script>' + bundle.outputFiles[0].text + '</script></body></html>');
+`, resolveDir: frontend, loader: "jsx" }, bundle: true, write: false, outdir: "dialog-scroll-fixture", format: "iife", platform: "browser", jsx: "automatic", logLevel: "silent" });
+const javascript = bundle.outputFiles.find(file => file.path.endsWith(".js")).text;
+const stylesheet = bundle.outputFiles.find(file => file.path.endsWith(".css")).text;
+const server = createServer((request, response) => {
+  const script = request.url === "/fixture.js", css = request.url === "/fixture.css";
+  response.setHeader("Content-Type", script ? "text/javascript" : css ? "text/css" : "text/html; charset=utf-8");
+  response.end(script ? javascript : css ? stylesheet : '<!doctype html><html><head><link rel="stylesheet" href="/fixture.css"><style>body{margin:0;min-height:2000px}</style></head><body><button id="trigger">Open</button><div id="root"></div><script src="/fixture.js"></script></body></html>');
 });
 await new Promise(done => server.listen(0, "127.0.0.1", done));
 let browser;

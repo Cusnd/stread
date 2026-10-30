@@ -10,7 +10,7 @@ const source = (await readFile(new URL("../src/useMotionPresence.js", import.met
   .replace(/^import .+;\r?\n/gm, "").replace("export function useMotionPresence", "function useMotionPresence");
 
 function harness({ open = false, reduced = false, onExit = () => {} } = {}) {
-  const cells = [], pending = new Map(), runs = [], sets = [];
+  const cells = [], pending = new Map(), runs = [], sets = [], scheduled = new Set();
   let cursor = 0, dirty = true, output, mounted = true, committed = false, stops = 0;
   let surfaceCleanup, surfaceAllowed = true;
   const surface = {}, subscribers = new Set();
@@ -59,8 +59,9 @@ function harness({ open = false, reduced = false, onExit = () => {} } = {}) {
     set(target) { sets.push(target); },
     stop() { stops++; },
   };
-  const hook = new Function("useEffect", "useLayoutEffect", "useMemo", "useRef", "useState", "useAnimationControls", "motionTransition", "useReducedMotionPreference", source + "\nreturn useMotionPresence;")(
+  const hook = new Function("useEffect", "useLayoutEffect", "useMemo", "useRef", "useState", "useAnimationControls", "motionTransition", "useReducedMotionPreference", "frame", "cancelFrame", source + "\nreturn useMotionPresence;")(
     effect("passive"), effect("layout"), memo, ref, state, () => controls, motionTransition, () => input.reduced,
+    { update: callback => scheduled.add(callback) }, callback => scheduled.delete(callback),
   );
   const flushEffects = (type) => {
     for (const [index, queued] of [...pending]) if (queued === type) {
@@ -69,7 +70,7 @@ function harness({ open = false, reduced = false, onExit = () => {} } = {}) {
       cells[index].cleanup = cells[index].callback();
     }
   };
-  const flush = () => {
+  const flush = (flushFrame = true) => {
     for (let guard = 0; guard < 20 && (dirty || pending.size); guard++) {
       if (dirty) {
         dirty = false; cursor = 0; committed = false;
@@ -83,6 +84,7 @@ function harness({ open = false, reduced = false, onExit = () => {} } = {}) {
       flushEffects("passive");
     }
     assert.equal(dirty || pending.size > 0, false, "effects converge");
+    if (flushFrame) for (const callback of [...scheduled]) { scheduled.delete(callback); callback(); }
     return output;
   };
   flush();
@@ -91,6 +93,8 @@ function harness({ open = false, reduced = false, onExit = () => {} } = {}) {
     get stops() { return stops; },
     get output() { return output; },
     update(patch) { input = { ...input, ...patch }; dirty = true; return flush(); },
+    updateBeforeFrame(patch) { input = { ...input, ...patch }; dirty = true; return flush(false); },
+    nextFrame() { return flush(); },
     async finish(index = runs.length - 1) { runs[index].finish(); await Promise.resolve(); return flush(); },
     replaySurface() {
       surfaceCleanup?.();
@@ -153,6 +157,29 @@ test("rapid close/open/close ignores old completions and never stops a retargete
   await h.finish(3);
   assert.equal(h.output.present, false);
   assert.equal(exits, 1);
+});
+
+test("commands wait for the render frame and only the latest pre-frame intent starts", async () => {
+  let exits = 0;
+  const h = harness({ onExit: () => exits++ });
+  h.updateBeforeFrame({ open: true });
+  assert.equal(h.output.present, true, "the surface mounts before its clock starts");
+  assert.equal(h.runs.length, 0);
+  h.updateBeforeFrame({ open: false });
+  h.updateBeforeFrame({ open: true });
+  h.nextFrame();
+  assert.equal(h.runs.length, 1, "cancelled pre-frame targets never start");
+  assert.equal(h.runs[0].target.opacity, 1);
+  h.updateBeforeFrame({ open: false });
+  h.updateBeforeFrame({ reduced: true });
+  assert.equal(exits, 1, "reduced motion completes without waiting for a frame");
+  h.nextFrame();
+  assert.equal(h.runs.length, 1, "the cancelled exit does not restart after reduced motion");
+  const other = harness();
+  other.updateBeforeFrame({ open: true });
+  other.unmount();
+  other.nextFrame();
+  assert.equal(other.runs.length, 0, "unmount cancels a pending opening command");
 });
 
 test("exit completion uses the current callback without starting another animation", async () => {

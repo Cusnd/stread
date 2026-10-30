@@ -21,6 +21,8 @@ import { availablePlanDocuments, dateRange, dayLabel, durationLabel, groupHistor
 import { flowResourceStore } from "./flow-resource-store.js";
 import { useReaderRuntime } from "../ReaderRuntime.jsx";
 import { UI_SCALE_BASE } from "../ui-scale.js";
+import { CopyFeedback, EmptyState as SharedEmptyState, useClipboardFeedback } from "../Feedback.jsx";
+import { flowPanelLayout, WORKSPACE_COMPACT_NAVIGATION_WIDTH, WORKSPACE_NAVIGATION_WIDTH } from "./workspace-layout.js";
 import "./flow.css";
 
 const sections = [{ id: "overview", label: "总览", Icon: CalendarBlank }, { id: "insights", label: "洞见", Icon: InsightIcon }, { id: "plan", label: "阅读计划", Icon: ListChecks }, { id: "history", label: "阅读历史", Icon: Clock }];
@@ -80,7 +82,36 @@ function useFlowResource(url, revision, refreshKey) {
 }
 
 function EmptyState({ children, action, compact = false }) {
-  return <MotionItem as="div" className={"flow-empty" + (compact ? " flow-empty-compact" : "")} layout={false}><p>{children}</p>{action}</MotionItem>;
+  return <SharedEmptyState className={"flow-empty" + (compact ? " flow-empty-compact" : "")} compact={compact} action={action}>{children}</SharedEmptyState>;
+}
+
+function useCompactInsightDialog(requestKey, explicitOpen, overlayActive) {
+  const [opened, setOpened] = useState(false);
+  useLayoutEffect(() => {
+    if (!requestKey) { setOpened(false); return; }
+    // A modal already beneath Settings must keep its native layer and content.
+    if (opened || explicitOpen) { setOpened(true); return; }
+    if (overlayActive) return;
+    const waiting = new Set();
+    let active = true;
+    const tryOpen = () => {
+      if (!active) return;
+      // The global overlay state clears before its native exit completes. A
+      // responsive layout change may open only after every other layer closes.
+      const blockers = [...document.querySelectorAll("dialog[open]")].filter((dialog) => !dialog.classList.contains("flow-insight-dialog"));
+      if (!blockers.length) { setOpened(true); return; }
+      for (const dialog of blockers) if (!waiting.has(dialog)) {
+        waiting.add(dialog);
+        dialog.addEventListener("close", tryOpen);
+      }
+    };
+    tryOpen();
+    return () => {
+      active = false;
+      for (const dialog of waiting) dialog.removeEventListener("close", tryOpen);
+    };
+  }, [requestKey, explicitOpen, overlayActive, opened]);
+  return Boolean(requestKey && opened);
 }
 
 function InsightGlyph({ note, size = 15 }) {
@@ -201,7 +232,7 @@ function InsightDetail({ note, document, pending, onRead, onEdit, onArchive, onR
         {onClose && <button type="button" className="workspace-icon-button flow-detail-close" aria-label="关闭洞见详情" title="关闭洞见详情" onClick={onClose}><X size={14} /></button>}
       </div>
     </header>
-    {copyStatus && <p className="flow-copy-status" role="status">{copyStatus}</p>}
+    <CopyFeedback className="flow-copy-status" message={copyStatus} />
     <div className="flow-detail-body">
       {note.title && <h2 className="flow-detail-title">{note.title}</h2>}
       {note.body && <div className="flow-detail-copy"><InlineContent text={note.body} /></div>}
@@ -248,7 +279,7 @@ function ReadingPlanList({ plan, pending, read, mutate, planVersion, onContextMe
   </>;
 }
 
-export function FlowPage({ workspace, view = {}, setView, onViewChange, command, openDocument, onEditInsight, busy = false }) {
+export function FlowPage({ workspace, view = {}, setView, onViewChange, command, openDocument, onEditInsight, busy = false, overlayActive = false }) {
   const reduced = useReducedMotionPreference();
   const [resizing, setResizing] = useState(false);
   const { mode } = useInterfaceMode();
@@ -256,6 +287,8 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
   const { percent } = useSyncExternalStore(runtime.uiScale.subscribe, runtime.uiScale.getSnapshot);
   const scale = percent / UI_SCALE_BASE;
   const condensedLayout = useMedia(`(max-width: ${1100 * scale}px)`);
+  const mobileNavigation = useMedia(`(max-width: ${WORKSPACE_COMPACT_NAVIGATION_WIDTH * scale}px)`);
+  const navigationExpanded = view.navigationExpanded !== false;
   const change = useView(view, setView || onViewChange);
   const section = sections.some((entry) => entry.id === view.section) ? view.section : "overview";
   const insightShortcut = view.insightReview === "pending" || view.insightQuestion === "unresolved";
@@ -264,7 +297,8 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerQuery, setPickerQuery] = useState("");
   const [pickerInitialPlanIds, setPickerInitialPlanIds] = useState(workspace.planIds);
-  const [copyStatus, setCopyStatus] = useState("");
+  const clipboard = useClipboardFeedback();
+  const copyStatus = clipboard.feedback?.message || "";
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailReturnFocusKey, setDetailReturnFocusKey] = useState(null);
@@ -272,13 +306,13 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
   const contextTargetVersion = useRef(null);
   const detailOpenRef = useRef(detailOpen);
   detailOpenRef.current = detailOpen;
-  const copyTimer = useRef(null);
   const scroll = useRef(null);
   const rail = useRef(null);
   const planPreviewScroll = useRef(null);
   const reviewPreviewScroll = useRef(null);
   const restoredScroll = useRef({ section: null, done: false });
   const restoredOverviewPreviews = useRef({ plan: false, review: false });
+  const restoredCompactOverview = useRef(false);
   const restoredDetail = useRef({ id: null, done: false });
   const layout = useRef(null);
   const layoutMotionRef = useImmediateReducedMotion(reduced);
@@ -287,7 +321,7 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
   const railMotionRef = useImmediateReducedMotion(reduced, rail);
   const filterToolsMotionRef = useImmediateReducedMotion(reduced);
   const questionFilterMotionRef = useImmediateReducedMotion(reduced);
-  const [layoutWidth, setLayoutWidth] = useState(window.innerWidth - 180);
+  const [layoutWidth, setLayoutWidth] = useState(() => document.body.clientWidth - (!mobileNavigation && navigationExpanded ? WORKSPACE_NAVIGATION_WIDTH * scale : 0));
   const timezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", []);
   const revision = workspace.revision;
   const range = dateRange(view.historyPeriod || "week", timezone);
@@ -315,10 +349,10 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
   const candidates = useMemo(() => availablePlanDocuments({ documents: workspace.documents, planIds: pickerInitialPlanIds }, pickerQuery), [workspace.documents, pickerInitialPlanIds, pickerQuery]);
   const openPlanPicker = () => { setPickerInitialPlanIds([...workspace.planIds]); setPickerOpen(true); };
   const selected = selectedDetail.data?.unavailable ? null : selectedDetail.data?.insight || insightPage.items.find((note) => note.id === selectedId) || (selectedSnapshot?.id === selectedId ? selectedSnapshot : null);
-  const railVisible = section === "overview" || section === "insights" && Boolean(selectedId);
-  const minWidth = 260 * scale;
-  const maxWidth = Math.max(minWidth, Math.min((section === "overview" ? 480 : 600) * scale, layoutWidth * (section === "overview" ? .44 : .49)));
-  const railWidth = Math.max(minWidth, Math.min(maxWidth, (view.panelWidth || (section === "overview" ? 364 : window.innerWidth / scale <= 1100 ? 286 : 306)) * scale));
+  const panelLayout = flowPanelLayout({ section, selectedInsightId: selectedId, panelWidth: view.panelWidth, scale, availableWidth: layoutWidth, viewportWidth: window.innerWidth });
+  const compactDetailOpen = useCompactInsightDialog(section === "insights" && panelLayout.compact ? selectedId : null, detailOpen, overlayActive);
+  const { minWidth, maxWidth, railWidth } = panelLayout;
+  const railVisible = panelLayout.sideRail || panelLayout.stacked;
   const activeError = task.error || selectedDetail.error || summary.error || insights.error || history.error || reviews.error;
   const loading = (section === "overview" && !summary.data && summary.loading) || (section === "insights" && !insights.data && insights.loading) || (section === "history" && !history.data && history.loading);
   const contextMenu = useContextMenu({ disabled: task.pending || pickerOpen || detailOpen, contextKey: JSON.stringify([section, insightUrl, overviewDate, overviewDays, view.historyPeriod]) });
@@ -346,12 +380,11 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
     for (const id of planFocusRequest.ids) if (focusByKey(prefix + id)) return;
     focusByKey(section === "overview" ? "flow-plan-all" : "flow-plan-add", "flow-content-heading");
   }, [planFocusRequest, task.pending, section, pickerOpen, detailOpen, workspace.planVersion]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const observer = new ResizeObserver(([entry]) => setLayoutWidth(entry.contentRect.width));
-    if (layout.current) observer.observe(layout.current);
+    if (layout.current) { setLayoutWidth(layout.current.getBoundingClientRect().width); observer.observe(layout.current); }
     return () => observer.disconnect();
   }, []);
-  useEffect(() => () => clearTimeout(copyTimer.current), []);
   useEffect(() => {
     let lastRefresh = 0;
     const refreshVisible = () => {
@@ -372,13 +405,19 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
   }, []);
   const scrollReady = section === "plan" || section === "insights" && insights.ready || section === "history" && history.ready || section === "overview" && history.ready && (Boolean(overviewDate) || historyPage.items.length > 0 || insights.ready);
   useLayoutEffect(() => {
-    if (layout.current) layout.current.scrollTop = 0;
+    if (!panelLayout.stacked) {
+      restoredCompactOverview.current = false;
+      if (layout.current) layout.current.scrollTop = 0;
+    } else if (scrollReady && !restoredCompactOverview.current && layout.current) {
+      layout.current.scrollTop = view.compactOverviewScrollTop || 0;
+      restoredCompactOverview.current = true;
+    }
     if (restoredScroll.current.section !== section) restoredScroll.current = { section, done: false };
     if (!restoredScroll.current.done && scrollReady && scroll.current) {
       scroll.current.scrollTop = view[section + "ScrollTop"] || 0;
       restoredScroll.current.done = true;
     }
-  }, [section, scrollReady, view]);
+  }, [section, scrollReady, view, panelLayout.stacked]);
   useLayoutEffect(() => {
     if (section !== "overview") { restoredOverviewPreviews.current = { plan: false, review: false }; return; }
     if (!restoredOverviewPreviews.current.plan && planPreviewScroll.current) {
@@ -399,7 +438,13 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
     }
   }, [section, selectedId, selected, view.insightDetailScrollTop]);
   useEffect(() => { if (selected && selected !== selectedSnapshot) setSelectedSnapshot(selected); }, [selected]);
-  const navigate = (next, patch = {}) => { setDetailOpen(false); task.setError(""); change({ section: next, ...patch }); };
+  const navigate = (next, patch = {}) => { setDetailOpen(false); task.setError(""); change({ section: next, ...patch, ...(mobileNavigation ? { navigationExpanded: false } : {}) }); };
+  const takeCompactScrollControl = (event) => {
+    if (!panelLayout.stacked || event.type === "keydown" && !["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Tab"].includes(event.key)) return;
+    // A delayed first response must not restore over a scroll/focus decision
+    // the user has already made in the compact overview.
+    restoredCompactOverview.current = true;
+  };
   const rememberScroll = (event) => { if (event.target === event.currentTarget && restoredScroll.current.section === section && restoredScroll.current.done) change({ [section + "ScrollTop"]: event.currentTarget.scrollTop }); };
   const rememberOverviewPreviewScroll = (event, kind) => {
     if (event.target === event.currentTarget && section === "overview" && restoredOverviewPreviews.current[kind]) change({ [kind === "plan" ? "overviewPlanScrollTop" : "overviewReviewScrollTop"]: event.currentTarget.scrollTop });
@@ -444,7 +489,7 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
     const result = await mutate({ kind: "insight.review." + action, insightId: note.id, documentId: note.documentId });
     if (result.ok) setSelectedSnapshot((current) => current?.id === note.id ? { ...current, ...(result.value.insight || {}), review: result.value.review || result.value.insight?.review || current.review } : current);
   };
-  const copy = async (note) => { try { await navigator.clipboard.writeText(note.reference); setCopyStatus("已复制 " + note.reference); } catch { setCopyStatus("复制失败，可直接选中编号复制。"); } clearTimeout(copyTimer.current); copyTimer.current = setTimeout(() => setCopyStatus(""), 2400); };
+  const copy = (note) => clipboard.copy(note.reference, { key: note.id, successMessage: "已复制 " + note.reference });
   const archive = async (note) => {
     const index = insightPage.items.findIndex((item) => item.id === note.id);
     const next = insightPage.items[index + 1] || insightPage.items[index - 1];
@@ -503,7 +548,7 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
     });
   };
   const search = <label className="workspace-search flow-search"><MagnifyingGlass size={14} /><input type="search" aria-label="搜索洞见" placeholder="搜索标题、内容或编号" value={insightQuery} onChange={(event) => filters({ insightQuery: event.target.value })} /></label>;
-  const detailProps = { note: selected, document: workspace.documents.find((item) => item.id === selected?.documentId), pending: task.pending || selectedDetail.loading || Boolean(selectedDetail.error), onRead: read, onEdit: edit, onArchive: archive, onReview: review, onCopy: copy, copyStatus };
+  const detailProps = { note: selected, document: workspace.documents.find((item) => item.id === selected?.documentId), pending: task.pending || selectedDetail.loading || Boolean(selectedDetail.error), onRead: read, onEdit: edit, onArchive: archive, onReview: review, onCopy: copy, copyStatus: clipboard.feedback?.key === selected?.id ? copyStatus : "" };
   const detail = selected ? <InsightDetail {...detailProps} onClose={closeInsight} onExpand={() => { setDetailReturnFocusKey(null); setDetailOpen(true); }} /> : <div className="flow-loading-space" aria-busy={selectedDetail.loading}><button type="button" className="workspace-icon-button" aria-label="关闭洞见详情" onClick={closeInsight}><X size={16} /></button></div>;
   const undoRecovery = Boolean(view.archivedInsights?.length) && view.undoNoticeDismissed && <button type="button" className="workspace-icon-button" title="撤销删除" aria-label={"恢复已删除洞见，共 " + view.archivedInsights.length + " 条"} onClick={() => change({ undoNoticeDismissed: false })}><ArrowCounterClockwise size={16} /></button>;
   const upcoming = <section className="flow-upcoming">
@@ -512,9 +557,10 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
       {plan.length ? <ol><AnimatePresence initial={false} mode="popLayout">{plan.slice(0, 3).map((document, index) => <MotionItem key={document.id} data-context-target={contextMenu.targetId === "plan:" + document.id || undefined} onContextMenu={(event) => openPlanMenu(event, document, index)} onKeyDown={(event) => openPlanMenu(event, document, index)}><span className="flow-plan-number">{index + 1}</span><div><button type="button" className="workspace-document-title flow-upcoming-title" data-focus-key={"flow-plan-preview-" + document.id} disabled={task.pending} onClick={() => read(document.id)}>{document.title}</button></div></MotionItem>)}</AnimatePresence></ol> : <EmptyState compact action={<button type="button" className="workspace-quiet-button" onClick={openPlanPicker}><Plus size={14} />添加阅读计划</button>}>阅读计划为空。</EmptyState>}
     </motion.div>
   </section>;
-  return <LayoutGroup id="flow"><motion.main ref={layoutMotionRef} initial={false} animate={{ gridTemplateColumns: `${view.navigationExpanded === false ? 0 : 184 * scale}px minmax(0, 1fr)` }} transition={motionTransition("layout", reduced)} className={"workspace-ui workspace-page flow-page" + (condensedLayout ? " flow-condensed-layout" : "") + (view.navigationExpanded === false ? " flow-nav-collapsed" : "")} data-interface-mode={mode}>
-    <motion.aside ref={navigationMotionRef} layoutScroll initial={false} animate={{ opacity: view.navigationExpanded === false ? 0 : 1 }} transition={motionTransition("content", reduced)} className="flow-nav" inert={view.navigationExpanded === false} aria-hidden={view.navigationExpanded === false || undefined}><nav className="workspace-category-navigation" aria-label="Flow"><div className="flow-nav-main">{sections.map(({ id, label, Icon }) => <button key={id} type="button" className={"workspace-nav-item" + (section === id && (id !== "insights" || !insightShortcut) ? " workspace-selected" : "")} aria-current={section === id ? "page" : undefined} data-focus-key={"flow-section-" + id} onClick={() => navigate(id, id === "insights" && insightShortcut ? { insightReview: "all", insightQuestion: "all", insightType: "all", insightLimit: 30, insightsScrollTop: 0 } : {})}>{section === id && (id !== "insights" || !insightShortcut) && <MotionSelection layoutId="flow-navigation" className="workspace-selection-layer workspace-nav-selection" />}<DecorativeIcon><Icon size={15} aria-hidden="true" /></DecorativeIcon><span>{label}</span>{id === "insights" && summary.data?.totals?.insightCount > 0 && <span className="flow-nav-count">{summary.data.totals.insightCount}</span>}</button>)}</div><div className="flow-nav-shortcuts"><button type="button" className={"workspace-nav-item" + (section === "insights" && view.insightReview === "pending" ? " workspace-selected" : "")} onClick={() => navigate("insights", { insightReview: "pending", insightQuestion: "all", insightType: "all", insightQuery: "", insightDocumentId: "" })}>{section === "insights" && view.insightReview === "pending" && <MotionSelection layoutId="flow-navigation" className="workspace-selection-layer workspace-nav-selection" />}<DecorativeIcon><BookmarkSimple size={15} aria-hidden="true" /></DecorativeIcon><span>待回顾</span>{summary.data?.totals?.reviewCount > 0 && <span className="flow-nav-count">{summary.data.totals.reviewCount}</span>}</button><button type="button" className={"workspace-nav-item" + (section === "insights" && view.insightQuestion === "unresolved" && view.insightReview !== "pending" ? " workspace-selected" : "")} onClick={() => navigate("insights", { insightQuestion: "unresolved", insightReview: "all", insightType: "question", insightQuery: "", insightDocumentId: "" })}>{section === "insights" && view.insightQuestion === "unresolved" && view.insightReview !== "pending" && <MotionSelection layoutId="flow-navigation" className="workspace-selection-layer workspace-nav-selection" />}<DecorativeIcon><Question size={15} aria-hidden="true" /></DecorativeIcon><span>待解决</span>{summary.data?.totals?.unresolvedQuestionCount > 0 && <span className="flow-nav-count">{summary.data.totals.unresolvedQuestionCount}</span>}</button></div></nav></motion.aside>
-    <motion.div initial={false} animate={{ gridTemplateColumns: `minmax(0, 1fr) ${railVisible ? 16 : 0}px ${railVisible ? railWidth : 0}px` }} transition={resizing ? { duration: 0 } : motionTransition("layout", reduced)} className={"flow-workspace" + (railVisible ? " flow-has-rail" : "") + (section === "overview" ? " flow-overview-workspace" : "")} ref={panelLayoutMotionRef} style={{ "--flow-rail-width": railWidth + "px" }} data-resizing={resizing || undefined}>
+  const navigation = <nav className="workspace-category-navigation" aria-label="Flow"><div className="flow-nav-main">{sections.map(({ id, label, Icon }) => <button key={id} type="button" className={"workspace-nav-item" + (section === id && (id !== "insights" || !insightShortcut) ? " workspace-selected" : "")} aria-current={section === id ? "page" : undefined} data-focus-key={"flow-section-" + id} onClick={() => navigate(id, id === "insights" && insightShortcut ? { insightReview: "all", insightQuestion: "all", insightType: "all", insightLimit: 30, insightsScrollTop: 0 } : {})}>{section === id && (id !== "insights" || !insightShortcut) && <MotionSelection layoutId="flow-navigation" className="workspace-selection-layer workspace-nav-selection" />}<DecorativeIcon><Icon size={15} aria-hidden="true" /></DecorativeIcon><span>{label}</span>{id === "insights" && summary.data?.totals?.insightCount > 0 && <span className="flow-nav-count">{summary.data.totals.insightCount}</span>}</button>)}</div><div className="flow-nav-shortcuts"><button type="button" className={"workspace-nav-item" + (section === "insights" && view.insightReview === "pending" ? " workspace-selected" : "")} onClick={() => navigate("insights", { insightReview: "pending", insightQuestion: "all", insightType: "all", insightQuery: "", insightDocumentId: "" })}>{section === "insights" && view.insightReview === "pending" && <MotionSelection layoutId="flow-navigation" className="workspace-selection-layer workspace-nav-selection" />}<DecorativeIcon><BookmarkSimple size={15} aria-hidden="true" /></DecorativeIcon><span>待回顾</span>{summary.data?.totals?.reviewCount > 0 && <span className="flow-nav-count">{summary.data.totals.reviewCount}</span>}</button><button type="button" className={"workspace-nav-item" + (section === "insights" && view.insightQuestion === "unresolved" && view.insightReview !== "pending" ? " workspace-selected" : "")} onClick={() => navigate("insights", { insightQuestion: "unresolved", insightReview: "all", insightType: "question", insightQuery: "", insightDocumentId: "" })}>{section === "insights" && view.insightQuestion === "unresolved" && view.insightReview !== "pending" && <MotionSelection layoutId="flow-navigation" className="workspace-selection-layer workspace-nav-selection" />}<DecorativeIcon><Question size={15} aria-hidden="true" /></DecorativeIcon><span>待解决</span>{summary.data?.totals?.unresolvedQuestionCount > 0 && <span className="flow-nav-count">{summary.data.totals.unresolvedQuestionCount}</span>}</button></div></nav>;
+  return <LayoutGroup id="flow"><motion.main ref={layoutMotionRef} initial={false} animate={{ gridTemplateColumns: `${navigationExpanded && !mobileNavigation ? WORKSPACE_NAVIGATION_WIDTH * scale : 0}px minmax(0, 1fr)` }} transition={motionTransition("layout", reduced)} className={"workspace-ui workspace-page flow-page" + (condensedLayout ? " flow-condensed-layout" : "") + (!navigationExpanded ? " flow-nav-collapsed" : "") + (mobileNavigation ? " flow-compact-navigation" : "")} data-interface-mode={mode}>
+    <motion.aside ref={navigationMotionRef} layoutScroll initial={false} animate={{ opacity: navigationExpanded && !mobileNavigation ? 1 : 0 }} transition={motionTransition("content", reduced)} className="flow-nav" inert={!navigationExpanded || mobileNavigation} aria-hidden={!navigationExpanded || mobileNavigation || undefined}>{!mobileNavigation && navigation}</motion.aside>
+    <motion.div initial={false} animate={{ gridTemplateColumns: panelLayout.columns }} transition={resizing ? { duration: 0 } : motionTransition("layout", reduced)} className={"flow-workspace" + (panelLayout.sideRail ? " flow-has-rail" : "") + (panelLayout.compact ? " flow-compact-content" : "") + (section === "overview" ? " flow-overview-workspace" : "")} ref={panelLayoutMotionRef} style={{ "--flow-rail-width": railWidth + "px" }} data-resizing={resizing || undefined} onPointerDownCapture={takeCompactScrollControl} onWheelCapture={takeCompactScrollControl} onKeyDownCapture={takeCompactScrollControl} onScroll={(event) => { if (panelLayout.stacked && event.target === event.currentTarget && restoredCompactOverview.current) change({ compactOverviewScrollTop: event.currentTarget.scrollTop }); }}>
       {section === "overview" && <>
         <header className="workspace-catalog-heading flow-page-heading flow-overview-heading">
           <h1 id="workspace-flow-title" data-focus-key="flow-content-heading" tabIndex={-1}>总览</h1>{undoRecovery}
@@ -587,12 +633,13 @@ export function FlowPage({ workspace, view = {}, setView, onViewChange, command,
           {section === "history" && <>{!history.data ? <div className="flow-loading-space" aria-hidden="true" /> : !historyPage.items.length ? <EmptyState>{view.historyPeriod === "all" ? "阅读历史从启用计时后开始记录。" : "这段时间还没有阅读记录。"}</EmptyState> : <HistoryTimeline items={historyPage.items} timezone={timezone} onRead={read} onInsight={showInsight} onInsightContextMenu={openInsightMenu} onSessionContextMenu={openSessionMenu} contextTargetId={contextMenu.targetId} pending={task.pending} />}{historyPage.hasMore && <button type="button" className="flow-load-more" disabled={history.loading} onClick={() => change({ historyLimit: (view.historyLimit || 30) + 30 })}>加载更多阅读记录</button>}{summary.data?.trackingStartedAt && <p className="flow-tracking-note">开始记录于 {new Date(summary.data.trackingStartedAt).toLocaleDateString("zh-CN")} · 仅统计有效阅读时间</p>}</>}
         </MotionItem></AnimatePresence></motion.div>
       </section>
-        <PanelResize visible={railVisible} onStart={() => setResizing(true)} onEnd={() => setResizing(false)} width={railWidth} minWidth={minWidth} maxWidth={maxWidth} scale={scale} onResize={(width) => change({ panelWidth: Math.max(minWidth, Math.min(maxWidth, width)) / scale })} /><motion.aside layoutScroll initial={false} animate={{ opacity: railVisible ? 1 : 0, paddingLeft: railVisible ? (section === "overview" ? 16 : condensedLayout ? 20 : 24) * scale : 0, paddingRight: railVisible ? (condensedLayout ? 20 : 24) * scale : 0 }} transition={motionTransition("panel", reduced)} inert={!railVisible} aria-hidden={!railVisible || undefined} className={"flow-rail" + (section === "insights" ? " flow-insight-rail" : "")} ref={railMotionRef} onScroll={(event) => { if (section === "insights" && event.target === event.currentTarget && restoredDetail.current.done) change({ insightDetailScrollTop: event.currentTarget.scrollTop }); }} aria-label={section === "overview" ? "阅读安排与待回顾" : "洞见详情"}><AnimatePresence initial={false} mode="popLayout">{railVisible && <MotionItem as="div" key={section === "overview" ? "overview-rail" : "insight-rail"} className="flow-rail-content" layout={false}>{section === "insights" ? <><div className="flow-detail-content-motion"><AnimatePresence initial={false} mode="popLayout"><MotionItem as="div" key={selected?.id || "loading"} layout={false}>{detail}</MotionItem></AnimatePresence></div></> : <>{upcoming}<section className="flow-review-queue" aria-busy={reviews.loading}><header className="flow-section-heading"><h2>待回顾</h2><button type="button" className="workspace-text-button" aria-label="全部待回顾" onClick={() => navigate("insights", { insightReview: "pending", insightType: "all", insightQuestion: "all", insightQuery: "", insightDocumentId: "" })}>查看全部<CaretRight size={12} /></button></header><motion.div layoutScroll className="flow-review-preview-scroll" ref={reviewPreviewScroll} role="region" tabIndex={0} aria-label="待回顾洞见" onScroll={(event) => rememberOverviewPreviewScroll(event, "review")}>{!reviews.data ? <div className="flow-loading-space flow-loading-space-compact" aria-hidden="true" /> : reviews.data.items.length ? <AnimatePresence initial={false} mode="popLayout">{reviews.data.items.slice(0, 5).map((note) => <MotionItem as="div" key={note.id}><InsightPreview note={note} onClick={showInsight} onContextMenu={openInsightMenu} contextTargetId={contextMenu.targetId} showDocument /></MotionItem>)}</AnimatePresence> : <EmptyState compact>暂无待回顾洞见。</EmptyState>}</motion.div></section></>}</MotionItem>}</AnimatePresence></motion.aside>
+        <PanelResize visible={panelLayout.sideRail} onStart={() => setResizing(true)} onEnd={() => setResizing(false)} width={railWidth} minWidth={minWidth} maxWidth={maxWidth} scale={scale} onResize={(width) => change({ panelWidth: Math.max(minWidth, Math.min(maxWidth, width)) / scale })} /><motion.aside layoutScroll initial={false} animate={{ opacity: railVisible ? 1 : 0, paddingLeft: railVisible ? (section === "overview" ? 16 : condensedLayout ? 20 : 24) * scale : 0, paddingRight: railVisible ? (condensedLayout ? 20 : 24) * scale : 0 }} transition={motionTransition("panel", reduced)} inert={!railVisible} aria-hidden={!railVisible || undefined} className={"flow-rail" + (section === "insights" ? " flow-insight-rail" : "")} ref={railMotionRef} onScroll={(event) => { if (section === "insights" && event.target === event.currentTarget && restoredDetail.current.done) change({ insightDetailScrollTop: event.currentTarget.scrollTop }); }} aria-label={section === "overview" ? "阅读安排与待回顾" : "洞见详情"}><AnimatePresence initial={false} mode="popLayout">{railVisible && <MotionItem as="div" key={section === "overview" ? "overview-rail" : "insight-rail"} className="flow-rail-content" layout={false}>{section === "insights" ? <><div className="flow-detail-content-motion"><AnimatePresence initial={false} mode="popLayout"><MotionItem as="div" key={selected?.id || "loading"} layout={false}>{detail}</MotionItem></AnimatePresence></div></> : <>{upcoming}<section className="flow-review-queue" aria-busy={reviews.loading}><header className="flow-section-heading"><h2>待回顾</h2><button type="button" className="workspace-text-button" aria-label="全部待回顾" onClick={() => navigate("insights", { insightReview: "pending", insightType: "all", insightQuestion: "all", insightQuery: "", insightDocumentId: "" })}>查看全部<CaretRight size={12} /></button></header><motion.div layoutScroll className="flow-review-preview-scroll" ref={reviewPreviewScroll} role="region" tabIndex={0} aria-label="待回顾洞见" onScroll={(event) => rememberOverviewPreviewScroll(event, "review")}>{!reviews.data ? <div className="flow-loading-space flow-loading-space-compact" aria-hidden="true" /> : reviews.data.items.length ? <AnimatePresence initial={false} mode="popLayout">{reviews.data.items.slice(0, 5).map((note) => <MotionItem as="div" key={note.id}><InsightPreview note={note} onClick={showInsight} onContextMenu={openInsightMenu} contextTargetId={contextMenu.targetId} showDocument /></MotionItem>)}</AnimatePresence> : <EmptyState compact>暂无待回顾洞见。</EmptyState>}</motion.div></section></>}</MotionItem>}</AnimatePresence></motion.aside>
     </motion.div>
-    <WorkspaceDialog open={detailOpen && section === "insights" && Boolean(selected)} title="洞见详情" contentKey={selected?.id} returnFocusKey={detailReturnFocusKey} className="flow-insight-dialog" onClose={() => setDetailOpen(false)}>
+    <WorkspaceDialog open={(detailOpen || compactDetailOpen) && section === "insights"} title="洞见详情" contentKey={selected?.id} returnFocusKey={detailReturnFocusKey} className="flow-insight-dialog" onClose={() => panelLayout.compact ? closeInsight() : setDetailOpen(false)}>
       <ActionError message={task.error} onDismiss={() => task.setError("")} />
-      <InsightDetail {...detailProps} expanded />
+      {selected ? <InsightDetail {...detailProps} expanded /> : detail}
     </WorkspaceDialog>
+    {mobileNavigation && <WorkspaceDialog open={navigationExpanded} title="Flow 导航" className="workspace-navigation-dialog" initialFocusKey={"flow-section-" + section} returnFocusKey="flow-navigation-toggle" onClose={() => change({ navigationExpanded: false })}>{navigation}</WorkspaceDialog>}
     <WorkspaceDialog open={pickerOpen} title="添加到阅读计划" onClose={() => setPickerOpen(false)} className="flow-plan-picker">
       <label className="workspace-search flow-picker-search"><MagnifyingGlass size={14} /><input type="search" autoFocus data-dialog-initial aria-label="搜索可添加的文章" placeholder="搜索 Collection" value={pickerQuery} onChange={(event) => setPickerQuery(event.target.value)} /></label>
       <ActionError message={task.error} />
